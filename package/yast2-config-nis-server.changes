@@ -1,4 +1,13 @@
 -------------------------------------------------------------------
+Mon Sep 10 10:20:41 CEST 2001 - mvidner@suse.cz
+
+- Slave server saves the domain name too.
+- Slave server gets the list of maps from yphelper, not from ypwhich.
+  (Works also when ypbind is not running, can change a domain)
+- Get the master name from a map, do not enforce an IP address.
+- 2.4.14
+
+-------------------------------------------------------------------
 Tue Sep  4 17:45:32 CEST 2001 - mvidner@suse.cz
 
 - Fixed using more than one slave server. (2.4.13)
