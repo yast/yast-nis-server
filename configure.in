@@ -33,6 +33,7 @@ AM_CONDITIONAL(ISPPC, test `uname -m` = ppc)
 AC_OUTPUT(Makefile
 	package/$RPMNAME.spec:$RPMNAME.spec.in
 	src/Makefile
+	conf/Makefile
         doc/Makefile
         doc/autodocs/Makefile
         doc/images/Makefile
