@@ -90,7 +90,7 @@ be used to set up these more specific options.</p>"));
         contents = add (contents, `VSpacing (0.5));
                                 // To translators: checkbox label
         contents = add (contents, `HBox (`HSpacing (), `Left (`CheckBox (`id (`have_slave), _("Active Slave NIS server &exists"),
-                        toboolean (lookup (user_settings, ".var.yp.makefile.NOPUSH", false))))));
+                        ! toboolean (lookup (user_settings, ".var.yp.makefile.NOPUSH", false))))));
         contents = add (contents, `VSpacing (0.5));
                                 // To translators: checkbox label
         contents = add (contents, `HBox (`HSpacing (),`Left (`CheckBox (`id (`fast_map), _("&Fast Map distribution (rpc.ypxfrd)"),
@@ -152,7 +152,7 @@ be used to set up these more specific options.</p>"));
 
         user_settings = add (user_settings, "ui_also_client", UI (`QueryWidget (`id (`also_client), `Value)));
         user_settings = add (user_settings, ".var.yp.makefile.NOPUSH",
-                             sformat ("%1", UI (`QueryWidget (`id (`have_slave), `Value))));
+                             sformat ("%1", ! UI (`QueryWidget (`id (`have_slave), `Value))));
         user_settings = add (user_settings, ".rc.ypserver.YPPWD_CHFN",
                              UI (`QueryWidget (`id (`allow_gecos), `Value)) ? "yes" : "no");
         user_settings = add (user_settings, ".rc.ypserver.YPPWD_CHSH",
