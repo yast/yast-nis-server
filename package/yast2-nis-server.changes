@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Aug  4 17:29:19 CEST 2003 - mvidner@suse.de
+
+- Added desktop file (supersedes y2cc file).
+- 2.8.2
+
+-------------------------------------------------------------------
 Wed Jul 23 15:36:10 CEST 2003 - mvidner@suse.cz
 
 - Fixed autoinstallation (#26998).
