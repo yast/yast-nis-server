@@ -377,20 +377,23 @@
 	}
 
 	// and get the maps
-	list running_maps = SCR (`Read (.run.ypwhich_m));
-	if (running_maps == nil)
+	string master = lookup (user_settings, "ui_master_ip", "");
+	output = SCR (`Execute (.target.bash_output, sformat ("/usr/lib/yp/yphelper --maps %1", master)));
+	if (size (lookup (output, "stderr", "")) > 0)
 	{
 	    // To translators: message in the popup dialog
 	    error_msg = error_msg + sformat (UI (_("Can not get list of maps.\n")));
+	    error_details = error_details + sformat ("<pre>%1</pre>", lookup (output, "stderr", ""));
 	    return;
 	}
-	running_maps = maplist (`m, running_maps, ``(lookup (m, "map")));
+	list running_maps = splitstring (lookup (output, "stdout", ""), "\n");
+	// the element after the last newline is empty, remove it
+	running_maps = remove (running_maps, size (running_maps) - 1); 
 
-	string master = lookup (user_settings, "ui_master_ip", "");
 	maplist (`map_name, running_maps, ``{
 	    output = SCR (`Execute (.target.bash_output,
 				    sformat ("/usr/lib/yp/ypxfr -f -h %1 -d %2 %3",
-					     lookup (user_settings, "ui_master_ip", ""),
+					     master,
 					     lookup (user_settings, ".rc.system.YP_DOMAINNAME", ""),
 					     map_name)));
 	    if (size (lookup (output, "stderr", "")) > 0)
