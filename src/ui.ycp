@@ -73,9 +73,9 @@
     global define ReadConfigDialog () ``{
 
 	// help text 1/1
-	locale help = UI (_("<p>Please wait while reading the configuration.</p>"));
-	locale title = UI (_("Initializing NIS server setup"));
-	locale progress_title = "";
+	string help = UI (_("<p>Please wait while reading the configuration.</p>"));
+	string title = UI (_("Initializing NIS server setup"));
+	string progress_title = "";
 
 	list files = [
 	    "/var/yp/Makefile",
@@ -101,7 +101,7 @@
 	while (i < size (files))
 	{
 	    // To translators: progress label %1 is filename
-	    locale msg = sformat (UI (_("Loading '%1'...")), select (files, i));
+	    string msg = sformat (UI (_("Loading '%1'...")), select (files, i));
 	    ProgressMilestone (i, msg, i);
 	    user_settings = user_settings + ReadPathFile (eval (select (vars, i)), select (files, i));
 	    i = i + 1;
@@ -128,10 +128,10 @@
     global define SavingDialog () ``{
 
 	// help text 1/1
-	locale help = UI (_("<p>Please wait until the configuration is saved.</p>"));
-	locale title = UI (_("Saving NIS server setup"));
-	locale progress_title = "";
-        locale progress_label = "";
+	string help = UI (_("<p>Please wait until the configuration is saved.</p>"));
+	string title = UI (_("Saving NIS server setup"));
+	string progress_title = "";
+        string progress_label = "";
 	UI (`RestoreWizardNextButton());
 	UI (`ChangeWidget (`id (`next), `Enabled, false));
 	UI (`ChangeWidget (`id (`abort), `Enabled, false));
