@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Mar 29 10:12:03 CEST 2004 - mvidner@suse.cz
+
+- fixed build by avoiding nil in testsuite (#36922)
+- 2.9.7
+
+-------------------------------------------------------------------
 Fri Mar 26 18:14:40 CET 2004 - mvidner@suse.cz
 
 - fixed writing broken by improper use of eval (#37031)
