@@ -39,38 +39,47 @@
     }
 
     /**
-     * Determines if the current host is YP master or not
-     * @return boolean
+     * Gets the master server (name or IP?) from any of this server's maps
+     * @return string	nil if no map is found or it has no YP_MASTER_NAME
      */
-    global define isYPMaster () ``{
-        map output = $[];
-        string masterentry_hostname  = "";
-        string yphelper_hostname = "";
+    global define getMaster () ``{
 	string dn = lookup (user_settings, ".rc.system.YP_DOMAINNAME", "");
+	if (dn == "")
+	{
+	    return nil;
+	}
 	string ddir = sformat ("/var/yp/%1", dn);
 	string any_map = nil;
 	if (SCR (`Read (.target.size, ddir)) >=0 )
 	{
 	    list maps = SCR (`Read (.target.dir, ddir));
-	    if (size (maps) > 0)
-	    {
-		any_map = select (maps, 0);
-	    }
+	    any_map = select (maps, 0, nil);
 	}
 	if (any_map == nil)
 	{
-	    return false;	// no maps, can't decide
+	    return nil;
 	}
 	string command = sformat ("/usr/lib/yp/makedbm -u /var/yp/%1/%2 | grep ^YP_MASTER_NAME", dn, any_map);
 
-        output = SCR (`Execute (.target.bash_output, command));
-        masterentry_hostname = select (splitstring (lookup (output, "stdout", ""), " "), 1, "");
-	masterentry_hostname = select (splitstring (deletechars (masterentry_hostname, "\n"), "."), 0);
-        output = SCR (`Execute (.target.bash_output, "/usr/lib/yp/yphelper --hostname"));
-        yphelper_hostname = lookup (output, "stdout", "");
-	yphelper_hostname = select (splitstring (deletechars (yphelper_hostname, "\n"), "."), 0);
+	string output = lookup (SCR (`Execute (.target.bash_output, command)), "stdout", "");
+	return select (splitstring (output, " \n"), 1, nil);
+    }
 
-        return masterentry_hostname == yphelper_hostname;
+    /**
+     * Determines if the current host is YP master or not
+     * @return boolean
+     */
+    global define isYPMaster () ``{
+	string master = getMaster();
+	if (master == nil)
+	{
+	    return false;	// can't decide
+	}
+
+	map output = SCR (`Execute (.target.bash_output, "/usr/lib/yp/yphelper --hostname"));
+	string yphelper_hostname = lookup (output, "stdout", "");
+
+	return master == deletechars (yphelper_hostname, "\n");
     }
 
     /**

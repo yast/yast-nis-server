@@ -121,7 +121,16 @@
 	}
 	else
 	{
-	    user_settings = add (user_settings, "ui_what", isYPMaster () ? `master : `slave);
+	    if (isYPMaster ())
+	    {
+		user_settings = add (user_settings, "ui_what", `master);
+	    }
+	    else
+	    {
+		user_settings = add (user_settings, "ui_what", `slave);
+		//FIXME: this will give a gostname. do we need an IP?
+		user_settings = add (user_settings, "ui_master_ip", getMaster());
+	    }
 	}
 
 	return `next;
