@@ -74,7 +74,9 @@
 
         // help text 1/1
         locale help = UI (_("<p>Please wait while reading the configuration.</p>"));
-        
+        locale title = UI (_("Initializing NIS server setup"));
+        locale progress_title = UI(_(""));
+
         list files = [
             "/var/yp/Makefile", 
             "/etc/rc.config.d/ypserv.rc.config",
@@ -90,7 +92,7 @@
             ``(YPServers ())
             ];
                                 // To translators: dialog title
-        ProgressSetup (_("Initializing NIS server setup"), _(""), size (files),
+        ProgressSetup (title, progress_title, size (files),
                        // To translators: progress label %1 is filename
                        maplist (`file, files, ``(sformat (UI (_("Load '%1' file")), file))),
                        help);
@@ -127,6 +129,9 @@
 
         // help text 1/1
         locale help = UI (_("<p>Please wait until the configuration is saved.</p>"));
+        locale title = UI (_("Saving NIS server setup"));
+        locale progress_title = UI (_(""));
+
         UI (`RestoreWizardNextButton());
         UI (`ChangeWidget (`id (`next), `Enabled, false));
         UI (`ChangeWidget (`id (`abort), `Enabled, false));
@@ -136,7 +141,7 @@
         integer step = 0;
 
         // To translators: dialog title
-        ProgressSetup (_("Saving NIS server setup"), _(""), size (save_list), 
+        ProgressSetup (title, progress_title, size (save_list), 
                        maplist (`e, save_list, ``(lookup (e, "save_label", ""))), help);
 
         while (step < size (save_list))
