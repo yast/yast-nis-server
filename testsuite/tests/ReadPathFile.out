@@ -18,5 +18,3 @@ Read	.rc.system.YP_DOMAINNAME "local"
 Return	$[".rc.system.START_PORTMAP":"yes", ".rc.system.START_YPBIND":"yes", ".rc.system.START_YPPASSWDD":"no", ".rc.system.START_YPSERV":"no", ".rc.system.START_YPXFRD":"no", ".rc.system.YP_DOMAINNAME":"local"]
 Read	.var.yp.securenets [$["netmask":"255.0.0.0", "network":"127.0.0.0"]]
 Return	$[".var.yp.securenets":[$["netmask":"255.0.0.0", "network":"127.0.0.0"]]]
-Read	.var.yp.ypservers []
-Return	$[".var.yp.ypservers":[]]
