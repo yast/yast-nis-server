@@ -111,7 +111,7 @@
 	}
 
 	user_settings = add (user_settings, "ui_also_client",
-			     lookup (user_settings, ".rc.system.YPBIND_START", "yes") == "yes");
+			     lookup (user_settings, ".rc.system.START_YPBIND", "no") == "yes");
 	user_settings = add (user_settings, "old_domainname",
 			     lookup (user_settings, ".rc.system.YP_DOMAINNAME", ""));
 
