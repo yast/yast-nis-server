@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Aug 20 15:05:18 CEST 2003 - jsuchome@suse.de
+
+- removed redundant "initialization dialog" (#28779)
+- 2.8.4
+
+-------------------------------------------------------------------
 Thu Aug 14 16:58:46 CEST 2003 - jsuchome@suse.cz
 
 - removed "really save" and "succesfully saved" popups, added writing
