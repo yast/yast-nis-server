@@ -34,8 +34,9 @@
     global define WhatToConfigure () ``{
 
         // help text 1/2
-        string helptext = UI (_("<p>Please select, if you want to configure NIS server to be a <b>master</b>,
-<b>slave</b> or <b>do not have</b> NIS server configured.</p>"));
+        string helptext = UI (_("<p>Select whether to configure the NIS server to be a <b>master</b> or a 
+<b>slave</b> or not to configure a NIS server.</p>
+"));
 
         symbol detected = lookup (user_settings, "ui_what", `master);
         term labels = `VBox ();
@@ -57,11 +58,15 @@ configure it.</p>"));
             labels = add (labels, `Left (`Label (_("No NIS Server is configured."))));
 
                                 // To translators: label in the dialog
-            master_setup_label = UI (_("Setup a NIS &Master Server \nwith previous software install"));
+            master_setup_label = UI (_("Set up a NIS &Master Server 
+with previous software install
+"));
                                 // To translators: label in the dialog
-            slave_setup_label  = UI (_("Setup a NIS &Slave Server \nwith previous software install"));
+            slave_setup_label  = UI (_("Set up a NIS &Slave Server 
+with previous software install
+"));
                                 // To translators: label in the dialog
-            none_setup_label   = UI (_("&Do nothing and leave setup"));
+            none_setup_label   = UI (_("&Do nothing and leave set up"));
         }
         else if (isYPServerConfigured ())
         {
@@ -96,12 +101,12 @@ configure it.</p>"));
                                 // To translators: checkbox label
             slave_setup_label  = UI (_("Create NIS &Slave Server"));
                                 // To translators: checkbox label
-            none_setup_label   = UI (_("&Do nothing and leave setup"));
+            none_setup_label   = UI (_("&Do nothing and leave set up"));
         }
 
         term info = `HBox ();
                                 // To translators: label in the dialog
-        info = add (info, `VBox (`Label (_("Actual status:"))));
+        info = add (info, `VBox (`Label (_("Current status:"))));
         info = add (info, `HSpacing (4));
         info = add (info, labels);
         term buttons  = `VBox ();

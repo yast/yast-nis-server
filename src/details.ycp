@@ -44,7 +44,7 @@ file and if the <i>group</i> file should be merged with <i>gshadow</i>
 file.</p>"));
 
         // help text 3/3
-        helptext = helptext + UI (_("<p>You can also adjust the minimal user and group id.</p>"));
+        helptext = helptext + UI (_("<p>You can also adjust the minimum user and group id.</p>"));
 
         boolean merge_passwd = toboolean (lookup (user_settings, ".var.yp.makefile.MERGE_PASSWD", true));
         boolean merge_groups = toboolean (lookup (user_settings, ".var.yp.makefile.MERGE_GROUP", true));
@@ -80,11 +80,11 @@ file.</p>"));
         term minimals = `HBox ();
         
                                 // To translators: intfield label
-        minimals = add (minimals, `IntField (`id (`minuid), _("Minimal &UID"), 0, 50000,
+        minimals = add (minimals, `IntField (`id (`minuid), _("Minimum &UID"), 0, 50000,
                                              tointeger(lookup (user_settings, ".var.yp.makefile.MINUID", 100))));
 	minimals = add (minimals, `HSpacing ());
                                 // To translators: intfield label
-        minimals = add (minimals, `IntField (`id (`mingid), _("Minimal &GUID"), 0, 50000,
+        minimals = add (minimals, `IntField (`id (`mingid), _("Minimum &GUID"), 0, 50000,
                                              tointeger(lookup (user_settings, ".var.yp.makefile.MINGID", 100))));
         
         

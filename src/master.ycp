@@ -41,23 +41,25 @@
 the appropriate button.</p>"));
 
         // help text 2/3
-        helptext = helptext + UI (_("<p>If you want to allow some slave to coexist with this master, check the
+        helptext = helptext + UI (_("<p>If you want slave servers to cooperate with this master, check the
 button <i>Active Slave NIS server exists</i>. If you check the button
 <i>Fast Map distribution</i> it will speed up the transfer of maps to the
-slaves.</p>"));
+slaves.</p>
+"));
 
         // help text 3/3
-        helptext = helptext + UI (_("<p><i>Allow change passwords</i> lets the users change their
-passwords in the presence of NIS. More detailed buttons to allow
-changes of SHELL or GECOS (full name and related informations) could
-be used to set up these more specific options.</p>"));
+        helptext = helptext + UI (_("<p><i>Allow changing of passwords</i> lets the users change their
+passwords in the presence of NIS. Buttons to allow
+changes of the login shell or GECOS (full name and related information) can
+be used to set up these more specific options.</p>
+"));
 
         term pass_yes_buttons = `VBox ();
                                 // To translators: checkbox label
-        pass_yes_buttons = add (pass_yes_buttons, `Left (`CheckBox (`id (`allow_shell), _("Allow changing &GECOS field"),
+        pass_yes_buttons = add (pass_yes_buttons, `Left (`CheckBox (`id (`allow_shell), _("Allow changing of &GECOS field"),
                                 lookup (user_settings, ".rc.ypserver.YPPWD_CHFN", "no") == "yes")));
                                 // To translators: checkbox label
-        pass_yes_buttons = add (pass_yes_buttons, `Left (`CheckBox (`id (`allow_gecos), _("Allow changing of &SHELL"),
+        pass_yes_buttons = add (pass_yes_buttons, `Left (`CheckBox (`id (`allow_gecos), _("Allow changing of login &shell"),
                                 lookup (user_settings, ".rc.ypserver.YPPWD_CHSH", "no") == "yes")));
         pass_yes_buttons = `HBox (`HSpacing (3), pass_yes_buttons);
         
@@ -65,7 +67,7 @@ be used to set up these more specific options.</p>"));
         pass_buttons = add (pass_buttons, `VSpacing (0.3));
         pass_buttons = add (pass_buttons, `Left (`CheckBox (`id (`change_passwords), `opt (`notify),
                                                             // To translators: checkbox label
-                            _("Allow change &passwords"),
+                            _("Allow changing of &passwords"),
                             lookup (user_settings, ".rc.system.START_YPPASSWDD", "no") == "yes")));
         pass_buttons = add (pass_buttons, `VSpacing (0.3));
         pass_buttons = add (pass_buttons, pass_yes_buttons);
@@ -86,7 +88,7 @@ be used to set up these more specific options.</p>"));
         term contents = `VBox ();
         contents = add (contents, `VSpacing (0.5));
                                 // To translators: frame label
-        contents = add (contents, `Frame (_("NIS &Domain name"), domain_frame));
+        contents = add (contents, `Frame (_("NIS &Domain Name"), domain_frame));
         contents = add (contents, `VSpacing (0.5));
                                 // To translators: checkbox label
         contents = add (contents, `HBox (`HSpacing (), `Left (`CheckBox (`id (`have_slave), _("Active Slave NIS server &exists"),
@@ -107,7 +109,7 @@ be used to set up these more specific options.</p>"));
         contents = `HBox (`HSpacing (4), contents, `HSpacing (6));
         
                                 // To translators: dialog label
-        UI(`SetWizardContents (_("Network Information Service - Master Server Setup"), contents, helptext, true, true));
+        UI(`SetWizardContents (_("Network Information Service -- Master Server Setup"), contents, helptext, true, true));
         UI (`ChangeWidget (`id (`allow_shell), `Enabled, 
                            lookup (user_settings, ".rc.system.START_YPPASSWDD", "no") == "yes"));
         UI (`ChangeWidget (`id (`allow_gecos), `Enabled, 
