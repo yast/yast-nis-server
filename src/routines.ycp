@@ -24,12 +24,15 @@
     textdomain "nis_server";
 
     /**
-     * Converts from any type to boolean
+     * Converts from any type to boolean: 
+     * true, "true" and nonzero integers are true,
+     * everything else including nil is false.
      * @param arg argument to convert
-     * @return boolean convertet value
+     * @return boolean converted value
      */
     global define toboolean (any arg) ``{
-        if      (is (arg, boolean)) return arg;
+    	if (arg == nil) return false;
+        else if (is (arg, boolean)) return arg;
         else if (is (arg, string))  return arg == "true";
         else if (is (arg, integer)) return arg != 0;
         else return false;
