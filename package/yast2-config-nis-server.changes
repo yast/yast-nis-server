@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Fri Feb  1 13:19:55 CET 2002 - mvidner@suse.cz
+
+- Fixed the interface to the client module after autoinst changes.
+- Fixed invisible labels in the first dialog.
+- Had the English texts proofread.
+- 2.5.7
+
+-------------------------------------------------------------------
 Mon Jan 28 15:52:53 CET 2002 - mvidner@suse.cz
 
 - Switched from rc-config-agent to ini-agent.
