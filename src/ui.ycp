@@ -123,7 +123,11 @@
 	{
 	    user_settings = add (user_settings, "ui_what", isYPMaster ()? `master: `slave);
 	    //FIXME: this will give a hostname. the label says IP.
-	    user_settings = add (user_settings, "ui_master_ip", getMaster());
+	    string master = getMaster();
+	    if (master != nil)
+	    {
+		user_settings = add (user_settings, "ui_master_ip", master);
+	    }
 	}
 
 	return `next;
