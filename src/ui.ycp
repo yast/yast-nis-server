@@ -67,7 +67,7 @@
     global define symbol DetailsPopup () ``{
 
 				// To translators: popup label
-	UI::LongTextPopup (_("Error details"), `RichText (lookup (user_settings, "error_details", "")), 50, 20 );
+	UI::LongTextPopup (_("Error details"), `RichText (error_details), 50, 20 );
 	return `ok;
     }
 
@@ -204,11 +204,11 @@
     global define symbol ResultPopup () ``{
 
 	string message = "";
-	if (size (lookup (user_settings, "error", "")) > 0)
+	if (size (error_msg) > 0)
 	{
 				// To translators: popup label
 	    message = sformat (_("Error during configuration:\n%1"),
-			       lookup (user_settings, "error", ""));
+			       error_msg);
 
 				// To translators: Error popup
 	    return UI::AnyQuestionPopup (ErrorMsg(), message, OKButtonLabel(), _("&Details"), `focus_yes) ? `ok : `details;

@@ -26,6 +26,27 @@
     import "Runlevel";
     include "nis_server/routines.ycp";
 
+    // plain text
+    global string error_msg = "";
+    // rich text
+    global string error_details = "";
+
+    /**
+     * Adds an error to error_msg
+     * @param s message, ending with a newline
+     */
+    global define void addError (string s) ``{
+	error_msg = error_msg + s;
+    }
+
+    /**
+     * Adds an error to error_details
+     * @param s message, ending with a newline
+     */
+    global define void addErrorDetail (string s) ``{
+	error_details = error_details + sformat ("<pre>%1</pre>", s);
+    }
+
     /**
      * Read variables, checks the file and each variable
      * @param variables map with names and default values
@@ -44,7 +65,7 @@
 		}
 		else
 		{
-		    y2error ("Variable %1 can not be read, using default value: %2!", name, value);
+		    y2error ("Variable %1 cannot be read, using default value: %2!", name, value);
 		    return [name, value];
 		}
 	    });
@@ -68,13 +89,9 @@
 	    map output = SCR::Execute (.target.bash_output, sformat ("/bin/rm -rf %1", file));
 	    if (size (lookup (output, "stderr", "")) > 0)
 	    {
-		string error_msg     = lookup (user_settings, "error", "");
-		string error_details = lookup (user_settings, "error_details", "");
 		// To translators: message in the popup dialog
-		error_msg     = error_msg + sformat (_("Error while removing %1\n"), file);
-		error_details = error_details + sformat ("<pre>%1</pre>", lookup (output, "stderr", ""));
-		user_settings = add (user_settings, "error", error_msg);
-		user_settings = add (user_settings, "error_details", error_details);
+		addError (sformat (_("Error while removing %1\n"), file));
+		addErrorDetail (lookup (output, "stderr", ""));
 	    }
 	}
     }
@@ -85,8 +102,6 @@
      * @return			false if not and cannot be created
      */
     global define boolean EnsureDirectory (string directory) ``{
-	string error_msg     = lookup (user_settings, "error", "");
-	string error_details = lookup (user_settings, "error_details", "");
 	map output = $[];
 
 	if (SCR::Read (.target.size, directory) == -1)
@@ -95,8 +110,8 @@
 	    if (size (lookup (output, "stderr", "")) > 0)
 	    {
 		// To translators: message in the popup dialog
-		error_msg = error_msg + sformat (_("Directory %1 can not be created.\n"), directory);
-		error_details = error_details + sformat ("<pre>%1</pre>", lookup (output, "stderr", ""));
+		addError (sformat (_("Directory %1 cannot be created.\n"), directory));
+		addErrorDetail (lookup (output, "stderr", ""));
 		return false;
 	    }
 	}
@@ -108,8 +123,6 @@
      */
     global define void YPGetMaps () ``{
 
-	string error_msg     = lookup (user_settings, "error", "");
-	string error_details = lookup (user_settings, "error_details", "");
 	map output = $[];
 	string dn = lookup (user_settings, ".etc.defaultdomain", "");
 
@@ -125,8 +138,8 @@
 	if (lookup (output, "exit", 1) != 0)
 	{
 	    // To translators: message in the popup dialog
-	    error_msg = error_msg + sformat (_("Can not get list of maps.\n"));
-	    error_details = error_details + sformat ("<pre>%1</pre>", lookup (output, "stderr", ""));
+	    addError (sformat (_("Cannot get list of maps.\n")));
+	    addErrorDetail (lookup (output, "stderr", ""));
 	}
 	list running_maps = splitstring (lookup (output, "stdout", ""), "\n");
 	// the element after the last newline is empty, remove it
@@ -144,8 +157,8 @@
 	    if (lookup (output, "exit", 1) != 0)
 	    {
 		// To translators: message in the popup dialog
-		error_msg = error_msg + sformat (_("Error while retrieving %1 map from master.\n"), map_name);
-		error_details = error_details + sformat ("<pre>%1</pre>", lookup (output, "stderr", ""));
+		addError (sformat (_("Error while retrieving %1 map from master.\n"), map_name));
+		addErrorDetail (lookup (output, "stderr", ""));
 	    }
 	});
 
@@ -153,7 +166,7 @@
 	if (!contains (running_maps, "ypservers"))
 	{
 	    // To translators: message in the popup dialog
-	    error_msg = error_msg + sformat (_("Could not get list with slaves.\n"));
+	    addError (_("Could not get list with slaves.\n"));
 	}
 	else
 	{
@@ -166,13 +179,10 @@
 		if (!contains (splitstring (slaves, "\n"), hostname))
 		{
 		    // To translators: message in the popup dialog
-		    error_msg = error_msg + sformat (_("Hostname of this host is not listed\nin the master's list.\n"));
+		    addError (_("Hostname of this host is not listed\nin the master's list.\n"));
 		}
 	    }
 	}
-
-	user_settings = add (user_settings, "error", error_msg);
-	user_settings = add (user_settings, "error_details", error_details);
     }
 
 
@@ -182,17 +192,14 @@
      */
 
     global define void SaveSecurenets () ``{
-
-	string error_msg     = lookup (user_settings, "error", "");
 	list securenets = lookup (user_settings, ".var.yp.securenets", []);
 
 	SCR::Execute (.target.bash, sformat ("/bin/cp %1 %1.YaST2.save", "/var/yp/securenets"));
 	if (! SCR::Write (.var.yp.securenets, securenets))
 	{
 	    // To translators: message in the popup dialog
-	    error_msg = error_msg + sformat (_("Error saving file %1\n"), "/var/yp/securenets");
+	    addError (sformat (_("Error saving file %1\n"), "/var/yp/securenets"));
 	}
-	user_settings = add (user_settings, "error", error_msg);
     }
 
 
@@ -200,16 +207,12 @@
      * Save list of slaves by calling appropriate any agent
      */
     global define void SaveSlaves () ``{
-	string error_msg     = lookup (user_settings, "error", "");
-
 	SCR::Execute (.target.bash, sformat ("/bin/cp %1 %1.YaST2.save", "/var/yp/ypservers"));
 	if (! SCR::Write (.var.yp.ypservers, lookup (user_settings, ".var.yp.ypservers", [])))
 	{
 	    // To translators: message in the popup dialog
-	    error_msg = error_msg + sformat (_("Error saving file %1\n"), "/var/yp/ypservers");
+	    addError (sformat (_("Error saving file %1\n"), "/var/yp/ypservers"));
 	}
-
-	user_settings = add (user_settings, "error", error_msg);
     }
 
     /**
@@ -217,13 +220,10 @@
      * @param which workflow one of `slave, `master
      */
     global define void SaveVariables (symbol which) ``{
-	string error_msg     = lookup (user_settings, "error", "");
-	string error_details = lookup (user_settings, "error_details", "");
-
 	if (!SCR::Write (.etc.defaultdomain, user_settings[".etc.defaultdomain"]:""))
 	{
 	    // To translators: message in the popup dialog
-	    error_msg = error_msg + _("Error setting up domain name\n");
+	    addError (_("Error setting up domain name\n"));
 	}
 
 	if (which == `master)
@@ -236,7 +236,7 @@
 		    {
 			string var_name = select (splitstring (var, "."), size (splitstring (var, ".")) - 1, "");
 			// To translators: message in the popup dialog
-			error_msg = error_msg + sformat (_("Error setting up variable %1\n"), var_name);
+			addError (sformat (_("Error setting up variable %1\n"), var_name));
 		    }
 		}
 	    });
@@ -244,17 +244,14 @@
 	    if (!SCR::Write (.sysconfig.ypserv, nil))
 	    {
 		// To translators: message in the popup dialog
-		error_msg = error_msg + sformat (_("Error saving file %1\n"), "/etc/sysconfig/ypserv");
+		addError (sformat (_("Error saving file %1\n"), "/etc/sysconfig/ypserv"));
 	    }
 	    if (!SCR::Write (.var.yp.makefile, nil))
 	    {
 		// To translators: message in the popup dialog
-		error_msg = error_msg + sformat (_("Error saving file %1\n"), "/var/yp/Makefile");
+		addError (sformat (_("Error saving file %1\n"), "/var/yp/Makefile"));
 	    }
 	}
-
-	user_settings = add (user_settings, "error", error_msg);
-	user_settings = add (user_settings, "error_details", error_details);
     }
 
     /**
@@ -262,8 +259,6 @@
      * @param workflow what to start or save: `master, `slave, `none
      */
     global define void YPDaemons (symbol workflow) ``{
-	string error_msg     = lookup (user_settings, "error", "");
-	string error_details = lookup (user_settings, "error_details", "");
 	map output    = $[];
 	list to_stop  = [];
 	list to_start = [];
@@ -295,8 +290,7 @@
 
 	map services = listmap (string s, to_stop, ``([s, "disable"]));
 	foreach (string s, to_start, ``{ services[s] = "enable"; });
-	// must quote, parser bug
-	foreach (string s, string `action, services, ``{
+	foreach (string s, string action, services, ``{
 	    Runlevel::ServiceAdjust (s, action);
 	});
 
@@ -307,7 +301,7 @@
 	    if (ret != 0)
 	    {
 		// To translators: message in the popup dialog
-		error_msg = error_msg + sformat (_("Error while stopping %1 daemon\n"), d);
+		addError (sformat (_("Error while stopping %1 daemon\n"), d));
 	    }
 	});
 
@@ -319,26 +313,48 @@
 		if (ret != 0)
 		{
 		    // To translators: message in the popup dialog
-		    error_msg = error_msg + sformat (_("Error while starting %1 daemon\n"), d);
+		    addError (sformat (_("Error while starting %1 daemon\n"), d));
 		}
 	    }
 	});
-
-	user_settings = add (user_settings, "error", error_msg);
-	user_settings = add (user_settings, "error_details", error_details);
     }
 
     /**
      * Creates initial database
      */
     global define void YPMake () ``{
-	string error_msg     = lookup (user_settings, "error", "");
-	string error_details = lookup (user_settings, "error_details", "");
 	map output =$[];
-	string dn = lookup (user_settings, ".etc.defaultdomain", "");
 
-	if (! EnsureDirectory (sformat ("/var/yp/%1", dn)))
+	// create the source directory, if it does not exist
+	// (and passwd, shadow, group, gshadow)
+
+	string srcdir = user_settings[".sysconfig.ypserv.YPPWD_SRCDIR"]:"";
+	if (! EnsureDirectory (srcdir))
 	{
+	    return;
+	}
+	boolean create_ok = true;
+	foreach (string s, ["passwd", "group"], ``{
+	    string p = srcdir + "/" + s;
+	    if (SCR::Read (.target.size, p) < 0)
+	    {
+		create_ok = create_ok && 0 == SCR::Execute (.target.bash, sformat ("/usr/bin/touch %1; /bin/chmod 0644 %1; /bin/chown root.root %1", p));
+	    }
+	});
+	foreach (string s, ["shadow", "gshadow"], ``{
+	    string p = srcdir + "/" + s;
+	    if (SCR::Read (.target.size, p) < 0)
+	    {
+		create_ok = create_ok && 0 == SCR::Execute (.target.bash, sformat ("/usr/bin/touch %1; /bin/chmod 0640 %1; /bin/chown root.shadow %1", p));
+	    }
+	});
+	if (!create_ok)
+	{
+	    addError (sformat (_("Error while creating an empty user database.\n")));
+	}
+
+	string dn = lookup (user_settings, ".etc.defaultdomain", "");
+	if (! EnsureDirectory (sformat ("/var/yp/%1", dn)))	{
 	    return;
 	}
 
@@ -346,10 +362,9 @@
 
 	if (size (lookup (output, "stderr", "")) > 0)
 	{
-	    // FIXME: Error while creating ypservers
 	    // To translators: message in the popup dialog
-	    error_msg = error_msg + sformat (_("Error while creating database.\n"));
-	    error_details = error_details + sformat ("<pre>%1</pre>", lookup (output, "stderr", ""));
+	    addError (_("Error while creating the ypservers map.\n"));
+	    addErrorDetail (lookup (output, "stderr", ""));
 	}
 
 	output = SCR::Execute (.target.bash_output, sformat ("/usr/bin/make -C /var/yp NOPUSH=true LOCALDOMAIN=%1", dn));
@@ -357,12 +372,9 @@
 	if (size (lookup (output, "stderr", "")) > 0)
 	{
 	    // To translators: message in the popup dialog
-	    error_msg = error_msg + sformat (_("Error while creating database.\n"));
-	    error_details = error_details + sformat ("<pre>%1</pre>", lookup (output, "stderr", ""));
+	    addError (_("Error while creating database.\n"));
+	    addErrorDetail (lookup (output, "stderr", ""));
 	}
-
-	user_settings = add (user_settings, "error", error_msg);
-	user_settings = add (user_settings, "error_details", error_details);
     }
 
     /**
@@ -371,23 +383,19 @@
     global define void Client () ``{
 	import "Nis";
 
-	string error_msg = lookup (user_settings, "error", "");
-	string error_details = lookup (user_settings, "error_details", "");
 	map c = $[
 	    "start_nis":	user_settings["start_ypbind"]:false,
 	    "nis_domain":	user_settings[".etc.defaultdomain"]:"",
 	    "nis_servers":	[ "127.0.0.1" ],
 	    ];
 
-	boolean ok =  Nis::Import (c) && Nis::Write (false);
+	boolean ok =  Nis::Import (c) && Nis::Write ();
 	if (!ok)
 	{
 	    // To translators: message in the popup dialog
-	    error_msg = error_msg + _("Error while configuring the client.\n");
-	    error_details = error_details + sformat ("<pre>%1</pre>", Nis::YpbindErrors);
+	    addError (_("Error while configuring the client.\n"));
+	    addErrorDetail (Nis::YpbindErrors);
 	}
-	user_settings = add (user_settings, "error", error_msg);
-	user_settings = add (user_settings, "error_details", error_details);
     }
 
     /**
