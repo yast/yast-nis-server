@@ -9,6 +9,7 @@ reduce depth, now uses prefixes instead.
 ".rc.system.START_YPSERV"               <string>
 ".rc.system.START_YPXFRD"               <string>
 ".rc.system.YP_DOMAINNAME"              <string>
+"old_domainname"			<string>
 
 ".rc.ypserver.YPPWD_CHFN"               <string>
 ".rc.ypserver.YPPWD_CHSH"               <string>
@@ -30,3 +31,4 @@ reduce depth, now uses prefixes instead.
 "ui_also_client"                        <boolean>
 
 "errors"                                <string>
+"error_details"				<string> RichText
