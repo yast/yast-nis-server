@@ -220,7 +220,7 @@
 	string error_msg     = lookup (user_settings, "error", "");
 	string error_details = lookup (user_settings, "error_details", "");
 
-	if (SCR::Write (.etc.defaultdomain, user_settings[".etc.defaultdomain"]:"") == nil)
+	if (!SCR::Write (.etc.defaultdomain, user_settings[".etc.defaultdomain"]:""))
 	{
 	    // To translators: message in the popup dialog
 	    error_msg = error_msg + _("Error setting up domain name\n");
