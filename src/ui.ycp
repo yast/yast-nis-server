@@ -53,8 +53,8 @@
      */
     global define ExitPopup () ``{
 
-				// To translators: ContinueCancel Popup
-	if (UI::ContinueCancelHeadlinePopup (_("Exit"), _("Really exit configuration without saving ?")))
+				// To translators: YesNo Popup
+	if (UI::YesNoHeadlinePopup (_("Exit"), _("Really exit configuration without saving ?")))
 	    return `exit;
 	return `back;
     }
