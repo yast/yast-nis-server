@@ -26,7 +26,8 @@
 
     import "NisServer";
     import "Wizard";
-    include "ui/common_popups.ycp";
+    import "Label";
+    import "Popup";
     include "network/ip.ycp";
 
     /**
@@ -82,8 +83,8 @@
     global define term NetsEditPopup (integer id, string netmask, string network) ``{
 
 	term buttons  = `HBox ();
-	buttons = add (buttons, `PushButton (`id (`ok), `opt (`default, `key_F10), OKButtonLabel()));
-	buttons = add (buttons, `PushButton (`id (`cancel), `opt (`key_F9), CancelButtonLabel()));
+	buttons = add (buttons, `PushButton (`id (`ok), `opt (`default, `key_F10), Label::OKButton()));
+	buttons = add (buttons, `PushButton (`id (`cancel), `opt (`key_F9), Label::CancelButton()));
 
 	term contents = `VBox ();
 	contents = add (contents, `VSpacing (0.3));
@@ -125,7 +126,7 @@
 
 		if (size (error_msg) > 0)
 		{
-		    UI::ErrorPopup (error_msg);
+		    Popup::Error (error_msg);
 		}
 	    }
 
@@ -179,7 +180,7 @@ to the  bitwise <i>AND</i> of the host's address and the <b>netmask</b>.</p>");
 
 				// To translators: dialog label
 	Wizard::SetContents (_("NIS Server Query Hosts Setup"), contents, helptext, true, true);
-	UI::ChangeWidget (`id (`next), `Label, FinishButtonLabel());
+	UI::ChangeWidget (`id (`next), `Label, Label::FinishButton());
 
 	symbol ui = nil;
 
@@ -230,11 +231,11 @@ to the  bitwise <i>AND</i> of the host's address and the <b>netmask</b>.</p>");
 		}
 	    }
 
-	    if (ui == `abort && !UI::ReallyAbortPopup (true)) continue;
+	    if (ui == `abort && !Popup::ReallyAbort (true)) continue;
 	}
 	until (contains ([`back, `next, `abort], ui));
 
-	if (ui == `back) UI::ChangeWidget (`id (`next), `Label, NextButtonLabel());
+	if (ui == `back) UI::ChangeWidget (`id (`next), `Label, Label::NextButton());
 
 	// and finally merge
 	NisServer::securenets = MergeNetsEntries (NisServer::securenets, allow_query);

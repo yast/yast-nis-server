@@ -26,7 +26,7 @@
 
     import "Wizard";
     import "Nis";		// check_nisdomainname
-    include "ui/common_popups.ycp";
+    import "Popup";
     include "network/dns.ycp";
 
     import "NisServer";
@@ -139,12 +139,12 @@ be used to set up these more specific options.</p>
 		if (!Nis::check_nisdomainname (domainname))
 		{
 		    UI::SetFocus (`id (`domain));
-		    UI::ErrorPopup (Nis::valid_nisdomainname ());
+		    Popup::Error (Nis::valid_nisdomainname ());
 		    ui = nil;
 		}
 	    }
 
-	    if (ui == `abort && !UI::ReallyAbortPopup (true)) continue;
+	    if (ui == `abort && !Popup::ReallyAbort (true)) continue;
 	}
 	until (contains ([`next, `back, `abort, `details], ui));
 

@@ -25,7 +25,8 @@
     textdomain "nis_server";
 
     import "Wizard";
-    include "ui/common_popups.ycp";
+    import "Label";
+    import "Popup";
     include "network/dns.ycp";
 
     import "NisServer";
@@ -45,9 +46,9 @@
 			   // To translators: selection box label
 			   `SelectionBox(`id(`hosts), _("&Remote hosts"), hosts)),
 		     `HBox(`PushButton(`id(`ok), `opt (`default, `key_F10),
-				       OKButtonLabel()),
+				       Label::OKButton()),
 			   `PushButton(`id(`cancel), `opt (`key_F9),
-				       CancelButtonLabel()))));
+				       Label::CancelButton()))));
 	any ret = nil;
 	do {
 	    ret = UI::UserInput();
@@ -84,8 +85,8 @@
 	contents = add (contents, `VSpacing (0.5));
 
 	hbox = `HBox ();
-	hbox = add (hbox, `PushButton (`id (`ok), `opt (`default, `key_F10), OKButtonLabel()));
-	hbox = add (hbox, `PushButton (`id (`cancel), `opt (`key_F9), CancelButtonLabel()));
+	hbox = add (hbox, `PushButton (`id (`ok), `opt (`default, `key_F10), Label::OKButton()));
+	hbox = add (hbox, `PushButton (`id (`cancel), `opt (`key_F9), Label::CancelButton()));
 
 	contents = add (contents, hbox);
 	contents = add (contents, `VSpacing (0.3));
@@ -106,7 +107,7 @@
 		if (!check_address (slave))
 		{
 		    UI::SetFocus (`id (`slave));
-		    UI::ErrorPopup (valid_address ());
+		    Popup::Error (valid_address ());
 		    ui = nil;
 		}
 	    }
@@ -212,7 +213,7 @@
 		}
 	    }
 
-	    if (ui == `abort && !UI::ReallyAbortPopup (true)) continue;
+	    if (ui == `abort && !Popup::ReallyAbort (true)) continue;
 	}
 	until (contains ([`back, `next, `abort], ui));
 

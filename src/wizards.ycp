@@ -12,6 +12,7 @@
     textdomain "nis_server";
 
     import "Wizard";
+    import "Label";
     include "wizard/sequencer.ycp";
 
     include "nis_server/ui.ycp";
@@ -65,7 +66,7 @@ global define symbol NisServerSequence() ``{
 
     Wizard::CreateDialog();
     Wizard::SetContentsButtons(caption, contents, "",
-	    BackButtonLabel(), NextButtonLabel());
+	    Label::BackButton(), Label::NextButton());
 
     any ret = WizardSequencer(aliases, sequence);
 
@@ -86,7 +87,7 @@ global define symbol NisServerAutoSequence() ``{
 
     Wizard::CreateDialog();
     Wizard::SetContentsButtons(caption, contents, "",
-	    BackButtonLabel(), NextButtonLabel());
+	    Label::BackButton(), Label::NextButton());
 
     any ret = MainSequence();
 

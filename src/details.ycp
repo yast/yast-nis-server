@@ -25,7 +25,8 @@
 
     import "Wizard";
     import "Mode";
-    include "ui/common_popups.ycp";
+    import "Label";
+    import "Popup";
 
     import "NisServer";
     include "nis_server/routines.ycp";
@@ -107,7 +108,7 @@ file
 
 				// To translators: dialog label
 	Wizard::SetContents (_("NIS Master Server Details Setup"), contents, helptext, true, true);
-	UI::ChangeWidget (`id (`next), `Label, OKButtonLabel());
+	UI::ChangeWidget (`id (`next), `Label, Label::OKButton());
 
 	// If the source directory does not exist, it will be created
 	// with empty passwd, group, shadow, gshadow.
@@ -141,14 +142,14 @@ file
 
 	    change_enabled = (ui == `srcdir);
 	    srcdir = UI::QueryWidget (`id (`srcdir), `Value);
-	    if (ui == `abort && !UI::ReallyAbortPopup (true)) continue;
+	    if (ui == `abort && !Popup::ReallyAbort (true)) continue;
 	    if (ui == `next)
 	    {
 		if (SCR::Read (.target.dir, srcdir) == nil && !Mode::config)
 		{
 		    UI::SetFocus (`id (`srcdir));
 		    // Translators: yes/no popup
-		    ui = UI::YesNoPopup (sformat (_("The directory %1 does not exist.
+		    ui = Popup::YesNo (sformat (_("The directory %1 does not exist.
 Create it?
 "), srcdir)) ? `next : nil;
 		}
@@ -162,7 +163,7 @@ Create it?
 	NisServer::merge_group = UI::QueryWidget (`id (`group_rb), `CurrentButton) == `yes;
 	NisServer::pwd_srcdir = srcdir;
 
-	UI::ChangeWidget (`id (`next), `Label, NextButtonLabel());
+	UI::ChangeWidget (`id (`next), `Label, Label::NextButton());
 	return ui;
     }
 }
