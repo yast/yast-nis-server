@@ -51,6 +51,13 @@ else if (func == "Reset") {
     NisServer::Import($[]);
     ret = $[];
 }
+/* Reset configuration */
+else if (func == "Read") {
+    import "Progress";
+    Progress::off();
+    ret = NisServer::Read();
+    Progress::on();
+}
 /* Change configuration (run AutoSequence) */
 else if (func == "Change") {
     ret = NisServerAutoSequence();
