@@ -1,0 +1,61 @@
+/*
+ * YaST2: Modules testsuite
+ *
+ * Description:
+ *   Testsuite for the routines.ycp include
+ *
+ * Authors:
+ *   Dan Vesely <dan@suse.cz>
+ *
+ * $Id$
+ */
+
+{
+    include "testsuite.ycp";
+    include "nis_server/io.ycp";
+
+    map READ = $[
+        "var" : $[
+            "yp" : $[
+                "makefile" : $[
+                    "NOPUSH"        : "true",
+                    "MERGE_PASSWD"  : "true",
+                    "MERGE_GROUP"   : "true",
+                    "MINUID"        : "100",
+                    "MINGID"        : "100",
+                    "maps"          : ["passwd", "group", "rpc", "services", "netid"]                            
+                    ],
+                "securenets" : [
+                    $["netmask" : "255.0.0.0",
+                      "network" : "127.0.0.0"
+                        ]
+                                
+                    ],
+                "ypservers" : []
+                ]
+            ],
+        "rc" : $[
+            "ypserver" : $[
+                "YPPWD_CHFN"        : "no", 
+                "YPPWD_CHSH"        : "no", 
+                "YPPWD_SRCDIR"      : "/etc"
+                ],
+            "system" : $[
+                "START_PORTMAP"       : "yes",
+                "START_YPPASSWDD"     : "no",
+                "START_YPSERV"        : "no",
+                "START_YPXFRD"        : "no",
+                "START_YPBIND"        : "yes",
+                "YP_DOMAINNAME"       : "local"                
+                ]
+            ]
+        ];
+
+    
+    TEST (``(ReadPathFile (YPMakefileVars (), "/var/yp/Makefile")), [READ, $[], $[]], nil);
+    TEST (``(ReadPathFile (YPServerVars (), "/etc/rc.config.d/ypserv.rc.config")), [READ, $[], $[]], nil);
+    TEST (``(ReadPathFile (YPSystemVars (), "/etc/rc.config")), [READ, $[], $[]], nil);
+    TEST (``(ReadPathFile (YPSecurenets (), "/var/yp/securenets")), [READ, $[], $[]], nil);
+    TEST (``(ReadPathFile (YPServers (), "/var/yp/ypservers")), [READ, $[], $[]], nil);
+    
+}

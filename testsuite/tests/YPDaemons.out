@@ -1,0 +1,19 @@
+Execute	.target.bash_output "/etc/init.d/ypxfrd status" $["TERM":"raw"] $["stderr":"", "stdout":"No Process"]
+Execute	.target.bash_output "/etc/init.d/yppasswdd status" $["TERM":"raw"] $["stderr":"", "stdout":"No Process"]
+Execute	.target.bash_output "/etc/init.d/ypserv status" $["TERM":"raw"] $["stderr":"", "stdout":"No Process"]
+Return	nil
+Execute	.target.bash_output "/etc/init.d/ypxfrd status" $["TERM":"raw"] $["stderr":"", "stdout":"No Process"]
+Execute	.target.bash_output "/etc/init.d/yppasswdd status" $["TERM":"raw"] $["stderr":"", "stdout":"No Process"]
+Execute	.target.bash_output "/etc/init.d/ypserv status" $["TERM":"raw"] $["stderr":"", "stdout":"No Process"]
+Execute	.target.bash_output "/etc/init.d/ypserv status" $["TERM":"raw"] $["stderr":"", "stdout":"No Process"]
+Return	nil
+Execute	.target.bash_output "/etc/init.d/ypxfrd status" $["TERM":"raw"] $["stderr":"", "stdout":"No Process"]
+Execute	.target.bash_output "/etc/init.d/yppasswdd status" $["TERM":"raw"] $["stderr":"", "stdout":"No Process"]
+Execute	.target.bash_output "/etc/init.d/ypserv status" $["TERM":"raw"] $["stderr":"", "stdout":"No Process"]
+Execute	.target.bash_output "/etc/init.d/ypserv status" $["TERM":"raw"] $["stderr":"", "stdout":"No Process"]
+Return	nil
+Execute	.target.bash_output "/etc/init.d/portmap status" $["TERM":"raw"] $["stderr":"", "stdout":"No Process"]
+Execute	.target.bash_output "/etc/init.d/ypbind status" $["TERM":"raw"] $["stderr":"", "stdout":"No Process"]
+Execute	.target.bash_output "/etc/init.d/portmap status" $["TERM":"raw"] $["stderr":"", "stdout":"No Process"]
+Execute	.target.bash_output "/etc/init.d/ypbind status" $["TERM":"raw"] $["stderr":"", "stdout":"No Process"]
+Return	nil

@@ -1,0 +1,39 @@
+/*
+ * YaST2: Modules testsuite
+ *
+ * Description:
+ *   Testsuite for the YPDaemons function
+ *
+ * Authors:
+ *   Dan Vesely <dan@suse.cz>
+ *
+ * $Id$
+ */
+
+{
+    include "testsuite.ycp";
+    include "nis_server/io.ycp";
+    include "nis_server/routines.ycp";
+
+    map READ = $[
+        ];
+
+    map WRITE = $[
+        ];
+    
+    map EXECUTE = $[
+        "target" : $[
+            "bash_output" : $[
+                "stdout" : "No Process",
+                "stderr" : ""
+                ]
+            ]
+        ];
+
+    map user_settings = $[];
+
+    TEST (``(YPDaemons (`none)), [$[], $[], EXECUTE], nil);
+    TEST (``(YPDaemons (`slave)), [$[], $[], EXECUTE], nil);
+    TEST (``(YPDaemons (`master)), [$[], $[], EXECUTE], nil);
+    TEST (``(YPDaemons (`client)), [$[], $[], EXECUTE], nil);
+}

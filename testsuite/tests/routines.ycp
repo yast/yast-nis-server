@@ -1,0 +1,37 @@
+/*
+ * YaST2: Modules testsuite
+ *
+ * Description:
+ *   Testsuite for the routines.ycp include
+ *
+ * Authors:
+ *   Dan Vesely <dan@suse.cz>
+ *
+ * $Id$
+ */
+
+{
+    include "testsuite.ycp";
+    include "nis_server/routines.ycp";
+
+    // converts values to boolean
+    TEST (``(toboolean ("true")), [], nil);
+    TEST (``(toboolean ("false")), [], nil);
+    TEST (``(toboolean (1)), [], nil);
+    TEST (``(toboolean (0)), [], nil);
+    TEST (``(toboolean (true)), [], nil);
+    TEST (``(toboolean (false)), [], nil);
+    
+    // all other values are false
+    TEST (``(toboolean ([])), [], nil);
+    TEST (``(toboolean ($[])), [], nil);
+    TEST (``(toboolean (nil)), [], nil);
+    TEST (``(toboolean (`symbol)), [], nil);
+
+    // checks hostnames
+    TEST (``(checkhostname ("bia.suse.cz")), [], nil);
+    TEST (``(checkhostname ("this.hostname.is.correct")), [], nil);
+    TEST (``(checkhostname ("this.hostname.is.not correct!")), [], nil);
+
+    
+}
