@@ -11,3 +11,4 @@ config.h.in
 aclocal.m4
 README
 COPYRIGHT.*
+ChangeLog
