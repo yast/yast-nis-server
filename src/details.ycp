@@ -1,0 +1,121 @@
+/**
+ *
+ * File:             
+ *   details.ycp
+ *
+ * Module:
+ *   Network/YPServer
+ *
+ * Summary:
+ *   YPServer module.
+ *
+ * Authors:            
+ *   Dan Vesely <dan@suse.cz>
+ *
+ * $Id$
+ *
+ * YPServer module part.
+ *
+ */
+
+
+{
+
+    textdomain "nis_server";
+    
+    include "ui/wizard_dialog.ycp";
+    include "ui/common_popups.ycp";
+
+    include "nis_server/routines.ycp";
+
+    global define DetailsDialog () ``{
+
+        string helptext = "TODO";
+
+        boolean merge_passwd = toboolean (lookup (user_settings, ".var.yp.makefile.MERGE_PASSWD", true));
+        boolean merge_groups = toboolean (lookup (user_settings, ".var.yp.makefile.MERGE_GROUP", true));
+
+        term merge_pass_buttons = `VBox ();
+        merge_pass_buttons = add (merge_pass_buttons, `VSpacing (0.1));
+        merge_pass_buttons = add (merge_pass_buttons, `Left (`RadioButton (`id(`no), _("No"), !merge_passwd)));
+        merge_pass_buttons = add (merge_pass_buttons, `VSpacing (0.3));
+        merge_pass_buttons = add (merge_pass_buttons, `Left (`RadioButton (`id(`yes), _("Yes"), merge_passwd)));
+        merge_pass_buttons = add (merge_pass_buttons, `VSpacing (0.1));
+        merge_pass_buttons = `RadioButtonGroup (`id (`pass_rb), merge_pass_buttons);
+        
+        term merge_group_buttons = `VBox ();
+        merge_group_buttons = add (merge_group_buttons, `VSpacing (0.1));
+        merge_group_buttons = add (merge_group_buttons, `Left (`RadioButton (`id(`no), _("No"), !merge_groups)));
+        merge_group_buttons = add (merge_group_buttons, `VSpacing (0.3));
+        merge_group_buttons = add (merge_group_buttons, `Left (`RadioButton (`id(`yes), _("Yes"), merge_groups)));
+        merge_group_buttons = add (merge_group_buttons, `VSpacing (0.1));
+        merge_group_buttons = `RadioButtonGroup (`id (`group_rb), merge_group_buttons);
+        
+        
+        term merge  = `HBox ();
+        merge = add (merge, `HWeight (1, `Frame (`id (`pass_frame), _("Merge pa&sswords"), merge_pass_buttons)));
+        merge = add (merge, `HSpacing ());
+        merge = add (merge, `HWeight (1, `Frame (`id (`group_frame), _("Merge g&roups"), merge_group_buttons)));
+        
+        term minimals = `HBox ();
+        
+        minimals = add (minimals, `IntField (`id (`minuid), _("Minimal &UID"), 0, 50000,
+                                             tointeger(lookup (user_settings, ".var.yp.makefile.MINUID", 100))));
+        minimals = add (minimals, `IntField (`id (`mingid), _("Minimal &GUID"), 0, 50000,
+                                             tointeger(lookup (user_settings, ".var.yp.makefile.MINGID", 100))));
+        
+        
+        term contents = `VBox ();
+        contents = add (contents, `TextEntry (`id (`srcdir), `opt(`notify), _("&YP Source directory"),
+                                              lookup (user_settings, ".rc.ypserver.YPPWD_SRCDIR", "")));
+        contents = add (contents, `VSpacing (0.5));
+        contents = add (contents, merge);
+        contents = add (contents, `VSpacing (0.5));
+        contents = add (contents, minimals);
+        
+        
+        contents = `HVSquash (contents);
+        
+        UI (`SetWizardContents (_("NIS Master Server Details Setup"), contents, helptext, true, true));
+        UI (`ChangeWidget (`id (`next), `Label, _("&OK")));
+
+        boolean shadow_exist  = fileexist (sformat ("%1/shadow", lookup (user_settings, ".rc.ypserver.YPPWD_SRCDIR", "")));
+        boolean gshadow_exist = fileexist (sformat ("%1/gshadow", lookup (user_settings, ".rc.ypserver.YPPWD_SRCDIR", "")));
+        UI (`ChangeWidget (`id (`pass_frame), `Enabled, shadow_exist));
+        UI (`ChangeWidget (`id (`group_frame), `Enabled, gshadow_exist));
+
+        symbol ui = nil;
+
+        repeat 
+        {
+            ui = UI (`UserInput ());
+
+            if (ui == `srcdir)
+            {
+                shadow_exist  = fileexist (sformat ("%1/shadow", UI (`QueryWidget (`id (`srcdir), `Value))));
+                gshadow_exist = fileexist (sformat ("%1/gshadow", UI (`QueryWidget (`id (`srcdir), `Value))));
+                UI (`ChangeWidget (`id (`pass_frame), `Enabled, shadow_exist));
+                UI (`ChangeWidget (`id (`group_frame), `Enabled, gshadow_exist));
+            }
+            if (ui == `abort && !UI (`ReallyAbortPopup (true))) continue;
+        }
+        until (contains ([`back, `next, `abort], ui));
+
+        user_settings = add (user_settings, ".var.yp.makefile.MINUID",
+                             sformat ("%1", UI (`QueryWidget (`id (`minuid), `Value))));        
+        user_settings = add (user_settings, ".var.yp.makefile.MINGID",
+                             sformat ("%1", UI (`QueryWidget (`id (`mingid), `Value))));
+        user_settings = add (user_settings, ".var.yp.makefile.MERGE_PASSWD",
+                             sformat ("%1", UI (`QueryWidget (`id (`pass_rb), `CurrentButton)) == `yes));
+        user_settings = add (user_settings, ".var.yp.makefile.MERGE_GROUP",
+                             sformat ("%1", UI (`QueryWidget (`id (`group_rb), `CurrentButton)) == `yes));
+        user_settings = add (user_settings, ".rc.ypserver.YPPWD_SRCDIR",
+                             UI (`QueryWidget (`id (`srcdir), `Value)));                             
+
+        UI (`ChangeWidget (`id (`next), `Label, _("&Next")));
+
+        return ui;
+
+    }
+
+}

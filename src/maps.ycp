@@ -1,0 +1,126 @@
+/**
+ *
+ * File:             
+ *   maps.ycp
+ *
+ * Module:
+ *   Network/YPServer
+ *
+ * Summary:
+ *   YPServer module.
+ *
+ * Authors:            
+ *   Dan Vesely <dan@suse.cz>
+ *
+ * $Id$
+ *
+ * YPServer module part.
+ *
+ */
+
+
+{
+
+    textdomain "nis_server";
+    
+    include "ui/wizard_dialog.ycp";
+    include "ui/common_popups.ycp";
+
+    include "nis_server/routines.ycp";
+
+    global define MapsDialog () ``{
+
+
+        string helptext = "TODO";
+        
+        list all = ["passwd", "group", "hosts", "rpc", "services", "netid", "protocols", "netgrp", "mail",
+                    "shadow", "publickey", "networks", "ethers", "bootparams", "printcap",
+                    "amd", "home", "auto.master", "auto.home", "auto.local", "passwd.adjunct",
+                    "timezone", "locale", "netmasks"];
+        list actual    = lookup (user_settings, ".var.yp.makefile.maps", ["passwd", "group", "rpc", "services", "netid"]);
+
+        if (toboolean (lookup (user_settings, ".var.yp.makefile.MERGE_PASSWD", false)))
+        {
+            actual = filter (`m, actual, ``(m != "shadow"));
+        }
+        list remaining = filter (`map_name, all, ``(!contains (actual, map_name)));
+
+        list to_filter_out = ["publickey", "botparams", "auto.master", "auto.home", "auto.local"];
+
+        if (!toboolean (lookup (user_settings, ".var.yp.makefile.MERGE_PASSWD", false)) &&
+            fileexist (sformat ("%1/shadow", lookup (user_settings, ".rc.ypserver.YPPWD_SRCDIR", ""))))
+        {
+            remaining = filter (`map_name, remaining, ``(map_name != "shadow"));
+        }
+
+        foreach (`file_name, to_filter_out, ``{
+            if (!fileexist (sformat ("/etc/%1", file_name)))
+            {
+                remaining = filter (`map_name, remaining, ``(map_name != file_name));
+            }
+        });
+
+        term buttons = `VBox ();
+        buttons = add (buttons, `PushButton (`id (`remove), "--&>"));
+        buttons = add (buttons, `PushButton (`id (`add), "&<--"));
+        
+        term contents = `HBox ();
+        contents = add (contents, `HWeight (1, 
+                                            `ReplacePoint (`id (`replace_actual),
+                                                           `SelectionBox (`id (`actual), `opt (`notify), _("&Actual"), sort (actual)))));
+        contents = add (contents, buttons);
+        contents = add (contents, `HWeight (1, 
+                                            `ReplacePoint (`id (`replace_remaining),
+                                                           `SelectionBox (`id (`remaining), `opt (`notify), _("&Possible"), sort (remaining)))));
+        
+        
+        UI (`SetWizardContents (_("NIS Server Maps Setup"), contents, helptext, true, true));
+        UI (`ChangeWidget (`id (`add), `Enabled, false));
+        UI (`ChangeWidget (`id (`remove), `Enabled, false));
+
+        symbol ui = nil;
+
+        repeat 
+        {
+            ui = UI (`UserInput ());
+
+            if (ui == `actual) UI (`ChangeWidget (`id (`remove), `Enabled, true));
+            if (ui == `remaining) UI (`ChangeWidget (`id (`add), `Enabled, true));
+
+            if (contains ([`add, `remove], ui))
+            {
+                symbol box_id = ui == `add ? `remaining : `actual;
+                string key = UI (`QueryWidget (`id (box_id), `CurrentItem));
+
+                if (ui == `add)
+                {
+                    actual    = add (actual, key);
+                    remaining = filter (`k, remaining, ``(k != key));
+                }
+                else
+                {
+                    remaining = add (remaining, key);
+                    actual    = filter (`k, actual, ``(k != key));
+                }
+
+                UI (`ReplaceWidget (`id (`replace_actual),
+                                    `SelectionBox (`id (`actual), `opt (`notify), _("&Actual"), sort (actual))));
+                UI (`ReplaceWidget (`id (`replace_remaining),
+                                    `SelectionBox (`id (`remaining), `opt (`notify), _("&Possible"), sort (remaining))));
+
+                UI (`ChangeWidget (`id (`add), `Enabled, false));
+                UI (`ChangeWidget (`id (`remove), `Enabled, false));
+            }
+
+            if (ui == `abort && !UI (`ReallyAbortPopup (true))) continue;
+            
+        }
+        until (contains ([`back, `next, `abort], ui));
+
+
+        user_settings = add (user_settings, ".var.yp.makefile.maps", actual);
+        return ui;
+
+    }
+
+}

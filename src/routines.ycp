@@ -1,0 +1,95 @@
+/*
+ *
+ * File:             
+ *   routines.ycp
+ *
+ * Module:
+ *   Network/YPServer
+ *
+ * Summary:
+ *   YPServer module.
+ *
+ * Authors:            
+ *   Dan Vesely <dan@suse.cz>
+ *
+ * $Id$
+ *
+ * YPServer module part.
+ *
+ */
+
+
+{
+
+    textdomain "nis_server";
+
+    /**
+     * Converts from any type to boolean
+     * @param arg argument to convert
+     * @return boolean convertet value
+     */
+    global define toboolean (any arg) ``{
+        if      (is (arg, boolean)) return arg;
+        else if (is (arg, string))  return arg == "true";
+        else if (is (arg, integer)) return arg != 0;
+        else return false;
+    }
+
+    /*
+     * Check hostname
+     * @param name string to check
+     * @return boolean correctness
+     */
+    global define checkhostname (string name) ``{
+        list subnames = splitstring (name, ".");
+        boolean result = true;
+        foreach (`n, subnames, ``{
+            result = result && (size (n) > 0) && (filterchars (n, "abcdefghijklmnopqrstuvwxyz0123456789_") == n);            
+        });
+        return result;
+    }
+
+    /*
+     * Determinates if the current host is YP master or not
+     * @return boolean
+     */
+    global define isYPMaster () ``{
+        map output = $[];
+        string ypwhich_hostname  = "";
+        string yphelper_hostname = "";
+        output = SCR (`Execute (.target.bash_output, "/usr/bin/ypwhich -m passwd.byname"));
+        ypwhich_hostname  = lookup (output, "stdout", "");
+        output = SCR (`Execute (.target.bash_output, "/usr/lib/yp/yphelper --hostname"));
+        yphelper_hostname = lookup (output, "stdout", "");
+
+        return ypwhich_hostname == yphelper_hostname;
+    }
+
+    /*
+     * Checks if the YP server software is installed
+     * @return boolean
+     */       
+    global define isYPServerInstalled () ``{
+        return (SCR (`Execute(.target.bash, "/bin/rpm -q ypserv")) == 0);
+    }
+
+    /*
+     * Checks if the YP server was already configured
+     * @return boolean
+     */
+    global define isYPServerConfigured () ``{
+        return (lookup (user_settings, ".rc.system.START_YPSERV", "no") == "yes");
+    }
+
+    /*
+     * Decides whether slave exists
+     * @return boolean
+     */
+    global define SlaveExists () ``{
+        if (toboolean (lookup (user_settings, ".var.yp.makefile.NOPUSH", false)))
+            return `have_slave;
+        
+        return `none_slave;
+    }
+
+}

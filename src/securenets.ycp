@@ -1,0 +1,213 @@
+/**
+ *
+ * File:             
+ *   securenets.ycp
+ *
+ * Module:
+ *   Network/YPServer
+ *
+ * Summary:
+ *   YPServer module.
+ *
+ * Authors:            
+ *   Dan Vesely <dan@suse.cz>
+ *
+ * $Id$
+ *
+ * YPServer module part.
+ *
+ */
+
+
+{
+
+    textdomain "nis_server";
+    
+    include "ui/wizard_dialog.ycp";
+    include "ui/common_popups.ycp";
+
+    /**
+     * Creates items for table from var_yp_securenets.scr any agent
+     * @param nets list output from securenets agent
+     * @return list of items formated for for table
+     */
+    global define ItemizeSecurenets (list nets) ``{
+        list not_comment = filter (`e, nets, ``(haskey (e, "netmask") || haskey (e, "network")));
+        list result = [];
+        integer i = 0;
+        map element = $[];
+        while (i < size (not_comment))
+        {
+            element = select (not_comment, i, $[]);
+            result = add (result, `item (`id (i), 
+                                         lookup (element, "netmask", ""),
+                                         lookup (element, "network", "")));
+            i = i + 1;
+        }
+        return result;
+    }
+
+    /*
+     * Merge edited entries with the original entries with comments
+     * @param orig list of original entries (with comments)
+     * @param edit list with edited entries (as placed in the table)
+     * @return list with merged entries
+     */
+    global define MergeNetsEntries (list orig, list edit) ``{
+
+        list edit_maps = maplist (`e, edit, ``(
+                                      $["netmask" : select (e, 1, ""),
+                                        "network" : select (e, 2, "")]
+        ));
+
+
+        list result = filter (`e, orig, ``(haskey (e, "hash") || haskey (e, "comment") || contains (edit_maps, e)));
+        edit_maps = filter (`e, edit_maps, ``(!contains (result, e)));
+        result = result + edit_maps;
+
+        return result;
+    }
+
+    /*
+     * Popup dialog for editing netmask/network
+     * @param id id of item
+     * @param netmask netmask
+     * @param network network
+     * @return item|void new item or nil on cancel
+     */
+    global define NetsEditPopup (integer id, string netmask, string network) ``{
+
+        term buttons  = `HBox ();
+        buttons = add (buttons, `PushButton (`id (`ok), `opt (`default), _("&OK")));
+        buttons = add (buttons, `PushButton (`id (`cancel), _("&Cancel")));
+
+        term contents = `VBox ();
+        contents = add (contents, `VSpacing (0.3));
+        contents = add (contents, `Heading (_("Edit netmask and network")));
+        contents = add (contents, `VSpacing (0.5));
+        contents = add (contents, `TextEntry (`id(`netmask), _("Net&mask"), netmask));
+        contents = add (contents, `VSpacing (0.3));
+        contents = add (contents, `TextEntry (`id(`network), _("Net&work"), network));
+        contents = add (contents, `VSpacing (0.5));
+        contents = add (contents, buttons);
+        contents = add (contents, `VSpacing (0.3));
+        contents = `HBox (`HSpacing (), contents, `HSpacing ());
+        
+        UI (`OpenDialog (contents));
+
+        symbol ui = nil;
+        string error_msg = "";
+
+        repeat {
+            error_msg = "";
+            ui = UI (`UserInput ());
+
+            if (ui == `ok)
+            {
+                netmask = UI (`QueryWidget (`id (`netmask), `Value));
+                network = UI (`QueryWidget (`id (`network), `Value));
+                error_msg = error_msg + (checkIP (netmask) ? "" : UI(_("Wrong netmask!\n")));
+                error_msg = error_msg + (checkIP (network) ? "" : UI(_("Wrong network!\n")));
+
+                if (size (error_msg) > 0)
+                {
+                    UI (`ErrorPopup (error_msg));
+                }
+            }
+
+        } until ((error_msg == "" && ui == `ok) || ui == `cancel);
+
+        UI (`CloseDialog ());
+
+        return ui == `ok ? `item (`id (id), netmask, network) : nil;
+    }
+
+    global define QueryHosts () ``{
+
+        string helptext = "TODO";
+    
+        list allow_query = ItemizeSecurenets (lookup (user_settings, ".var.yp.securenets", []));
+        integer n_items = size (allow_query);
+
+        term buttons = `HBox ();
+        buttons = add (buttons, `PushButton (`id (`edit), _("&Edit")));
+        buttons = add (buttons, `PushButton (`id (`delete), _("&Delete")));
+        buttons = add (buttons, `HStretch ());
+        buttons = add (buttons, `PushButton (`id (`add), _("&Add")));
+        
+        term contents = `VBox ();
+        contents = add (contents, `Table (`id (`table), `opt (`notify, `immediate), 
+                                          `header ("Netmask", "Network"), allow_query));
+        contents = add (contents, buttons);
+        
+        
+        UI(`SetWizardContents (_("NIS Server Query Hosts Setup"), contents, helptext, true, true));
+        UI (`ChangeWidget (`id (`next), `Label, _("&Finish")));
+        UI (`ChangeWidget (`id (`edit), `Enabled, false));
+        UI (`ChangeWidget (`id (`delete), `Enabled, false));
+
+        symbol ui = nil;
+
+        repeat 
+        {
+            ui = UI (`UserInput ());
+
+            if (ui == `table)
+            {
+                UI (`ChangeWidget (`id (`edit), `Enabled, true));
+                UI (`ChangeWidget (`id (`delete), `Enabled, true));                
+            }
+            
+            else if (ui == `delete)
+            {
+                integer id = UI (`QueryWidget (`id (`table), `CurrentItem));
+                allow_query = filter (`e, allow_query, ``(id != select (select (e, 0), 0)));
+                UI (`ChangeWidget(`id(`table), `Items, allow_query));
+                
+                if (size (allow_query) == 0)
+                {
+                    UI (`ChangeWidget (`id (`edit), `Enabled, false));
+                    UI (`ChangeWidget (`id (`delete), `Enabled, false));                                    
+                }
+            }
+
+            else if (ui == `edit)
+            {
+                integer id = UI (`QueryWidget (`id (`table), `CurrentItem));
+                term item  = select (filter (`e, allow_query, ``(id == select (select (e, 0), 0))), 0);
+                item = NetsEditPopup (id, select (item, 1, ""), select (item, 2, ""));
+                if (item != nil)
+                {
+                    allow_query = maplist (`e, allow_query, ``{
+                        return select(select (e, 0), 0) == id ? item : e;
+                    });
+                    UI (`ChangeWidget (`id (`table), `Items, allow_query));
+                }
+            }
+
+            else if (ui == `add)
+            {
+                term new_item = NetsEditPopup (n_items, "", "");
+                if (new_item != nil)
+                {
+                    n_items = n_items + 1;
+                    allow_query = add (allow_query, new_item);
+                    UI (`ChangeWidget (`id (`table), `Items, allow_query));
+                }
+            }
+
+            if (ui == `abort && !UI (`ReallyAbortPopup (true))) continue;
+        }
+        until (contains ([`back, `next, `abort], ui));
+
+        if (ui == `back) UI (`ChangeWidget (`id (`next), `Label, _("&Next")));
+
+        // and finally merge
+
+        user_settings = add (user_settings, ".var.yp.securenets", 
+                             MergeNetsEntries (lookup (user_settings, ".var.yp.securenets"), allow_query));
+
+        return ui;
+    }
+
+}

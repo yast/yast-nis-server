@@ -1,0 +1,525 @@
+/**
+ *
+ * File:             
+ *   io.ycp
+ *
+ * Module:
+ *   Network/YPServer
+ *
+ * Summary:
+ *   YPServer module.
+ *
+ * Authors:            
+ *   Dan Vesely <dan@suse.cz>
+ *
+ * $Id$
+ *
+ * YPServer module part.
+ *
+ */
+
+
+{
+
+    textdomain "nis_server";    
+
+    /**
+     * Read variables, checks the file and each variable
+     * @param variables map with names and default values
+     * @param file filename to check for
+     * @return map with read values
+     */
+    global define ReadPathFile (map variables, string file) ``{
+
+        if (fileexist (file))
+        {                     
+            variables = mapmap (`name, `value, variables, ``{
+                any read_value = SCR (`Read (topath (name)));
+                if (read_value != nil)
+                {
+                    return [name, read_value];
+                }
+                else
+                {
+                    y2error ("Variable %1 can not be read, using default value: %2!", name, value);
+                    return [name, value];
+                }
+            });
+        }
+        else
+        {
+            y2error ("File %1 does not exists, using default values!", file);
+        }
+
+        return variables;
+    }
+
+
+    /*
+     * Removes file or directory and log errors
+     * @param file what to remove     
+     */
+    global define Remove (string file) ``{
+        if (fileexist (file)) 
+        {
+            map output = SCR (`Execute (.target.bash_output, sformat ("/bin/rm -rf %1", file)));
+            if (size (lookup (output, "stderr", "")) > 0)
+            {
+                string error_msg     = lookup (user_settings, "error", "");
+                string error_details = lookup (user_settings, "error_details", "");
+                error_msg     = error_msg + sformat (UI (_("Error while removing %1\n")), file);
+                error_details = error_details + sformat ("<p>%1</p>", lookup (output, "stderr", ""));
+                user_settings = add (user_settings, "error", error_msg);
+                user_settings = add (user_settings, "error_details", error_details);
+            }
+        }
+    }
+    
+    /*
+     * Starts or stop daemons
+     * @param workflow what to start or save
+     */
+    global define YPDaemons (symbol workflow) ``{
+        string error_msg     = lookup (user_settings, "error", "");
+        string error_details = lookup (user_settings, "error_details", "");
+        map output    = $[];
+        list to_stop  = [];
+        list to_start = [];
+        
+        if (workflow == `none) 
+        {
+            to_stop = ["ypxfrd", "yppasswdd", "ypserv"];
+        }
+        else if (workflow == `slave)
+        {
+            to_stop  = ["ypxfrd", "yppasswdd", "ypserv"];
+            to_start = ["ypserv"];
+        }
+        else if (workflow == `master)
+        {
+            to_stop  = ["ypxfrd", "yppasswdd", "ypserv"];
+            to_start = ["ypserv"];
+            
+            if (toboolean (lookup (user_settings, ".rc.system.START_YPPASSWDD", false)))
+            {
+                to_start = add (to_start, "yppasswdd");
+            }
+            
+            if (toboolean (lookup (user_settings, ".rc.system.START_YPXFRD", false)))
+            {
+                to_start = add (to_start, "ypxfrd");
+            }            
+        }
+        else if (workflow == `client)
+        {
+            to_stop  = ["portmap", "ypbind"];
+            to_start = ["portmap", "ypbind"]; 
+        }
+
+        if (size (to_stop) > 0)
+        {
+            maplist (`d, to_stop, ``{
+                output = SCR (`Execute (.target.bash_output, sformat ("/etc/init.d/%1 status", d)));
+                if (issubstring (lookup (output, "stdout"), "No process"))
+                {
+                    y2milestone ("Stopping daemon %1", d);
+                    output = SCR (`Execute (.target.bash_output, sformat ("/etc/init.d/%1 stop", d)));
+                    if (size (lookup (output, "stderr", "")) > 0)
+                    {
+                        error_msg = error_msg + sformat (UI (_("Error while stopping %1 daemon\n")), d);
+                        error_details = error_details + sformat ("<p>%1</p>", lookup (output, "stderr", ""));
+                    }
+                }
+            });
+        }
+
+        if (size (to_start) > 0)
+        {
+            maplist (`d, to_start, ``{
+                output = SCR (`Execute (.target.bash_output, sformat ("/etc/init.d/%1 status", d)));
+                if (issubstring (lookup (output, "stdout"), "No process"))
+                {
+                    y2milestone ("Starting daemon %1", d);                    
+                    output = SCR (`Execute (.target.bash_output, sformat ("/etc/init.d/%1 start", d)));
+                    if (size (lookup (output, "stderr", "")) > 0)
+                    {
+                        error_msg = error_msg + sformat (UI (_("Error while starting %1 daemon\n")), d);
+                        error_details = error_details + sformat ("<p>%1</p>", lookup (output, "stderr", ""));
+                    }
+                }
+            });
+        }
+
+
+        user_settings = add (user_settings, "error", error_msg);
+        user_settings = add (user_settings, "error_details", error_details);        
+    }
+
+    
+    /*
+     * Save list of slaves
+     */
+    global define SaveSlaves () ``{
+        string error_msg     = lookup (user_settings, "error", "");
+
+        SCR (`Execute (.target.bash, "/bin/cp %1, %1.YaST2_backup", "/var/yp/ypservers"));
+        if (SCR (`Write (.var.yp.ypservers, lookup (user_settings, ".var.yp.ypservers", []))) == nil)
+        {
+            error_msg = error_msg + sformat (UI (_("Error saving file %1\n")), "/var/yp/ypservers");
+        }
+        
+        user_settings = add (user_settings, "error", error_msg);
+    }
+
+    /*
+     * Creates initial database
+     */
+    global define YPMake () ``{
+        string error_msg     = lookup (user_settings, "error", "");
+        string error_details = lookup (user_settings, "error_details", "");
+        map output = SCR (`Execute (.target.bash_output, "/usr/bin/make -C /var/yp", $["NOPUSH" : "true"]));
+
+        if (size (lookup (output, "stderr", "")) > 0)
+        {
+            error_msg = error_msg + sformat (UI (_("Error while creating database.\n")));
+            error_details = error_details + sformat ("<p>%1</p>", lookup (output, "stderr", ""));
+        }
+
+        user_settings = add (user_settings, "error", error_msg);
+        user_settings = add (user_settings, "error_details", error_details);                
+    }
+
+
+    /*
+     * Saves config variables according to workflow
+     * @param which workflow
+     */
+    global define SaveVariables (symbol which) ``{
+        string error_msg     = lookup (user_settings, "error", "");
+        string error_details = lookup (user_settings, "error_details", "");
+
+        // none workflow
+        if (which == `none)
+        {
+            maplist (`var, ["YPXFRD", "YPSERV", "YPPASSWDD"], ``{
+                if (!SCR (`Write(topath (sformat (".rc.system.START_%1", var)), "no")))
+                {
+                    error_msg = error_msg + sformat (UI (_("Error setting up variable %1%2\n")), "START_", var);
+                }
+            });
+        }
+        
+        // slave workflow
+        else if (which == `slave)
+        {
+            maplist (`var, ["YPXFRD", "YPPASSWDD"], ``{
+                if (!SCR (`Write(topath (sformat (".rc.system.START_%1", var)), "no")))
+                {
+                    error_msg = error_msg + sformat (UI (_("Error setting up variable %1%2\n")), "START_", var);
+                }                
+            });            
+            if (!SCR (`Write(.rc.system.START_YPSERV, "yes")))
+            {
+                error_msg = error_msg + sformat (UI (_("Error setting up variable %1%\n")), "START_YPSERV");
+            }
+            
+        }
+
+        // master workflow
+        else if (which == `master)
+        {
+            maplist (`var, `value, user_settings, ``{
+                if (substring (var, 0, 10) == ".rc.system"   ||
+                    substring (var, 0, 12) == ".rc.ypserver" ||
+                    substring (var, 0, 16) == ".var.yp.makefile")
+                {
+                    if (!SCR (`Write (topath (var), value)))
+                    {
+                        string var_name = select (splitstring (var, "."), size (splitstring (var, ".")) - 1, "");
+                        error_msg = error_msg + sformat (UI (_("Error setting up variable %1%\n")), var_name);
+                    }
+                }
+            });
+        }
+
+
+        if (contains ([`slave, `master], which) && lookup (user_settings, "ui_also_client", false))
+        {
+            if (!SCR (`Write(.rc.system.START_YPBIND, "yes")))
+            {
+                error_msg = error_msg + sformat (UI (_("Error setting up variable %1%\n")), "START_BIND");
+            }
+            if (!SCR (`Write(.rc.system.YP_SERVER, "127.0.0.1")))
+            {
+                error_msg = error_msg + sformat (UI (_("Error setting up variable %1%\n")), "START_BIND");
+            }
+        }
+
+        if (!SCR (`Write (.rc.system, nil)))
+        {
+            error_msg = error_msg + sformat (UI (_("Error saving file %1\n")), "/etc/rc.config");
+        }
+        
+        if (which == `master)
+        {
+            if (!SCR (`Write (.rc.ypserver, nil)))
+            {
+                error_msg = error_msg + sformat (UI (_("Error saving file %1\n")), "/etc/rc.config.d/ypserv.rc.config");
+            }
+            if (!SCR (`Write (.var.yp.makefile, nil)))
+            {
+                error_msg = error_msg + sformat (UI (_("Error saving file %1\n")), "/var/yp/Makefile");
+            }
+        }
+        
+        user_settings = add (user_settings, "error", error_msg);
+        user_settings = add (user_settings, "error_details", error_details);
+    }
+
+
+    /*
+     * Gets the YP maps from master for slave
+     */
+    global define YPGetMaps () ``{
+
+        string error_msg     = lookup (user_settings, "error", "");
+        string error_details = lookup (user_settings, "error_details", "");
+        map output = $[];
+
+        // firts make sure that the directory exists
+        string directory = sformat ("/var/yp/%1", lookup (user_settings, ".rc.system.YP_DOMAINNAME", ""));
+        if (!fileexist (directory))
+        {
+            output = SCR (`Execute (.target.bash_output, sformat ("/bin/mkdir %1", directory)));
+            if (size (lookup (output, "stderr", "")) > 0)
+            {
+                error_msg = error_msg + sformat (UI (_("Directory %1 can not be created.\n")), directory);
+                error_details = error_details + sformat ("<p>%1</p>", lookup (output, "stderr", ""));
+                return;
+            }
+        }
+
+        // and get the maps
+        list running_maps = SCR (`Read (.run.ypwhich_m));
+        if (running_maps == nil)
+        {
+            error_msg = error_msg + sformat (UI (_("Can not get list of maps.\n")));
+            return;
+        }
+        running_maps = maplist (`m, running_maps, ``(lookup (m, "map")));
+        
+        string master = lookup (user_settings, "ui_master_ip", "");
+        maplist (`map_name, running_maps, ``{
+            output = SCR (`Execute (.target.bash_output, 
+                                    sformat ("/usr/lib/yp/ypxfr -f -h %1 -d %2 %3", 
+                                             lookup (user_settings, "ui_master_ip", ""),
+                                             lookup (user_settings, ".rc.system.YP_DOMAINNAME", ""),
+                                             map_name)));
+            if (size (lookup (output, "stderr", "")) > 0)
+            {
+                error_msg = error_msg + sformat (UI (_("Error while retrieving %1 map from master.\n")), map_name);
+                error_details = error_details + sformat ("<p>%1</p>", lookup (output, "stderr", ""));
+            }
+        });
+        
+
+        if (!contains (running_maps, "ypservers"))
+        {
+            error_msg = error_msg + sformat (UI (_("Could not get list with slaves.\n")));
+        }
+        else
+        {
+            string slaves = lookup (SCR (`Execute (.target.bash_output, "/usr/bin/ypcat ypservers")), "stdout");
+            
+            if (slaves != nil)
+            {
+                string hostname = lookup (SCR (`Execute (.target.bash_output, "/usr/lib/yp/yphelper --hostname")), "stdout");
+                hostname = substring (hostname, 0, size (hostname) - 1);
+                if (!contains (splitstring (slaves, "\n"), hostname))
+                {
+                    error_msg = error_msg + sformat (UI (_("Hostname of this host is not listed\nin the master's list.\n")));
+                }
+            }
+        }
+        
+        user_settings = add (user_settings, "error", error_msg);
+        user_settings = add (user_settings, "error_details", error_details);        
+    }
+
+
+    /*
+     * Save securenets list
+     */
+    
+    global define SaveSecurenets () ``{
+        
+        list securenets = lookup (user_settings, ".var.yp.securenets", []);
+
+        SCR (`Execute (.target.bash, "/bin/cp %1, %1.YaST2_backup", "/var/yp/securenets"));
+        if (SCR (`Write (.var.yp.securenets, securenets)) == nil)
+        {
+            error_msg = error_msg + sformat (UI (_("Error saving file %1\n")), "/var/yp/securenets");
+        }
+    }
+
+
+    /*
+     * Returns list of progress labels
+     * @param workflow symbol of what workflow was choosed
+     * @return list of localized strings
+     */
+    global define GetSaveList (symbol workflow) ``{
+        
+        list result = [];
+
+        // do this remove for all workflows
+        if (size (lookup (user_settings, ".rc.system.YP_DOMAINNAME", "")) > 0)
+        {
+            string domain         = lookup (user_settings, ".rc.system.YP_DOMAINNAME");
+            locale save_label     = sformat (UI(_("Remove /var/yp/%1")), domain);
+            locale progress_label = sformat (UI(_("Removing /var/yp/%1")), domain);
+            term function = ``(Remove ());
+            function = add (function, sformat ("/var/yp/%1", domain));
+            result = [
+                $["save_label"     : save_label,
+                  "progress_label" : progress_label,
+                  "function"       : function
+                    ]
+                ];
+        }
+
+        // *** none YP server flow
+        if (workflow == `none)
+        {
+            result = result + [
+                $["save_label"     : _("Stop running daemons."),
+                  "progress_label" : _("Stoping running daemons."),
+                  "function"       : ``(YPDaemons (`none))
+                    ],
+                $["save_label"     : _("Set config variables."),
+                  "progress_label" : _("Setting config variables."),
+                  "function"       : ``(SaveVariables (`none))
+                    ]
+                ];
+        }
+
+        // *** slave YP server flow
+        else if (workflow == `slave)
+        {
+            result = result + [
+                $["save_label"     : _("Get maps from master."),
+                  "progress_label" : _("Gettins maps from master."),
+                  "function"       : ``(YPGetMaps ())
+                    ],
+                $["save_label"     : _("Set config variables."),
+                  "progress_label" : _("Setting config variables."),
+                  "function"       : ``(SaveVariables (`slave))
+                    ],
+                $["save_label"     : _("Save hosts allowed to query server."),
+                  "progress_label" : _("Saving hosts allowed to query server."),
+                  "function"       : ``(SaveSecurenets ())
+                    ],
+                $["save_label"     : _("Start daemon."),
+                  "progress_label" : _("Starting daemon."),
+                  "function"       : ``(YPDaemons (`slave))
+                    ]
+                ];            
+        }
+        
+        // *** master YP server flow
+        else if (workflow == `master)
+        {
+            result = result + [            
+                $["save_label"     : _("Set config variables."),
+                  "progress_label" : _("Setting config variables."),
+                  "function"       : ``(SaveVariables (`master))
+                    ],
+                $["save_label"     : _("Save hosts allowed to query server."),
+                  "progress_label" : _("Saving hosts allowed to query server."),
+                  "function"       : ``(SaveSecurenets ())
+                    ]
+                ];
+
+            if (!tooboolean (lookup (user_settings, ".var.yp.makefile.NOPUSH", true)) &&
+                size (lookup (user_settings, ".var.yp.ypservers", [])) > 0)
+            {
+                result = result + [            
+                    $["save_label"     : _("Save slaves."),
+                      "progress_label" : _("Saving slaves."),
+                      "function"       : ``(SaveSlaves ())
+                        ]
+                    ];
+            }
+            result = result + [            
+                $["save_label"     : _("Start daemons."),
+                  "progress_label" : _("Starting daemons."),
+                  "function"       : ``(YPDaemons (`master))
+                    ],
+                $["save_label"     : _("Create initial database."),
+                  "progress_label" : _("Creating database."),
+                  "function"       : ``(YPMake ())
+                    ],
+                ];            
+        }
+        
+        // slave or master is also client ?
+        if (contains ([`slave, `master], which) && lookup (user_settings, "ui_also_client", false))
+        {
+            result = result + [            
+                $["save_label"     : _("Start NIS client."),
+                  "progress_label" : _("Staring NIS client."),
+                  "function"       : ``(YPDaemons (`client))
+                    ]
+                ];
+            
+        }
+
+        return result;
+    }
+    
+
+    /* **************************
+     * ***** Default values *****
+     * **************************
+     */
+    global define YPMakefileVars () ``{
+        return $[
+            ".var.yp.makefile.NOPUSH"        : "true",
+            ".var.yp.makefile.MERGE_PASSWD"  : "true",
+            ".var.yp.makefile.MERGE_GROUP"   : "true",
+            ".var.yp.makefile.MINUID"        : "100",
+            ".var.yp.makefile.MINGID"        : "100",
+            ".var.yp.makefile.maps"          : ["passwd", "group", "rpc", "services", "netid"]            
+            ];
+    }
+
+    global define YPServerVars () ``{
+        return $[
+            ".rc.ypserver.YPPWD_CHFN"        : "no", 
+            ".rc.ypserver.YPPWD_CHSH"        : "no", 
+            ".rc.ypserver.YPPWD_SRCDIR"      : "/etc"
+            ];
+    }
+
+    global define YPSystemVars () ``{
+        return $[
+            ".rc.system.START_PORTMAP"       : "yes",
+            ".rc.system.START_YPPASSWDD"     : "no",
+            ".rc.system.START_YPSERV"        : "no",
+            ".rc.system.START_YPXFRD"        : "no",
+            ".rc.system.START_YPBIND"        : "yes",
+            ".rc.system.YP_DOMAINNAME"       : "local"
+            ];
+    }
+
+    global define YPSecurenets () ``{
+        return $[".var.yp.securenets" : [$["netmask" : "255.0.0.0",
+                                           "network" : "127.0.0.0"
+                                             ]    
+                     ]];
+    }
+
+    global define YPServers () ``{
+        return $[".var.yp.ypservers" : []];
+    }    
+}

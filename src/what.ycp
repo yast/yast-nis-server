@@ -1,0 +1,140 @@
+/**
+ *
+ * File:             
+ *   what.ycp
+ *
+ * Module:
+ *   Network/YPServer
+ *
+ * Summary:
+ *   YPServer module.
+ *
+ * Authors:            
+ *   Dan Vesely <dan@suse.cz>
+ *
+ * $Id$
+ *
+ * YPServer module part.
+ *
+ */
+
+
+{
+
+    textdomain "nis_server";
+    
+    include "ui/wizard_dialog.ycp";
+    include "ui/common_popups.ycp";
+
+    include "nis_server/routines.ycp";
+
+    /**
+     * Dialog for choosing the way of the flow
+     */
+    global define WhatToConfigure () ``{
+
+        string helptext = "TODO";
+        symbol default = lookup (user_settings, "ui_what", `master);
+        term labels = `VBox ();
+        labels = add (labels, `VSpacing (1.5));
+
+        string master_setup_label = "";
+        string slave_setup_label  = "";
+        string none_setup_label   = "";
+
+        if (!isYPServerInstalled ())
+        {
+            labels = add (labels, `Left (`Label (_("No NIS Software is installed."))));
+            labels = add (labels, `Left (`Label (_("No NIS Server is configured."))));
+
+            master_setup_label = UI (_("Setup a NIS &Master Server \nwith previous software install"));
+            slave_setup_label  = UI (_("Setup a NIS &Slave Server \nwith previous software install"));
+            none_setup_label   = UI (_("&Do nothing and leave setup"));
+        }
+        else if (isYPServerConfigured ())
+        {
+            string slave_or_master = isYPMaster () ? UI (_("Master")) : UI (_("Slave"));
+            string master_action   = isYPMaster () ? UI (_("Reconfigure")) : UI (_("Change to"));
+            string slave_action    = isYPMaster () ? UI (_("Change to")) : UI (_("Reconfigure"));
+
+            labels = add (labels, `Left (`Label (_("NIS Software is installed."))));
+            labels = add (labels, `Left (`Label (sformat (UI (_("A NIS %1 Server is configured.")), 
+                                                          slave_or_master))));
+
+            master_setup_label = sformat (UI (_("%1 NIS &Master Server")), master_action);
+            slave_setup_label  = sformat (UI (_("%1 NIS &Slave Server")), slave_action);
+            none_setup_label   = UI (_("Deactivate any NIS server configuration"));
+        }
+        else
+        {
+            labels = add (labels, `Left (`Label ("NIS Software is installed.")));
+            labels = add (labels, `Left (`Label ("No NIS Server is configured.")));
+
+            master_setup_label = UI (_("Create NIS &Master Server"));
+            slave_setup_label  = UI (_("Create NIS &Slave Server"));
+            none_setup_label   = UI (_("&Do nothing and leave setup"));
+        }
+
+        term info = `HBox ();
+        info = add (info, `VBox (`Label (_("Actual status:"))));
+        info = add (info, `HSpacing (4));
+        info = add (info, labels);
+        term buttons  = `VBox ();
+        buttons = add (buttons, `VSpacing (0.5));
+        buttons = add (buttons, `Left(`RadioButton (`id (`master), `opt(`notify), master_setup_label, default == `master)));
+        buttons = add (buttons, `VSpacing (0.2));
+        buttons = add (buttons, `Left(`RadioButton (`id (`slave), `opt(`notify), slave_setup_label, default == `slave)));
+        buttons = add (buttons, `VSpacing (0.2));
+        buttons = add (buttons, `Left(`RadioButton (`id (`none), `opt(`notify), none_setup_label, default == `none)));
+        buttons = add (buttons, `VSpacing (0.5));
+        
+        buttons = `HBox (`HSpacing (0.5),
+                         buttons,
+                         `HSpacing (0.5));
+        
+        buttons = `HVSquash (`RadioButtonGroup (`id(`rb), buttons));
+        
+        term contents = `VBox ();
+        contents = add (contents, info);
+        contents = add (contents, `VSpacing ());
+        contents = add (contents, `VCenter(`Frame (_("Select what you want to do"), buttons)));
+        contents = add (contents, `VStretch ());
+        
+        UI(`SetWizardContents (_("Network Information Service (NIS) Server Setup"), contents, helptext, true, true));
+
+        symbol ui = nil;
+        symbol current_button = nil;
+
+        repeat 
+        {
+            ui = UI (`UserInput ());
+            
+            if (ui == `none) 
+            {
+                UI (`ReplaceWizardNextButton(`PushButton (`id (`finish), `opt (`default), _("&Finish"))));
+                UI (`SetFocus (`id (`finish)));
+            }
+            else if (contains ([`master, `slave], ui)) 
+            {
+                UI (`RestoreWizardNextButton());
+                UI (`SetFocus (`id (`next)));
+            }
+
+            if (ui == `abort && !UI (`ReallyAbortPopup (true))) continue;
+
+        }
+        until (contains ([`back, `next, `abort, `finish], ui));
+
+        if (ui == `next || ui == `finish) 
+        {
+            current_button = UI (`QueryWidget (`id (`rb), `CurrentButton));
+            user_settings = add (user_settings, "ui_what", current_button);
+            if (ui == `finish && !isYPServerInstalled ()) return `nothing;
+            if (ui == `finish && !isYPServerConfigured ()) return `nothing;
+            return ui == `next ? current_button : ui;
+        }
+
+        return ui == `back ? `exit : ui;
+    }
+
+}

@@ -1,0 +1,144 @@
+/**
+ *
+ * File:             
+ *   master.ycp
+ *
+ * Module:
+ *   Network/YPServer
+ *
+ * Summary:
+ *   YPServer module.
+ *
+ * Authors:            
+ *   Dan Vesely <dan@suse.cz>
+ *
+ * $Id$
+ *
+ * YPServer module part.
+ *
+ */
+
+
+{
+
+    textdomain "nis_server";
+    
+    include "ui/wizard_dialog.ycp";
+    include "ui/common_popups.ycp";
+
+    include "nis_server/routines.ycp";
+    
+    global define MasterDialog () ``{
+
+        string helptext = "TODO";
+
+        term pass_yes_buttons = `VBox ();
+        pass_yes_buttons = add (pass_yes_buttons, `Left (`CheckBox (`id (`allow_shell), _("Allow changing &GECOS field"),
+                                lookup (user_settings, ".rc.ypserver.YPPWD_CHFN", "no") == "yes")));
+        pass_yes_buttons = add (pass_yes_buttons, `Left (`CheckBox (`id (`allow_gecos), _("Allow changing of &SHELL"),
+                                lookup (user_settings, ".rc.ypserver.YPPWD_CHSH", "no") == "yes")));
+        pass_yes_buttons = `HBox (`HSpacing (3), pass_yes_buttons);
+        
+        term pass_buttons = `VBox ();
+        pass_buttons = add (pass_buttons, `VSpacing (0.3));
+        pass_buttons = add (pass_buttons, `Left (`CheckBox (`id (`change_passwords), `opt (`notify),
+                            _("Active right to change &passwords"),
+                            lookup (user_settings, ".rc.system.START_YPPASSWDD", "no") == "yes")));
+        pass_buttons = add (pass_buttons, `VSpacing (0.3));
+        pass_buttons = add (pass_buttons, pass_yes_buttons);
+        pass_buttons = add (pass_buttons, `VSpacing (0.3));
+        pass_buttons = `HBox (`HSpacing (), pass_buttons);
+        
+        term domain_frame = `VBox ();
+        domain_frame = add (domain_frame, `VSpacing (0.3));
+        domain_frame = add (domain_frame, `TextEntry (`id (`domain), "", 
+                                                      lookup (user_settings, ".rc.system.YP_DOMAINNAME", "")));
+        domain_frame = add (domain_frame, `VSpacing (0.3));
+        domain_frame = add (domain_frame, `Left (`CheckBox (`id (`also_client), _("This host is also a NIS &client"),
+                                                            lookup (user_settings, "ui_also_client", false))));
+        domain_frame = add (domain_frame, `VSpacing (0.3));   
+        domain_frame = `HBox (`HSpacing (), domain_frame, `HSpacing (4));
+        
+        term contents = `VBox ();
+        contents = add (contents, `VSpacing (0.5));
+        contents = add (contents, `Frame (_("NIS &Domain name"), domain_frame));
+        contents = add (contents, `VSpacing (0.5));
+        contents = add (contents, `HBox (`HSpacing (), `Left (`CheckBox (`id (`have_slave), _("Active Slave NIS server &exists"),
+                        toboolean (lookup (user_settings, ".var.yp.makefile.NOPUSH", false))))));
+        contents = add (contents, `VSpacing (0.5));
+        contents = add (contents, `HBox (`HSpacing (),`Left (`CheckBox (`id (`fast_map), _("&Fast Map distribution (rpc.ypxfrd)"),
+                        lookup (user_settings, ".rc.system.START_YPXFRD", "no") == "yes"))));
+        contents = add (contents, `VSpacing (0.5));
+        contents = add (contents, `Frame (_("Changing of passwords"), pass_buttons));
+        
+        contents = `VBox (contents,
+                          `VSpacing (0.5),
+                          `PushButton (`id (`details), _("&Other global settings ...")));
+        
+        contents = `HBox (`HSpacing (4), contents, `HSpacing (6));
+        
+        UI(`SetWizardContents (_("Network Information Service - Master Server Setup"), contents, helptext, true, true));
+        UI (`ChangeWidget (`id (`allow_shell), `Enabled, 
+                           lookup (user_settings, ".rc.system.START_YPPASSWDD", "no") == "yes"));
+        UI (`ChangeWidget (`id (`allow_gecos), `Enabled, 
+                           lookup (user_settings, ".rc.system.START_YPPASSWDD", "no") == "yes"));
+
+        symbol ui = nil;
+        string error_msg = "";
+        repeat 
+        {
+            error_msg = "";
+            ui = UI (`UserInput ());
+
+            if (ui == `change_passwords)
+            {
+                boolean enabled = UI (`QueryWidget (`id (`change_passwords), `Value));
+                UI (`ChangeWidget (`id (`allow_shell), `Enabled, enabled));
+                UI (`ChangeWidget (`id (`allow_gecos), `Enabled, enabled));
+            }
+
+            else if (ui == `next)
+            {
+                string domainname = UI (`QueryWidget (`id (`domain), `Value));
+                error_msg = error_msg + ((size (domainname) == 0 || checkhostname (domainname)) ? "" : UI(_("Wrong domain!\n")));
+
+                if (size (error_msg) > 0)
+                {
+                    UI (`ErrorPopup (error_msg));
+                }                
+            }
+
+            if (ui == `abort && !UI (`ReallyAbortPopup (true))) continue;
+        }
+        until ((ui == `next && size (error_msg) == 0) || contains ([`back, `abort, `details], ui));
+
+        // query the widgets
+        list widgets_to_query = [`have_slave, `also_client, `fast_map, `allow_gecos, `allow_shell, `change_passwords];
+        maplist (`widget, widgets_to_query, ``{
+            string key = sformat ("ui_%1", substring (sformat ("%1", widget), 1));
+            user_settings = add (user_settings, key, UI (`QueryWidget (`id (widget), `Value)));
+        });
+
+        user_settings = add (user_settings, "ui_also_client", UI (`QueryWidget (`id (`also_client), `Value)));
+        user_settings = add (user_settings, ".var.yp.makefile.NOPUSH",
+                             sformat ("%1", UI (`QueryWidget (`id (`have_slave), `Value))));
+        user_settings = add (user_settings, ".rc.ypserver.YPPWD_CHFN",
+                             UI (`QueryWidget (`id (`allow_gecos), `Value)) ? "yes" : "no");
+        user_settings = add (user_settings, ".rc.ypserver.YPPWD_CHSH",
+                             UI (`QueryWidget (`id (`allow_shell), `Value)) ? "yes" : "no");
+        user_settings = add (user_settings, ".rc.system.START_YPPASSWDD", 
+                             UI (`QueryWidget (`id (`change_passwords), `Value)) ? "yes" : "no");
+        user_settings = add (user_settings, ".rc.system.START_YPXFRD",
+                             UI (`QueryWidget (`id (`fast_map), `Value)) ? "yes" : "no");
+        user_settings = add (user_settings, ".rc.system.YP_DOMAINNAME", UI (`QueryWidget (`id (`domain), `Value)));
+        user_settings = add (user_settings, ".rc.system.START_YPSERV", "yes");
+
+        if (lookup (user_settings, ".rc.system.START_YPPASSWDD", "no") == "yes")
+        {
+            user_settings = add (user_settings, ".rc.system.START_PORTMAP", "yes");
+        }
+
+        return ui;
+    }
+
+}

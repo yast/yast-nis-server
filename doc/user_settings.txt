@@ -1,0 +1,32 @@
+user_settings map
+=================
+
+This should be global configuration map for ypserv. Reorganized to
+reduce depth, now uses prefixes instead.
+
+".rc.system.START_PORTMAP"              <string>
+".rc.system.START_YPPASSWDD"            <string>
+".rc.system.START_YPSERV"               <string>
+".rc.system.START_YPXFRD"               <string>
+".rc.system.YP_DOMAINNAME"              <string>
+
+".rc.ypserver.YPPWD_CHFN"               <string>
+".rc.ypserver.YPPWD_CHSH"               <string>
+".rc.ypserver.YPPWD_SRCDIR"             <string>
+
+".var.yp.makefile.NOPUSH"               <string>
+".var.yp.makefile.MERGE_PASSWD"         <string>
+".var.yp.makefile.MERGE_GROUP"          <string>
+".var.yp.makefile.MINUID"               <string>
+".var.yp.makefile.MINGID"               <string>
+".var.yp.makefile.maps"                 <list>
+
+".var.yp.securenets"                    <list>
+
+".var.yp.ypservers"                     <list>
+
+"ui_what"                               <symbol>
+"ui_master_ip"                          <string>
+"ui_also_client"                        <boolean>
+
+"errors"                                <string>

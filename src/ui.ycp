@@ -1,0 +1,172 @@
+/**
+ *
+ * File:             
+ *   ui.ycp
+ *
+ * Module:
+ *   Network/YPServer
+ *
+ * Summary:
+ *   YPServer module.
+ *
+ * Authors:            
+ *   Dan Vesely <dan@suse.cz>
+ *
+ * $Id$
+ *
+ * YPServer module part.
+ *
+ */
+
+
+{
+
+    textdomain "nis_server";
+
+    include "nis_server/what.ycp";
+    include "nis_server/slave.ycp";
+    include "nis_server/master.ycp";
+    include "nis_server/details.ycp";
+    include "nis_server/slaves.ycp";
+    include "nis_server/maps.ycp";
+    include "nis_server/securenets.ycp";
+
+    include "nis_server/io.ycp";
+    include "nis_server/routines.ycp";
+
+    include "ui/progress.ycp";
+
+    global define FinishPopup () ``{
+
+        if (UI (`ContinueCancelHeadlinePopup (_("Finish"), _("Really save configuration ?"))))
+            return `yes;
+        return `back;
+    }
+
+    global define ExitPopup () ``{
+
+        if (UI (`ContinueCancelHeadlinePopup (_("Exit"), _("Really exit configuration without saving ?"))))
+            return `exit;
+        return `back;
+    }
+
+    global define DetailsPopup () ``{
+
+        UI (`LongTextPopup (_("Error details"), `RichText (lookup (user_settings, "error_details", "")), 50, 20 ));
+        return `ok;
+    }
+
+    
+    global define ReadConfigDialog () ``{
+
+        locale help = UI (_("TODO"));
+        
+        list files = [
+            "/var/yp/Makefile", 
+            "/etc/rc.config.d/ypserv.rc.config",
+            "/etc/rc.config",
+            "/var/yp/securenets",
+            "/var/yp/ypservers"
+            ];
+        list vars = [
+            ``(YPMakefileVars ()),
+            ``(YPServerVars ()),
+            ``(YPSystemVars ()),
+            ``(YPSecurenets ()),
+            ``(YPServers ())
+            ];
+        ProgressSetup (_("Initializing NIS server setup"), _(""), size (files),
+                       maplist (`file, files, ``(sformat (UI (_("Load '%1' file")), file))),
+                       help);
+
+        integer i = 0;
+        while (i < size (files))
+        {
+            locale msg = sformat (UI (_("Loading '%1'...")), select (files, i));
+            ProgressMilestone (i, msg, i);
+            user_settings = user_settings + ReadPathFile (eval (select (vars, i)), select (files, i));
+            i = i + 1;
+        }
+        
+        user_settings = add (user_settings, "ui_also_client",
+                             lookup (user_settings, ".rc.system.YPBIND_START", "yes") == "yes");
+        user_settings = add (user_settings, "ui_what", isYPMaster () ? `master : `slave);
+        return `next;
+    }
+
+    global define SavingDialog () ``{
+
+        locale help = UI (_("TODO"));
+        UI (`RestoreWizardNextButton());
+        UI (`ChangeWidget (`id (`next), `Enabled, false));
+        UI (`ChangeWidget (`id (`abort), `Enabled, false));
+
+        symbol workflow = lookup (user_settings, "ui_what");
+        list save_list = GetSaveList (workflow);
+        integer step = 0;
+
+        ProgressSetup (_("Saving NIS server setup"), _(""), size (save_list), 
+                       maplist (`e, save_list, ``(lookup (e, "save_label", ""))), help);
+
+        while (step < size (save_list))
+        {
+            map save_item = select (save_list, step, $[]);
+            ProgressMilestone (step, lookup (save_item, "progress_label", ""), step);
+            y2milestone ("Calling: %1", lookup (save_item, "function", ""));
+            //sleep (1000);
+            eval (lookup (save_item, "function", ""));
+            step = step + 1;
+        }
+
+        ProgressMilestone (step + 1, _("Done."), step);
+
+        return `done;
+    }
+
+
+    global define ResultPopup () ``{
+
+        string message = "";
+        if (size (lookup (user_settings, "error", "")) > 0)
+        {
+            message = sformat (UI (_("Error during configuration:\n%1")), 
+                               lookup (user_settings, "error", ""));
+
+            return UI (`AnyQuestionPopup (_("Error"), message, _("&Ok"), _("&Details"), `focus_yes)) ? `ok : `details;
+            //UI (`ErrorPopup (message));
+        }
+        else 
+        {
+            message = UI (_("The configuration was succesful!"));
+            UI (`NotifyPopup (message));
+        }
+
+        return `ok;
+    }
+
+    /*
+     * Checks if the YP server package is installed
+     * and calls installation if not
+     */
+    global define InstallServer () ``{
+        
+        if (isYPServerInstalled ())
+        {
+            return lookup (user_settings, "ui_what", `master);
+        }
+        
+        map script = $[
+            "userInput" : false,
+            "install"   : ["ypserv"],
+            "delete"    : []
+            ];
+
+        string file = SCR (`Read (.target.tmpdir));
+        file = file + "/ypserv.sw_single";
+        SCR (`Write (.target.ycp, file, script));
+        CallFunction (`sw_single (file));
+
+
+        return lookup (user_settings, "ui_what", `master);
+    }
+}
