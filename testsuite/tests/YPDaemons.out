@@ -11,6 +11,7 @@ Execute	.target.bash "/etc/init.d/yppasswdd status" 0
 Execute	.target.bash_output "/etc/init.d/yppasswdd stop" $["TERM":"raw"] $["exit":0, "stderr":"", "stdout":""]
 Execute	.target.bash "/etc/init.d/ypserv status" 0
 Execute	.target.bash_output "/etc/init.d/ypserv stop" $["TERM":"raw"] $["exit":0, "stderr":"", "stdout":""]
+Execute	.target.bash_output "/etc/init.d/portmap start" $["TERM":"raw"] $["exit":0, "stderr":"", "stdout":""]
 Execute	.target.bash_output "/etc/init.d/ypserv start" $["TERM":"raw"] $["exit":0, "stderr":"", "stdout":""]
 Return	nil
 Execute	.target.bash "/etc/init.d/ypxfrd status" 0
@@ -19,12 +20,9 @@ Execute	.target.bash "/etc/init.d/yppasswdd status" 0
 Execute	.target.bash_output "/etc/init.d/yppasswdd stop" $["TERM":"raw"] $["exit":0, "stderr":"", "stdout":""]
 Execute	.target.bash "/etc/init.d/ypserv status" 0
 Execute	.target.bash_output "/etc/init.d/ypserv stop" $["TERM":"raw"] $["exit":0, "stderr":"", "stdout":""]
+Execute	.target.bash_output "/etc/init.d/portmap start" $["TERM":"raw"] $["exit":0, "stderr":"", "stdout":""]
 Execute	.target.bash_output "/etc/init.d/ypserv start" $["TERM":"raw"] $["exit":0, "stderr":"", "stdout":""]
 Return	nil
-Execute	.target.bash "/etc/init.d/portmap status" 0
-Execute	.target.bash_output "/etc/init.d/portmap stop" $["TERM":"raw"] $["exit":0, "stderr":"", "stdout":""]
 Execute	.target.bash "/etc/init.d/ypbind status" 0
 Execute	.target.bash_output "/etc/init.d/ypbind stop" $["TERM":"raw"] $["exit":0, "stderr":"", "stdout":""]
-Execute	.target.bash_output "/etc/init.d/portmap start" $["TERM":"raw"] $["exit":0, "stderr":"", "stdout":""]
-Execute	.target.bash_output "/etc/init.d/ypbind start" $["TERM":"raw"] $["exit":0, "stderr":"", "stdout":""]
 Return	nil
