@@ -71,7 +71,7 @@
 		string error_details = lookup (user_settings, "error_details", "");
 		// To translators: message in the popup dialog
 		error_msg     = error_msg + sformat (UI (_("Error while removing %1\n")), file);
-		error_details = error_details + sformat ("<p>%1</p>", lookup (output, "stderr", ""));
+		error_details = error_details + sformat ("<pre>%1</pre>", lookup (output, "stderr", ""));
 		user_settings = add (user_settings, "error", error_msg);
 		user_settings = add (user_settings, "error_details", error_details);
 	    }
@@ -80,7 +80,7 @@
 
     /**
      * Starts or stop daemons
-     * @param workflow what to start or save
+     * @param workflow what to start or save: `master, `slave, `none OR `client
      */
     global define YPDaemons (symbol workflow) ``{
 	string error_msg     = lookup (user_settings, "error", "");
@@ -122,18 +122,18 @@
 	if (size (to_stop) > 0)
 	{
 	    maplist (`d, to_stop, ``{
-		output = SCR (`Execute (.target.bash_output, sformat ("/etc/init.d/%1 status", d),
-					$["TERM" : "raw"]));
-		if (issubstring (lookup (output, "stdout"), "unused"))
+		y2milestone ("Stopping daemon %1", d);
+
+		// only stop it if it is not running. LSB will make this check unnecessary.
+		if (SCR (`Execute (.target.bash, sformat ("/etc/init.d/%1 status", d))) == 0)
 		{
-		    y2milestone ("Stopping daemon %1", d);
 		    output = SCR (`Execute (.target.bash_output, sformat ("/etc/init.d/%1 stop", d),
 					    $["TERM" : "raw"]));
-		    if (size (lookup (output, "stderr", "")) > 0)
+		    if (lookup (output, "exit", 1) != 0)
 		    {
 			// To translators: message in the popup dialog
 			error_msg = error_msg + sformat (UI (_("Error while stopping %1 daemon\n")), d);
-			error_details = error_details + sformat ("<p>%1</p>", lookup (output, "stderr", ""));
+			error_details = error_details + sformat ("<pre>%1</pre>", lookup (output, "stderr", ""));
 		    }
 		}
 	    });
@@ -142,21 +142,16 @@
 	if (size (to_start) > 0)
 	{
 	    maplist (`d, to_start, ``{
-		output = SCR (`Execute (.target.bash_output, sformat ("/etc/init.d/%1 status", d),
+		y2milestone ("Starting daemon %1", d);
+		output = SCR (`Execute (.target.bash_output, sformat ("/etc/init.d/%1 start", d),
 					$["TERM" : "raw"]));
-		if (issubstring (lookup (output, "stdout"), "unused"))
+		if (lookup (output, "exit", 1) != 0)
 		{
-		    y2milestone ("Starting daemon %1", d);
-		    output = SCR (`Execute (.target.bash_output, sformat ("/etc/init.d/%1 start", d),
-					    $["TERM" : "raw"]));
-		    if (size (lookup (output, "stderr", "")) > 0)
-		    {
-			// To translators: message in the popup dialog
-			error_msg = error_msg + sformat (UI (_("Error while starting %1 daemon\n")), d);
-			// To translators: formated string %1 is a daemon name %2 is an error message
-			error_details = error_details + sformat (UI (_("<p>Starting daemon %1 %2</p>")), d,
-								 lookup (output, "stderr", ""));
-		    }
+		    // To translators: message in the popup dialog
+		    error_msg = error_msg + sformat (UI (_("Error while starting %1 daemon\n")), d);
+		    // To translators: formated string %1 is a daemon name %2 is an error message
+		    error_details = error_details + sformat (UI (_("<p>Starting daemon %1 %2</p>")), d,
+							     lookup (output, "stderr", ""));
 		}
 	    });
 	}
@@ -189,13 +184,15 @@
     global define YPMake () ``{
 	string error_msg     = lookup (user_settings, "error", "");
 	string error_details = lookup (user_settings, "error_details", "");
-	map output = SCR (`Execute (.target.bash_output, "/usr/bin/make -C /var/yp", $["NOPUSH" : "true"]));
+	string dn = lookup (user_settings, ".rc.system.YP_DOMAINNAME");
+	map output = SCR (`Execute (.target.bash_output, "/usr/bin/make -e -C /var/yp", 
+				    $["NOPUSH" : "true", "LOCALDOMAIN" : dn]));
 
 	if (size (lookup (output, "stderr", "")) > 0)
 	{
 	    // To translators: message in the popup dialog
 	    error_msg = error_msg + sformat (UI (_("Error while creating database.\n")));
-	    error_details = error_details + sformat ("<p>%1</p>", lookup (output, "stderr", ""));
+	    error_details = error_details + sformat ("<pre>%1</pre>", lookup (output, "stderr", ""));
 	}
 
 	user_settings = add (user_settings, "error", error_msg);
@@ -260,17 +257,20 @@
 	}
 
 
-	if (contains ([`slave, `master], which) && lookup (user_settings, "ui_also_client", false))
+	if (contains ([`slave, `master], which))
 	{
-	    if (!SCR (`Write(.rc.system.START_YPBIND, "yes")))
+	    if (lookup (user_settings, "ui_also_client", false))
 	    {
-		// To translators: message in the popup dialog
-		error_msg = error_msg + sformat (UI (_("Error setting up variable %1%\n")), "START_BIND");
-	    }
-	    if (!SCR (`Write(.rc.system.YP_SERVER, "127.0.0.1")))
-	    {
-		// To translators: message in the popup dialog
-		error_msg = error_msg + sformat (UI (_("Error setting up variable %1%\n")), "START_BIND");
+		if (!SCR (`Write(.rc.system.START_YPBIND, "yes")))
+		{
+		    // To translators: message in the popup dialog
+		    error_msg = error_msg + sformat (UI (_("Error setting up variable %1%\n")), "START_YPBIND");
+		}
+		if (!SCR (`Write(.rc.system.YP_SERVER, "127.0.0.1")))
+		{
+		    // To translators: message in the popup dialog
+		    error_msg = error_msg + sformat (UI (_("Error setting up variable %1%\n")), "YP_SERVER");
+		}
 	    }
 	}
 
@@ -317,7 +317,7 @@
 	    {
 		// To translators: message in the popup dialog
 		error_msg = error_msg + sformat (UI (_("Directory %1 can not be created.\n")), directory);
-		error_details = error_details + sformat ("<p>%1</p>", lookup (output, "stderr", ""));
+		error_details = error_details + sformat ("<pre>%1</pre>", lookup (output, "stderr", ""));
 		return;
 	    }
 	}
@@ -343,7 +343,7 @@
 	    {
 		// To translators: message in the popup dialog
 		error_msg = error_msg + sformat (UI (_("Error while retrieving %1 map from master.\n")), map_name);
-		error_details = error_details + sformat ("<p>%1</p>", lookup (output, "stderr", ""));
+		error_details = error_details + sformat ("<pre>%1</pre>", lookup (output, "stderr", ""));
 	    }
 	});
 
@@ -405,9 +405,9 @@
 	{
 	    string domain         = lookup (user_settings, ".rc.system.YP_DOMAINNAME");
 	    // To translators: progress label
-	    locale save_label     = sformat (UI(_("Remove /var/yp/%1")), domain);
+	    string save_label     = sformat (UI(_("Remove /var/yp/%1")), domain);
 	    // To translators: progress label
-	    locale progress_label = sformat (UI(_("Removing /var/yp/%1")), domain);
+	    string progress_label = sformat (UI(_("Removing /var/yp/%1")), domain);
 	    term function = ``(Remove ());
 	    function = add (function, sformat ("/var/yp/%1", domain));
 	    result = [
