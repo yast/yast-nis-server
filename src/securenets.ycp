@@ -98,6 +98,7 @@
 	contents = `HBox (`HSpacing (), contents, `HSpacing ());
 
 	UI::OpenDialog (contents);
+	UI::SetFocus (`id (`netmask));
 
 	symbol ui = nil;
 	string error_msg = "";
