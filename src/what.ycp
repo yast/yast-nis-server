@@ -37,7 +37,7 @@
         string helptext = UI (_("<p>Please select, if you want to configure NIS server to be a <b>master</b>,
 <b>slave</b> or <b>do not have</b> NIS server configured.</p>"));
 
-        symbol default = lookup (user_settings, "ui_what", `master);
+        symbol detected = lookup (user_settings, "ui_what", `master);
         term labels = `VBox ();
         labels = add (labels, `VSpacing (1.5));
 
@@ -45,7 +45,7 @@
         string slave_setup_label  = "";
         string none_setup_label   = "";
 
-        if (!isYPServerInstalled ())
+	if (detected == `none)
         {
             // help text 2/2
             helptext = helptext + UI (_("<p>The NIS server package will be <b>installed</b> first if you want to
@@ -65,7 +65,7 @@ configure it.</p>"));
         }
         else if (isYPServerConfigured ())
         {
-	    boolean isMaster = isYPMaster ();
+	    boolean isMaster = (detected == `master);
                     // To translators: part of the label in the dialog
             string slave_or_master = isMaster ? UI (_("Master")) : UI (_("Slave"));
                     // To translators: part of the label in the dialog
@@ -106,11 +106,11 @@ configure it.</p>"));
         info = add (info, labels);
         term buttons  = `VBox ();
         buttons = add (buttons, `VSpacing (0.5));
-        buttons = add (buttons, `Left(`RadioButton (`id (`master), `opt(`notify), master_setup_label, default == `master)));
+        buttons = add (buttons, `Left(`RadioButton (`id (`master), `opt(`notify), master_setup_label, detected == `master)));
         buttons = add (buttons, `VSpacing (0.2));
-        buttons = add (buttons, `Left(`RadioButton (`id (`slave), `opt(`notify), slave_setup_label, default == `slave)));
+        buttons = add (buttons, `Left(`RadioButton (`id (`slave), `opt(`notify), slave_setup_label, detected == `slave)));
         buttons = add (buttons, `VSpacing (0.2));
-        buttons = add (buttons, `Left(`RadioButton (`id (`none), `opt(`notify), none_setup_label, default == `none)));
+        buttons = add (buttons, `Left(`RadioButton (`id (`none), `opt(`notify), none_setup_label, detected == `none)));
         buttons = add (buttons, `VSpacing (0.5));
         
         buttons = `HBox (`HSpacing (0.5),
@@ -153,16 +153,21 @@ configure it.</p>"));
         }
         until (contains ([`back, `next, `abort, `finish], ui));
 
-        if (ui == `next || ui == `finish) 
-        {
-            current_button = UI (`QueryWidget (`id (`rb), `CurrentButton));
-            user_settings = add (user_settings, "ui_what", current_button);
-            if (ui == `finish && !isYPServerInstalled ()) return `nothing;
-            if (ui == `finish && !isYPServerConfigured ()) return `nothing;
-            return ui == `next ? current_button : ui;
-        }
+	if (ui == `abort)
+	{
+	    return `abort;
+	}
+	if (ui == `back)
+	{
+	    return `exit;
+	}
+	if (ui == `finish && (detected == `none || !isYPServerConfigured ()))
+	{
+	    return `nothing;
+	}
 
-        return ui == `back ? `exit : ui;
+	current_button = UI (`QueryWidget (`id (`rb), `CurrentButton));
+	user_settings = add (user_settings, "ui_what", current_button);
+	return ui == `next ? current_button : ui;
     }
-
 }
