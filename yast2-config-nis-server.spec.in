@@ -14,6 +14,7 @@ Requires:	yast2-lib-sequencer
 Requires:	yast2-config-runlevel
 Requires:	yast2-lib-network
 Requires:	yast2-config-nis
+Requires:	yast2-agent-ini >= 2.5.8
 BuildArchitectures:	noarch
 
 %description
@@ -33,7 +34,7 @@ BuildArchitectures:	noarch
 @YAST2DIR@/clients/nis_server.ycp
 @YAST2DIR@/include/nis_server/*.ycp
 @YAST2DIR@/menuentries/menuentry_nis_server.y2cc
-@YAST2DIR@/scrconf/rc_ypserv.scr
+@YAST2DIR@/scrconf/cfg_ypserv.scr
 @YAST2DIR@/scrconf/run_ypwhich_m.scr
 @YAST2DIR@/scrconf/var_yp_securenets.scr
 @YAST2DIR@/scrconf/var_yp_ypservers.scr

@@ -11,10 +11,9 @@ reduce depth, now uses prefixes instead.
 ".etc.defaultdomain"			<string> (was .rc.system.YP_DOMAINNAME)
 "old_domainname"			<string>
 
-(now actually in /etc/sysconfig/ypserv)
-".rc.ypserver.YPPWD_CHFN"               <string>
-".rc.ypserver.YPPWD_CHSH"               <string>
-".rc.ypserver.YPPWD_SRCDIR"             <string>
+".sysconfig.ypserv.YPPWD_CHFN"		<string>
+".sysconfig.ypserv.YPPWD_CHSH"		<string>
+".sysconfig.ypserv.YPPWD_SRCDIR"	<string>
 
 ".var.yp.makefile.NOPUSH"               <string>
 ".var.yp.makefile.MERGE_PASSWD"         <string>

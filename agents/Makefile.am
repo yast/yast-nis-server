@@ -1,5 +1,5 @@
 #
-# Makefile.am for y2c_online_update/conf
+# Makefile.am for y2c_nis_server/agents
 #
 
 scrconfdir = $(YAST2DIR)/scrconf

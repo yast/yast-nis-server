@@ -37,8 +37,8 @@
 		"ypservers" : []
 		]
 	    ],
-	"rc" : $[
-	    "ypserver" : $[
+	"sysconfig" : $[
+	    "ypserv" : $[
 		"YPPWD_CHFN"        : "no",
 		"YPPWD_CHSH"        : "no",
 		"YPPWD_SRCDIR"      : "/etc"

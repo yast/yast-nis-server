@@ -9,7 +9,6 @@ htmldir = $(docdir)
 
 html_DATA = 			\
 	index.html		\
-	implementation.html	\
 	yast2-config-ypserv.txt \
 	user_settings.txt
 
