@@ -103,12 +103,12 @@
 	    to_stop  = ["ypxfrd", "yppasswdd", "ypserv"];
 	    to_start = ["ypserv"];
 
-	    if (toboolean (lookup (user_settings, ".rc.system.START_YPPASSWDD", false)))
+	    if (lookup (user_settings, ".rc.system.START_YPPASSWDD", "no") == "yes")
 	    {
 		to_start = add (to_start, "yppasswdd");
 	    }
 
-	    if (toboolean (lookup (user_settings, ".rc.system.START_YPXFRD", false)))
+	    if (lookup (user_settings, ".rc.system.START_YPXFRD", "no") == "yes")
 	    {
 		to_start = add (to_start, "ypxfrd");
 	    }
@@ -266,10 +266,25 @@
 		    // To translators: message in the popup dialog
 		    error_msg = error_msg + sformat (UI (_("Error setting up variable %1%\n")), "START_YPBIND");
 		}
+		if (!SCR (`Write(.rc.system.START_PORTMAP, "yes")))
+		{
+		    // To translators: message in the popup dialog
+		    error_msg = error_msg + sformat (UI (_("Error setting up variable %1%\n")), "START_PORTMAP");
+		}
+		if (!SCR (`Write(.rc.system.CREATE_YP_CONF, "yes")))
+		{
+		    // To translators: message in the popup dialog
+		    error_msg = error_msg + sformat (UI (_("Error setting up variable %1%\n")), "CREATE_YP_CONF");
+		}
 		if (!SCR (`Write(.rc.system.YP_SERVER, "127.0.0.1")))
 		{
 		    // To translators: message in the popup dialog
 		    error_msg = error_msg + sformat (UI (_("Error setting up variable %1%\n")), "YP_SERVER");
+		}
+		if (SCR (`Execute (.target.bash, "/sbin/SuSEconfig --nonewpackage --module ypclient")) != 0)
+		{
+		    // To translators: message in the popup dialog
+		    error_msg = error_msg + UI (_("Error running SuSEconfig\n"));
 		}
 	    }
 	}
