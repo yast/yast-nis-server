@@ -143,7 +143,7 @@ file
 	    if (ui == `abort && !UI::ReallyAbortPopup (true)) continue;
 	    if (ui == `next)
 	    {
-		if (SCR::Read (.target.dir, srcdir) == nil)
+		if (SCR::Read (.target.dir, srcdir) == nil && !Mode::config)
 		{
 		    UI::SetFocus (`id (`srcdir));
 		    // Translators: yes/no popup
