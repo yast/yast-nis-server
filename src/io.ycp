@@ -425,7 +425,7 @@
 				// To translators: progress label
 		$["save_label"     : _("Stop running daemons."),
 				// To translators: progress label
-		  "progress_label" : _("Stoping running daemons."),
+		  "progress_label" : _("Stopping running daemons."),
 		  "function"       : ``(YPDaemons (`none))
 		    ],
 				// To translators: progress label
@@ -444,7 +444,7 @@
 				// To translators: progress label
 		$["save_label"     : _("Get maps from master."),
 				// To translators: progress label
-		  "progress_label" : _("Gettins maps from master."),
+		  "progress_label" : _("Getting maps from master."),
 		  "function"       : ``(YPGetMaps ())
 		    ],
 				// To translators: progress label
@@ -521,7 +521,7 @@
 				// To translators: progress label
 		$["save_label"     : _("Start NIS client."),
 				// To translators: progress label
-		  "progress_label" : _("Staring NIS client."),
+		  "progress_label" : _("Starting NIS client."),
 		  "function"       : ``(YPDaemons (`client))
 		    ]
 		];
