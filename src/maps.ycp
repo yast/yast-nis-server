@@ -56,13 +56,13 @@ used. You can simply add some more maps from the list on the right side, named
         list to_filter_out = ["publickey", "bootparams", "auto.master", "auto.home", "auto.local"];
 
         if (toboolean (lookup (user_settings, ".var.yp.makefile.MERGE_PASSWD", false)) &&
-            fileexist (sformat ("%1/shadow", lookup (user_settings, ".rc.ypserver.YPPWD_SRCDIR", ""))))
+            SCR::Read (.target.size, sformat ("%1/shadow", lookup (user_settings, ".rc.ypserver.YPPWD_SRCDIR", ""))) != -1)
         {
             remaining = filter (`map_name, remaining, ``(map_name != "shadow"));
         }
 
         foreach (`file_name, to_filter_out, ``{
-            if (!fileexist (sformat ("/etc/%1", file_name)))
+            if (SCR::Read (.target.size, sformat ("/etc/%1", file_name)) == -1)
             {
                 remaining = filter (`map_name, remaining, ``(map_name != file_name));
             }

@@ -15,6 +15,9 @@
     include "nis_server/io.ycp";
 
     map READ = $[
+	"target" : $[
+	    "size" : 42
+	    ],
         "var" : $[
             "yp" : $[
                 "makefile" : $[
@@ -51,12 +54,16 @@
             ]
         ];
 
-    
+
+    DUMP ("YPMakefileVars");
     TEST (``(ReadPathFile (YPMakefileVars (), "/var/yp/Makefile")), [READ, $[], $[]], nil);
+    DUMP ("YPServerVars");
     TEST (``(ReadPathFile (YPServerVars (), "/etc/rc.config.d/ypserv.rc.config")), [READ, $[], $[]], nil);
+    DUMP ("YPSystemVars");
     TEST (``(ReadPathFile (YPSystemVars (), "/etc/rc.config")), [READ, $[], $[]], nil);
+    DUMP ("YPSecurenets");
     TEST (``(ReadPathFile (YPSecurenets (), "/var/yp/securenets")), [READ, $[], $[]], nil);
-// fails if ypservers does not exist, fix the agent?
-//    TEST (``(ReadPathFile (YPServers (), "/var/yp/ypservers")), [READ, $[], $[]], nil);
-    
+    DUMP ("YPServers");
+    TEST (``(ReadPathFile (YPServers (), "/var/yp/ypservers")), [READ, $[], $[]], nil);
+
 }
