@@ -47,7 +47,16 @@
         string masterentry_hostname  = "";
         string yphelper_hostname = "";
 	string dn = lookup (user_settings, ".rc.system.YP_DOMAINNAME", "");
-	string any_map = select (lookup (user_settings, ".var.yp.makefile.maps"), 0);
+	string ddir = sformat ("/var/yp/%1", dn);
+	string any_map = nil;
+	if (SCR (`Read (.target.size, ddir)) >=0 )
+	{
+	    list maps = SCR (`Read (.target.dir, ddir));
+	    if (size (maps) > 0)
+	    {
+		any_map = select (maps, 0);
+	    }
+	}
 	if (any_map == nil)
 	{
 	    return false;	// no maps, can't decide
@@ -55,9 +64,11 @@
 	string command = sformat ("/usr/lib/yp/makedbm -u /var/yp/%1/%2 | grep ^YP_MASTER_NAME", dn, any_map);
 
         output = SCR (`Execute (.target.bash_output, command));
-        masterentry_hostname  = select (splitstring (lookup (output, "stdout", ""), " "), 1, "");
+        masterentry_hostname = select (splitstring (lookup (output, "stdout", ""), " "), 1, "");
+	masterentry_hostname = select (splitstring (masterentry_hostname, "."), 0);
         output = SCR (`Execute (.target.bash_output, "/usr/lib/yp/yphelper --hostname"));
         yphelper_hostname = lookup (output, "stdout", "");
+	yphelper_hostname = select (splitstring (yphelper_hostname, "."), 0);
 
         return masterentry_hostname == yphelper_hostname;
     }
