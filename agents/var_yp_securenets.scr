@@ -25,20 +25,20 @@
 .var.yp.securenets
 
 `ag_anyagent(
-  Description (
-  ``(File ("/var/yp/securenets")),	// real file name
+  `Description (
+  (`File ("/var/yp/securenets")),	// real file name
   "\n",                                   // Comment
   false,                                // read-only
-  ``(List (      
-         Or (
-             Tuple (
-                 `hash (String ("#")),
-                 Optional (`comment (String ("^\n")))
+  (`List (      
+         `Or (
+             `Tuple (
+                 `hash (`String ("#")),
+                 `Optional (`comment (`String ("^\n")))
                  ),
-             Tuple (
-                 `netmask (String ("^ \t")),
-                 Separator ("\t "),
-                 `network (String("^ \t\n"))
+             `Tuple (
+                 `netmask (`String ("^ \t")),
+                 `Separator ("\t "),
+                 `network (`String("^ \t\n"))
                  )
              ),
          "\n")
