@@ -26,7 +26,7 @@
    $[
      ////////////////////////////////////////////////////////////////////////////////
      // name of the entry, shon in curses menu and ycc                             //
-     `menuentry    : _("Configure NIS Server"),
+     `menuentry    : _("NIS Server"),
 
      ////////////////////////////////////////////////////////////////////////////////
      //leave blank,  experts only ;-)
@@ -49,7 +49,7 @@
 
       ////////////////////////////////////////////////////////////////////////////////
       // explanation in YaST2 Control Center                                         //
-      `helptext     : _("Configure NIS server."),
+      `helptext     : _("Configure NIS server"),
 
       ////////////////////////////////////////////////////////////////////////////////
       // leave nil, experts only ;-)
