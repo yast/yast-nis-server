@@ -56,6 +56,7 @@
 
     /**
      * Slave dialog
+     * @return symbol `back, `abort or `next
      */
     global define SlaveDialog () ``{
 
