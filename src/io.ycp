@@ -127,7 +127,7 @@
 	    maplist (`d, to_stop, ``{
 		y2milestone ("Stopping daemon %1", d);
 
-		// only stop it if it is not running. LSB will make this check unnecessary.
+		// only stop it if it is running. LSB will make this check unnecessary.
 		if (SCR (`Execute (.target.bash, sformat ("/etc/init.d/%1 status", d))) == 0)
 		{
 		    output = SCR (`Execute (.target.bash_output, sformat ("/etc/init.d/%1 stop", d),
@@ -146,15 +146,18 @@
 	{
 	    maplist (`d, to_start, ``{
 		y2milestone ("Starting daemon %1", d);
-		output = SCR (`Execute (.target.bash_output, sformat ("/etc/init.d/%1 start", d),
-					$["TERM" : "raw"]));
-		if (lookup (output, "exit", 1) != 0)
-		{
-		    // To translators: message in the popup dialog
-		    error_msg = error_msg + sformat (UI (_("Error while starting %1 daemon\n")), d);
-		    // To translators: formated string %1 is a daemon name %2 is an error message
-		    error_details = error_details + sformat (UI (_("<p>Starting daemon %1 %2</p>")), d,
-							     lookup (output, "stderr", ""));
+		// start only if not running. essential for portmap! (bug #9999)
+		if (SCR (`Execute (.target.bash, sformat ("/etc/init.d/%1 status", d))) != 0) {
+		    output = SCR (`Execute (.target.bash_output, sformat ("/etc/init.d/%1 start", d),
+					    $["TERM" : "raw"]));
+		    if (lookup (output, "exit", 1) != 0)
+		    {
+			// To translators: message in the popup dialog
+			error_msg = error_msg + sformat (UI (_("Error while starting %1 daemon\n")), d);
+			// To translators: formated string %1 is a daemon name %2 is an error message
+			error_details = error_details + sformat (UI (_("<p>Starting daemon %1 %2</p>")), d,
+								 lookup (output, "stderr", ""));
+		    }
 		}
 	    });
 	}
