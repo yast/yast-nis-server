@@ -148,14 +148,14 @@ configure it.</p>");
 
 	    if (current_button == `none)
 	    {
-		Wizard::ReplaceNextButton(`PushButton (`id (`finish), `opt (`default, `key_F10), Label::FinishButton()));
-		UI::SetFocus (`id (`finish));
+		Wizard::SetNextButton(`finish, Label::FinishButton() );
 	    }
 	    else if (contains ([`master, `slave], current_button))
 	    {
 		Wizard::RestoreNextButton();
-		UI::SetFocus (`id (`next));
 	    }
+
+	    Wizard::SetFocusToNextButton();
 
 	    ui = (symbol) UI::UserInput ();
 	    if (ui == `cancel)
