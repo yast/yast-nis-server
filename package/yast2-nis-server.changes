@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed Jul 23 15:36:10 CEST 2003 - mvidner@suse.cz
+
+- Fixed autoinstallation (#26998).
+- Using Label, Popup, Require.
+- 2.8.1
+
+-------------------------------------------------------------------
 Mon Feb 17 16:39:04 CET 2003 - mvidner@suse.de
 
 - Fixed file names of png's that were named as jpg's. (#21925)
