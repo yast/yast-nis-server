@@ -40,8 +40,8 @@
 <i>'/etc'</i>).</p>");
 
 	// help text 2/3
-	helptext = helptext + _("<p>Select if your <i>passwd</i> file should be merged with <i>shadow</i>
-file and if the <i>group</i> file should be merged with <i>gshadow</i>
+	helptext = helptext + _("<p>Select if your <i>passwd</i> file should be merged with the <i>shadow</i>
+file and if the <i>group</i> file should be merged with the <i>gshadow</i>
 file
 (only possible if the <i>shadow</i> or <i>gshadow</i> files exist).</p>
 ");
