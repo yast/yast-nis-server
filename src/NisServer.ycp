@@ -18,8 +18,8 @@ textdomain "nis_server";
 
 import "Progress";
 import "Report";
-import "Summary";
 import "Runlevel";
+import "Summary";
 
 //TODO: make it work like Mail::Touch
 /**
@@ -63,7 +63,7 @@ global string ui_master_ip = "";
 /**
  * Maps to be served
  */
-global list(string) maps = [];
+global list<string> maps = [];
 
 /**
  * Minimal UID to include in the user maps
@@ -96,7 +96,7 @@ global boolean nopush = false;
 /**
  * Slave servers
  */
-global list(string) ypservers = [];
+global list<string> ypservers = [];
 
 /**
  * @struct securenet
@@ -106,7 +106,7 @@ global list(string) ypservers = [];
  *  hash: "#"
  *  (optional) comment: string
  */
-global list(map) securenets = [];
+global list<map> securenets = [];
 
 /**
  * Start also the client?
@@ -145,6 +145,15 @@ global list required_packages = ["ypserv"];
 
 
 // ------------------------------------------------------------
+define void YPMakefileVars ();
+define void YPServerVars ();
+define void YPSystemVars ();
+define void YPSecurenets ();
+define void YPServers ();
+global define boolean isYPMaster ();
+global define boolean isYPServerInstalled ();
+global define string getMaster ();
+global define list<map> GetSaveList (symbol workflow);
 
 /**
  * Read all NIS server settings.
@@ -164,14 +173,15 @@ global define boolean Read() ``{
 	"/etc/defaultdomain",
 	"/var/yp/securenets",
 	"/var/yp/ypservers"
-	];
+    ];
+
     list vars = [
-	``(YPMakefileVars ()),
-	``(YPServerVars ()),
-	``(YPSystemVars ()),
-	``(YPSecurenets ()),
-	``(YPServers ())
-	];
+	YPMakefileVars,
+	YPServerVars,
+	YPSystemVars,
+	YPSecurenets,
+	YPServers
+    ];
 
     Progress::New (title, progress_title, size (files) + 2,
 		   // To translators: progress label %1 is filename
@@ -213,7 +223,7 @@ global define boolean Read() ``{
     {
 	// a DHCP client may set the domainname too:
 	// /etc/sysconfig/network/dhcp:DHCLIENT_SET_DOMAINNAME
-	map out = SCR::Execute (.target.bash_output, "/bin/ypdomainname");
+	map out = (map) SCR::Execute (.target.bash_output, "/bin/ypdomainname");
 	domain = deletechars (out["stdout"]:"", "\n");
 
     }
@@ -246,33 +256,33 @@ define any SCRGet (path p, any default) ``{
 }
 
 define void YPMakefileVars () ``{
-    maps = SCRGet (.var.yp.makefile.maps, ["passwd", "group", "rpc", "services", "netid"]);
-    minuid = tointeger (SCRGet (.var.yp.makefile.MINUID, "100"));
-    mingid = tointeger (SCRGet (.var.yp.makefile.MINGID, "100"));
-    merge_passwd = SCRGet (.var.yp.makefile.MERGE_PASSWD, "true") == "true";
-    merge_group = SCRGet (.var.yp.makefile.MERGE_GROUP, "true") == "true";
-    nopush = SCRGet (.var.yp.makefile.NOPUSH, "true") == "true";
+    maps = (list<string>) SCRGet (.var.yp.makefile.maps, ["passwd", "group", "rpc", "services", "netid"]);
+    minuid = tointeger ((string) SCRGet (.var.yp.makefile.MINUID, "100"));
+    mingid = tointeger ((string) SCRGet (.var.yp.makefile.MINGID, "100"));
+    merge_passwd = (string) SCRGet (.var.yp.makefile.MERGE_PASSWD, "true") == "true";
+    merge_group = (string) SCRGet (.var.yp.makefile.MERGE_GROUP, "true") == "true";
+    nopush = (string) SCRGet (.var.yp.makefile.NOPUSH, "true") == "true";
 }
 
 define void YPServerVars () ``{
-    pwd_srcdir = SCRGet (.sysconfig.ypserv.YPPWD_SRCDIR, "/etc");
+    pwd_srcdir = (string) SCRGet (.sysconfig.ypserv.YPPWD_SRCDIR, "/etc");
     pwd_chfn = SCRGet (.sysconfig.ypserv.YPPWD_CHFN, "no") == "yes";
     pwd_chsh = SCRGet (.sysconfig.ypserv.YPPWD_CHSH, "no") == "yes";
 }
 
 define void YPSystemVars () ``{
-    domain = SCRGet (.etc.defaultdomain, "local");
+    domain = (string) SCRGet (.etc.defaultdomain, "local");
 }
 
 define void YPSecurenets () ``{
-    securenets = SCRGet (.var.yp.securenets, [$[
+    securenets = (list<map>) SCRGet (.var.yp.securenets, [$[
 				 "network" : "127.0.0.0",
 				 "netmask" : "255.0.0.0",
 				 ]]);
 }
 
 define void YPServers () ``{
-    ypservers = SCRGet (.var.yp.ypservers, []);
+    ypservers = (list<string>) SCRGet (.var.yp.ypservers, []);
 }
 
 // --------------------
@@ -292,8 +302,8 @@ define void YPServers () ``{
 	string any_map = nil;
 	if (SCR::Read (.target.size, ddir) >=0 )
 	{
-	    list dmaps = SCR::Read (.target.dir, ddir);
-	    any_map = dmaps[0]:nil;
+	    list dmaps = (list) SCR::Read (.target.dir, ddir);
+	    any_map = (string) dmaps[0]:nil;
 	}
 	if (any_map == nil)
 	{
@@ -301,7 +311,7 @@ define void YPServers () ``{
 	}
 	string command = sformat ("/usr/lib/yp/makedbm -u /var/yp/%1/%2 | grep ^YP_MASTER_NAME", dn, any_map);
 
-	string output = lookup (SCR::Execute (.target.bash_output, command), "stdout", "");
+	string output = (string) lookup ((map) SCR::Execute (.target.bash_output, command), "stdout", "");
 	return select (splitstring (output, " \n"), 1, nil);
     }
 
@@ -315,7 +325,7 @@ define void YPServers () ``{
 	    return false;	// can't decide
 	}
 
-	map output = SCR::Execute (.target.bash_output, "/usr/lib/yp/yphelper --hostname");
+	map output = (map) SCR::Execute (.target.bash_output, "/usr/lib/yp/yphelper --hostname");
 	string yphelper_hostname = output["stdout"]:"";
 
 	return master == deletechars (yphelper_hostname, "\n");
@@ -326,7 +336,7 @@ define void YPServers () ``{
      * by querying RPM for ypserv
      */
     global define boolean isYPServerInstalled () ``{
-	return (SCR::Execute(.target.bash, "/bin/rpm -q ypserv") == 0);
+	return SCR::Execute(.target.bash, "/bin/rpm -q ypserv") == 0;
     }
 
 
@@ -392,7 +402,7 @@ global define boolean Write() ``{
 global define void Remove (string file) ``{
     if (SCR::Read (.target.size, file) != -1)
     {
-	map output = SCR::Execute (.target.bash_output,
+	map output = (map) SCR::Execute (.target.bash_output,
 				   sformat ("/bin/rm -rf %1", file));
 	if (size (output["stderr"]:"") > 0)
 	{
@@ -413,7 +423,7 @@ global define boolean EnsureDirectory (string directory) ``{
 
     if (SCR::Read (.target.size, directory) == -1)
     {
-	output = SCR::Execute (.target.bash_output,
+	output = (map) SCR::Execute (.target.bash_output,
 			       sformat ("/bin/mkdir %1", directory));
 	if (size (output["stderr"]:"") > 0)
 	{
@@ -442,7 +452,7 @@ global define void YPGetMaps () ``{
 
     // and get the maps
     string master = ui_master_ip;
-    output = SCR::Execute (.target.bash_output, sformat ("/usr/lib/yp/yphelper --maps %1 --domainname %2", master, dn));
+    output = (map) SCR::Execute (.target.bash_output, sformat ("/usr/lib/yp/yphelper --maps %1 --domainname %2", master, dn));
     if (output["exit"]:1 != 0)
     {
 	// To translators: message in the popup dialog
@@ -457,7 +467,7 @@ global define void YPGetMaps () ``{
     }
 
     maplist (`map_name, running_maps, ``{
-	output = SCR::Execute (.target.bash_output,
+	output = (map) SCR::Execute (.target.bash_output,
 			       sformat ("/usr/lib/yp/ypxfr -f -h %1 -d %2 %3",
 					master,
 					dn,
@@ -478,14 +488,14 @@ global define void YPGetMaps () ``{
     }
     else
     {
-	output = SCR::Execute (.target.bash_output, sformat (
+	output = (map) SCR::Execute (.target.bash_output, sformat (
 				   "/usr/lib/yp/makedbm -u %1/ypservers",
 				   dndir));
-	string slaves = output["stdout"]:nil;
+	string slaves = (string) output["stdout"]:nil;
 
 	if (slaves != nil)
 	{
-	    output = SCR::Execute (.target.bash_output,
+	    output = (map) SCR::Execute (.target.bash_output,
 				   "/usr/lib/yp/yphelper --hostname");
 	    string hostname = output["stdout"]:"";
 	    hostname = substring (hostname, 0, size (hostname) - 1);
@@ -614,8 +624,12 @@ global define void YPDaemons (symbol workflow) ``{
 	}
     }
 
-    map services = listmap (string s, to_stop, ``([s, "disable"]));
-    foreach (string s, to_start, ``{ services[s] = "enable"; });
+    map services = listmap (string s, to_stop, ``{
+	return $[s : "disable"];
+    });
+    foreach (string s, to_start, ``{
+	services[s] = "enable";
+    });
     foreach (string s, string action, services, ``{
 	Runlevel::ServiceAdjust (s, action);
     });
@@ -684,7 +698,7 @@ global define void YPMake () ``{
 	return;
     }
 
-    output = SCR::Execute (.target.bash_output, sformat ("/usr/bin/make -C /var/yp/%1 -f ../Makefile NOPUSH=true ypservers", dn));
+    output = (map) SCR::Execute (.target.bash_output, sformat ("/usr/bin/make -C /var/yp/%1 -f ../Makefile NOPUSH=true ypservers", dn));
 
     if (size (output["stderr"]:"") > 0)
     {
@@ -693,7 +707,7 @@ global define void YPMake () ``{
 	addErrorDetail (output["stderr"]:"");
     }
 
-    output = SCR::Execute (.target.bash_output, sformat ("/usr/bin/make -C /var/yp NOPUSH=true LOCALDOMAIN=%1", dn));
+    output = (map) SCR::Execute (.target.bash_output, sformat ("/usr/bin/make -C /var/yp NOPUSH=true LOCALDOMAIN=%1", dn));
 
     if (size (output["stderr"]:"") > 0)
     {
@@ -735,9 +749,9 @@ global define void Client () ``{
  *   "function": a term (will be eval'd)
  * ]</pre>
  */
-global define list(map) GetSaveList (symbol workflow) ``{
+global define list<map> GetSaveList (symbol workflow) ``{
 
-    list result = [];
+    list<map> result = [];
 
     // do this remove for all workflows
     if (domain != "")
@@ -748,8 +762,8 @@ global define list(map) GetSaveList (symbol workflow) ``{
 		"save_label"     : sformat (_("Remove /var/yp/%1"), domain),
 		// To translators: progress label
 		"progress_label" : sformat (_("Removing /var/yp/%1"), domain),
-		"function"       : add (``(Remove ()),
-					sformat ("/var/yp/%1", domain)),
+		"function"       : (``(Remove (
+					sformat ("/var/yp/%1", domain)))),
 		]
 	    ];
     }
@@ -963,8 +977,8 @@ global define map Export () ``{
 	slaves = ypservers;
     }
 
-    global boolean start_ypbind = false;
-
+    // FIXME: NI
+    // global boolean start_ypbind = false;
 
     settings["start_ypbind"] = start_ypbind;
 
