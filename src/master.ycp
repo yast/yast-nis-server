@@ -41,25 +41,25 @@
 the appropriate button.</p>");
 
 	// help text 2/3
-	helptext = helptext + _("<p>If you want slave servers to cooperate with this master, check the
-button <i>Active Slave NIS server exists</i>. If you check the button
-<i>Fast Map distribution</i> it will speed up the transfer of maps to the
+	helptext = helptext + _("<p>For slave servers to cooperate with this master, check
+<i>Active Slave NIS server exists</i>. If you check
+<i>Fast Map distribution</i>, it will speed up the transfer of maps to the
 slaves.</p>
 ");
 
 	// help text 3/3
-	helptext = helptext + _("<p><i>Allow changing of passwords</i> lets the users change their
+	helptext = helptext + _("<p><i>Allow changes to passwords</i> lets the users change their
 passwords in the presence of NIS. Buttons to allow
-changes of the login shell or GECOS (full name and related information) can
+changing the login shell or GECOS (full name and related information) can
 be used to set up these more specific options.</p>
 ");
 
 	term pass_yes_buttons = `VBox ();
 				// To translators: checkbox label
-	pass_yes_buttons = add (pass_yes_buttons, `Left (`CheckBox (`id (`allow_shell), _("Allow changing of &GECOS field"),
+	pass_yes_buttons = add (pass_yes_buttons, `Left (`CheckBox (`id (`allow_shell), _("Allow changes to &GECOS field"),
 				lookup (user_settings, ".sysconfig.ypserv.YPPWD_CHFN", "no") == "yes")));
 				// To translators: checkbox label
-	pass_yes_buttons = add (pass_yes_buttons, `Left (`CheckBox (`id (`allow_gecos), _("Allow changing of login &shell"),
+	pass_yes_buttons = add (pass_yes_buttons, `Left (`CheckBox (`id (`allow_gecos), _("Allow changes to login &shell"),
 				lookup (user_settings, ".sysconfig.ypserv.YPPWD_CHSH", "no") == "yes")));
 	pass_yes_buttons = `HBox (`HSpacing (3), pass_yes_buttons);
 
@@ -67,7 +67,7 @@ be used to set up these more specific options.</p>
 	pass_buttons = add (pass_buttons, `VSpacing (0.3));
 	pass_buttons = add (pass_buttons, `Left (`CheckBox (`id (`change_passwords), `opt (`notify),
 							    // To translators: checkbox label
-			    _("Allow changing of &passwords"),
+			    _("Allow changes to &passwords"),
 			    lookup (user_settings, "start_yppasswdd", false))));
 	pass_buttons = add (pass_buttons, `VSpacing (0.3));
 	pass_buttons = add (pass_buttons, pass_yes_buttons);

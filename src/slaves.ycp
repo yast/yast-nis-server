@@ -103,7 +103,7 @@
 	    {
 		slave = tolower (UI::QueryWidget (`id (`slave), `Value));
 				// To translators: error message
-		error_msg = error_msg + (check_domainname (slave) ? "" : _("Wrong host name!\n"));
+		error_msg = error_msg + (check_domainname (slave) ? "" : _("Wrong host name.\n"));
 
 		if (size (error_msg) > 0)
 		{
