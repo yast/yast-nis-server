@@ -1,4 +1,15 @@
 -------------------------------------------------------------------
+Tue Apr 16 15:44:42 CEST 2002 - mvidner@suse.cz
+
+- Rewrote the maps selection dialog:
+  * Two clumsy SelectionBoxes replaced by a single MultiSelectionBox.
+  * Offer only those maps whose sources exist.
+  * Added amd.home and removed amd and home (duh).
+- Added return type declarations to defines.
+- Fix for automake 1.6
+- 2.6.1
+
+-------------------------------------------------------------------
 Mon Mar 11 15:40:47 CET 2002 - mvidner@suse.cz
 
 - Check that the source directory exists. (#14708)
