@@ -85,6 +85,7 @@
 			      ``( `item (`id (table), table, e) ));
 
 	term contents = `MultiSelectionBox (
+	    // multilesection box label
 	    `id (`current), _("&Maps"), items
 	    );
 
