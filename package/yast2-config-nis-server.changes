@@ -1,4 +1,17 @@
 -------------------------------------------------------------------
+Mon Sep  3 17:56:02 CEST 2001 - mvidner@suse.cz
+
+- Start services only if not running already, portmap needs this (Bug #9999).
+- Fixed detection of master without passwd.byname, using base host name.
+- Make the ypservers map too.
+- Fixed slave server setup (inverted NOPUSH).
+- The check for presence in ypservers is done only after the domain is set up.
+- Fixed stopping the client.
+- Fixed backing up /var/yp/{ypservers,securenets}.
+- Eliminated redundant bash calls in server selection dialog.
+- 2.4.12
+
+-------------------------------------------------------------------
 Fri Aug 31 00:49:12 CEST 2001 - ro@suse.de
 
 - added <libycp-devel> to neededforbuild (for testsuite)
