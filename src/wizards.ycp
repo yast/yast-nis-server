@@ -27,7 +27,6 @@ global define symbol NisServerSequence() ``{
     map aliases = $[
 	"read"		: [ ``( ReadDialog() ), true ],
 	"main"		: ``( MainSequence() ),
-//	"finish_popup"  : ``( FinishPopup () ),
 	"write"		: [ ``( WriteDialog() ), true ],
 	"result"        : ``( ResultPopup () ),
 	"error_details" : ``( DetailsPopup () ),
@@ -42,14 +41,8 @@ global define symbol NisServerSequence() ``{
 	"main" : $[
 	    `abort	: `abort,
 	    `nothing	: `nothing,
-//	    `next	: "finish_popup",
 	    `next	: "write",
 	    ],
-	/*
-	"finish_popup" : $[
-	    `yes       : "write",
-	    ],
-	*/
 	"write"       : $[
 	    `next    : "result"
 	    ],
@@ -62,15 +55,7 @@ global define symbol NisServerSequence() ``{
 	    ],
 	];
 
-    // Translators: dialog caption
-    string caption = _("NIS Server Configuration");
-    // label
-    term contents = `Label(_("Initializing..."));
-
     Wizard::CreateDialog();
-    Wizard::SetContentsButtons(caption, contents, "",
-	    Label::BackButton(), Label::NextButton());
-
     any ret = WizardSequencer(aliases, sequence);
 
     UI::CloseDialog();
