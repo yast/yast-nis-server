@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon Mar  8 13:49:31 CET 2004 - mvidner@suse.cz
+
+- switched from Runlevel to Service
+- require yast2-installation because of ProductFeatures
+- 2.9.4
+
+-------------------------------------------------------------------
 Fri Mar  5 17:03:27 CET 2004 - mvidner@suse.cz
 
 - added type information (lslezak)
