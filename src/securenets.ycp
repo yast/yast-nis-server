@@ -100,33 +100,33 @@
 	contents = add (contents, `VSpacing (0.3));
 	contents = `HBox (`HSpacing (), contents, `HSpacing ());
 
-	UI (`OpenDialog (contents));
+	UI::OpenDialog (contents);
 
 	symbol ui = nil;
 	string error_msg = "";
 
 	repeat {
 	    error_msg = "";
-	    ui = UI (`UserInput ());
+	    ui = UI::UserInput ();
 
 	    if (ui == `ok)
 	    {
-		netmask = UI (`QueryWidget (`id (`netmask), `Value));
-		network = UI (`QueryWidget (`id (`network), `Value));
+		netmask = UI::QueryWidget (`id (`netmask), `Value);
+		network = UI::QueryWidget (`id (`network), `Value);
 				// To translators: error message
-		error_msg = error_msg + (check_ip4 (netmask) ? "" : UI(_("Wrong netmask!\n")));
+		error_msg = error_msg + (check_ip4 (netmask) ? "" : _("Wrong netmask!\n"));
 				// To translators: error message
-		error_msg = error_msg + (check_ip4 (network) ? "" : UI(_("Wrong network!\n")));
+		error_msg = error_msg + (check_ip4 (network) ? "" : _("Wrong network!\n"));
 
 		if (size (error_msg) > 0)
 		{
-		    UI (`ErrorPopup (error_msg));
+		    UI::ErrorPopup (error_msg);
 		}
 	    }
 
 	} until ((error_msg == "" && ui == `ok) || ui == `cancel);
 
-	UI (`CloseDialog ());
+	UI::CloseDialog ();
 
 	return ui == `ok ? `item (`id (id), netmask, network) : nil;
     }
@@ -137,18 +137,18 @@
     global define QueryHosts () ``{
 
 	// help text 1/4
-	string helptext = UI (_("<p>Please enter which hosts are allowed to query the NIS server.</p>"));
+	string helptext = _("<p>Please enter which hosts are allowed to query the NIS server.</p>");
 	// help text 2/4
-	helptext = helptext + UI (_("<p>A host address will be allowed if <b>network</b> is equal
-to the  bitwise <i>AND</i> of the host's address and the <b>netmask</b>.</p>"));
+	helptext = helptext + _("<p>A host address will be allowed if <b>network</b> is equal
+to the  bitwise <i>AND</i> of the host's address and the <b>netmask</b>.</p>");
 	// help text 3/4
-	helptext = helptext + UI (_("<p>The entry with <b>netmask</b> <tt>255.0.0.0</tt> and <b>network</b>
+	helptext = helptext + _("<p>The entry with <b>netmask</b> <tt>255.0.0.0</tt> and <b>network</b>
 <tt>127.0.0.0</tt> must exist to allow connections from the local host.</p>
-"));
+");
 	// help text 4/4
-	helptext = helptext + UI (_("<p>If <b>netmask</b> <tt>0.0.0.0</tt> and <b>network</b> <tt>0.0.0.0</tt> is entered,
+	helptext = helptext + _("<p>If <b>netmask</b> <tt>0.0.0.0</tt> and <b>network</b> <tt>0.0.0.0</tt> is entered,
 it gives access to all hosts.</p>
-"));
+");
 
 	list allow_query = ItemizeSecurenets (lookup (user_settings, ".var.yp.securenets", []));
 	integer n_items = size (allow_query);
@@ -169,29 +169,29 @@ it gives access to all hosts.</p>
 
 
 				// To translators: dialog label
-	UI(`SetWizardContents (_("NIS Server Query Hosts Setup"), contents, helptext, true, true));
-	UI (`ChangeWidget (`id (`next), `Label, FinishButtonLabel()));
+	UI::SetWizardContents (_("NIS Server Query Hosts Setup"), contents, helptext, true, true);
+	UI::ChangeWidget (`id (`next), `Label, FinishButtonLabel());
 
 	symbol ui = nil;
 
 	repeat
 	{
-	    boolean anyitems = UI (`QueryWidget (`id (`table), `CurrentItem)) != nil;
-	    UI (`ChangeWidget (`id (`edit), `Enabled, anyitems));
-	    UI (`ChangeWidget (`id (`delete), `Enabled, anyitems));
+	    boolean anyitems = UI::QueryWidget (`id (`table), `CurrentItem) != nil;
+	    UI::ChangeWidget (`id (`edit), `Enabled, anyitems);
+	    UI::ChangeWidget (`id (`delete), `Enabled, anyitems);
 
-	    ui = UI (`UserInput ());
+	    ui = UI::UserInput ();
 
 	    if (ui == `delete)
 	    {
-		integer id = UI (`QueryWidget (`id (`table), `CurrentItem));
+		integer id = UI::QueryWidget (`id (`table), `CurrentItem);
 		allow_query = filter (`e, allow_query, ``(id != select (select (e, 0), 0)));
-		UI (`ChangeWidget(`id(`table), `Items, allow_query));
+		UI::ChangeWidget(`id(`table), `Items, allow_query);
 	    }
 
 	    else if (ui == `edit)
 	    {
-		integer id = UI (`QueryWidget (`id (`table), `CurrentItem));
+		integer id = UI::QueryWidget (`id (`table), `CurrentItem);
 		term item  = select (filter (`e, allow_query, ``(id == select (select (e, 0), 0))), 0);
 		item = NetsEditPopup (id, select (item, 1, ""), select (item, 2, ""));
 		if (item != nil)
@@ -199,7 +199,7 @@ it gives access to all hosts.</p>
 		    allow_query = maplist (`e, allow_query, ``{
 			return select(select (e, 0), 0) == id ? item : e;
 		    });
-		    UI (`ChangeWidget (`id (`table), `Items, allow_query));
+		    UI::ChangeWidget (`id (`table), `Items, allow_query);
 		}
 	    }
 
@@ -210,15 +210,15 @@ it gives access to all hosts.</p>
 		{
 		    n_items = n_items + 1;
 		    allow_query = add (allow_query, new_item);
-		    UI (`ChangeWidget (`id (`table), `Items, allow_query));
+		    UI::ChangeWidget (`id (`table), `Items, allow_query);
 		}
 	    }
 
-	    if (ui == `abort && !UI (`ReallyAbortPopup (true))) continue;
+	    if (ui == `abort && !UI::ReallyAbortPopup (true)) continue;
 	}
 	until (contains ([`back, `next, `abort], ui));
 
-	if (ui == `back) UI (`ChangeWidget (`id (`next), `Label, NextButtonLabel()));
+	if (ui == `back) UI::ChangeWidget (`id (`next), `Label, NextButtonLabel());
 
 	// and finally merge
 

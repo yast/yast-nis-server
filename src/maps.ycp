@@ -36,11 +36,11 @@
 
 
 	// help text 1/1
-	string helptext = UI (_("<p>This dialog allows you to adjust which maps will be available. The
+	string helptext = _("<p>This dialog allows you to adjust which maps will be available. The
 list named <i>Current</i> contains the list of maps that will be
 used. You can simply add some more maps from the list on the right side, named
 <i>Available</i>, or remove maps from the current list using the buttons with arrows.</p>
-"));
+");
 
 	list all = ["passwd", "group", "hosts", "rpc", "services", "netid", "protocols", "netgrp", "mail",
 		    "shadow", "publickey", "networks", "ethers", "bootparams", "printcap",
@@ -89,21 +89,21 @@ used. You can simply add some more maps from the list on the right side, named
 
 
 	// To translators: dialog label
-	UI (`SetWizardContents (_("NIS Server Maps Setup"), contents, helptext, true, true));
+	UI::SetWizardContents (_("NIS Server Maps Setup"), contents, helptext, true, true);
 
 	symbol ui = nil;
 
 	repeat
 	{
-	    UI (`ChangeWidget (`id (`add),    `Enabled, UI (`QueryWidget (`id (`remaining), `CurrentItem)) != nil));
-	    UI (`ChangeWidget (`id (`remove), `Enabled, UI (`QueryWidget (`id (`current), `CurrentItem)) != nil));
+	    UI::ChangeWidget (`id (`add),    `Enabled, UI::QueryWidget (`id (`remaining), `CurrentItem) != nil);
+	    UI::ChangeWidget (`id (`remove), `Enabled, UI::QueryWidget (`id (`current), `CurrentItem) != nil);
 
-	    ui = UI (`UserInput ());
+	    ui = UI::UserInput ();
 
 	    if (contains ([`add, `remove], ui))
 	    {
 		symbol box_id = ui == `add ? `remaining : `current;
-		string key = UI (`QueryWidget (`id (box_id), `CurrentItem));
+		string key = UI::QueryWidget (`id (box_id), `CurrentItem);
 
 		if (ui == `add)
 		{
@@ -116,15 +116,15 @@ used. You can simply add some more maps from the list on the right side, named
 		    current    = filter (`k, current, ``(k != key));
 		}
 
-		UI (`ReplaceWidget (`id (`replace_current),
+		UI::ReplaceWidget (`id (`replace_current),
 				// To translators: selectionbox label
-				    `SelectionBox (`id (`current), `opt (`notify), _("&Current"), sort (current))));
-		UI (`ReplaceWidget (`id (`replace_remaining),
+				    `SelectionBox (`id (`current), `opt (`notify), _("&Current"), sort (current)));
+		UI::ReplaceWidget (`id (`replace_remaining),
 				// To translators: selectionbox label
-				    `SelectionBox (`id (`remaining), `opt (`notify), _("A&vailable"), sort (remaining))));
+				    `SelectionBox (`id (`remaining), `opt (`notify), _("A&vailable"), sort (remaining)));
 	    }
 
-	    if (ui == `abort && !UI (`ReallyAbortPopup (true))) continue;
+	    if (ui == `abort && !UI::ReallyAbortPopup (true)) continue;
 
 	}
 	until (contains ([`back, `next, `abort], ui));
