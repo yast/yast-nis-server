@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Sun Aug 11 23:05:55 CEST 2002 - mvidner@suse.cz
+
+- Let the table keep the keyboard focus (#16116 workaround).
+- 2.6.8
+
+-------------------------------------------------------------------
 Sun Aug  4 00:20:28 CEST 2002 - schwab@suse.de
 
 - Fix requires.
