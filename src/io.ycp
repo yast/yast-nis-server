@@ -278,7 +278,7 @@
 	    });
 	}
 
-
+	boolean client = false;
 	if (contains ([`slave, `master], which))
 	{
 	    if (!SCR (`Write(.rc.system.START_PORTMAP, "yes")))
@@ -287,7 +287,7 @@
 		error_msg = error_msg + sformat (UI (_("Error setting up variable %1%\n")), "START_PORTMAP");
 	    }
 
-	    boolean client = lookup (user_settings, "ui_also_client", false);
+	    client = lookup (user_settings, "ui_also_client", false);
 	    if (!SCR (`Write(.rc.system.START_YPBIND, client ? "yes" : "no")))
 	    {
 		// To translators: message in the popup dialog
@@ -312,11 +312,6 @@
 		    // To translators: message in the popup dialog
 		    error_msg = error_msg + sformat (UI (_("Error setting up variable %1%\n")), "YP_SERVER");
 		}
-		if (SCR (`Execute (.target.bash, "/sbin/SuSEconfig --nonewpackage --module ypclient")) != 0)
-		{
-		    // To translators: message in the popup dialog
-		    error_msg = error_msg + UI (_("Error running SuSEconfig\n"));
-		}
 	    }
 	}
 
@@ -337,6 +332,14 @@
 	    {
 		// To translators: message in the popup dialog
 		error_msg = error_msg + sformat (UI (_("Error saving file %1\n")), "/var/yp/Makefile");
+	    }
+	}
+	if (client)
+	{
+	    if (SCR (`Execute (.target.bash, "/sbin/SuSEconfig --nonewpackage --module ypclient")) != 0)
+	    {
+		// To translators: message in the popup dialog
+		error_msg = error_msg + UI (_("Error running SuSEconfig\n"));
 	    }
 	}
 

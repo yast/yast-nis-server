@@ -13,8 +13,8 @@ Write	.rc.system.START_YPBIND "yes" true
 Write	.rc.system.YP_DOMAINNAME "thedomain" true
 Write	.rc.system.CREATE_YP_CONF "yes" true
 Write	.rc.system.YP_SERVER "127.0.0.1" true
-Execute	.target.bash "/sbin/SuSEconfig --nonewpackage --module ypclient" 0
 Write	.rc.system nil true
+Execute	.target.bash "/sbin/SuSEconfig --nonewpackage --module ypclient" 0
 Return	nil
 Dump	master
 Write	.rc.system.START_YPSERV "yes" true
@@ -26,8 +26,8 @@ Write	.rc.system.START_YPBIND "yes" true
 Write	.rc.system.YP_DOMAINNAME "thedomain" true
 Write	.rc.system.CREATE_YP_CONF "yes" true
 Write	.rc.system.YP_SERVER "127.0.0.1" true
-Execute	.target.bash "/sbin/SuSEconfig --nonewpackage --module ypclient" 0
 Write	.rc.system nil true
 Write	.rc.ypserver nil true
 Write	.var.yp.makefile nil true
+Execute	.target.bash "/sbin/SuSEconfig --nonewpackage --module ypclient" 0
 Return	nil
