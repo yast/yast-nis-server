@@ -168,7 +168,7 @@
     global define SaveSlaves () ``{
 	string error_msg     = lookup (user_settings, "error", "");
 
-	SCR (`Execute (.target.bash, "/bin/cp %1, %1.YaST2_backup", "/var/yp/ypservers"));
+	SCR (`Execute (.target.bash, sformat ("/bin/cp %1 %1.YaST2.save", "/var/yp/ypservers")));
 	if (SCR (`Write (.var.yp.ypservers, lookup (user_settings, ".var.yp.ypservers", []))) == nil)
 	{
 	    // To translators: message in the popup dialog
@@ -397,7 +397,7 @@
 
 	list securenets = lookup (user_settings, ".var.yp.securenets", []);
 
-	SCR (`Execute (.target.bash, "/bin/cp %1, %1.YaST2_backup", "/var/yp/securenets"));
+	SCR (`Execute (.target.bash, sformat ("/bin/cp %1 %1.YaST2.save", "/var/yp/securenets")));
 	if (SCR (`Write (.var.yp.securenets, securenets)) == nil)
 	{
 	    // To translators: message in the popup dialog
