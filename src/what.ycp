@@ -34,7 +34,7 @@
     global define WhatToConfigure () ``{
 
 	// help text 1/2
-	string helptext = _("<p>Select whether to configure the NIS server to be a <b>master</b> or a
+	string helptext = _("<p>Select whether to configure the NIS server as a <b>master</b> or a
 <b>slave</b> or not to configure a NIS server.</p>
 ");
 
@@ -58,12 +58,12 @@ configure it.</p>");
 	    labels = add (labels, `Left (`Label (_("No NIS Server is configured."))));
 
 				// To translators: label in the dialog
-	    master_setup_label = _("Set up a NIS &Master Server
-with previous software install
+	    master_setup_label = _("Install and set up  
+an NIS &Master Server
 ");
 				// To translators: label in the dialog
-	    slave_setup_label  = _("Set up a NIS &Slave Server
-with previous software install
+	    slave_setup_label  = _("Install and set up 
+an NIS &Slave Server
 ");
 				// To translators: label in the dialog
 	    none_setup_label   = _("&Do nothing and leave set up");
