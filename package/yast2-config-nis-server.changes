@@ -1,4 +1,15 @@
 -------------------------------------------------------------------
+Tue Jul 31 14:35:46 CEST 2001 - mvidner@suse.cz
+
+- New maintainer.
+- Temporary fix of an inconsistent testsuite.
+- Requires yast2-config-package-manager.
+- Some English corrections.
+- Added some doc comments.
+- Unified Add-Edit-Delete buttons.
+- Better enabling/disabling of buttons.
+
+-------------------------------------------------------------------
 Mon Jul 30 13:36:16 CEST 2001 - mvidner@suse.cz
 
 - Added missing files.
