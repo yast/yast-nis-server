@@ -17,14 +17,78 @@
 
 textdomain "nis_server";
 
+import "CommandLine";
+import "NisServer";
+import "RichText";
+import "Summary";
+
+include "nis_server/wizards.ycp";
+
 /* The main () */
 y2milestone ("----------------------------------------");
 y2milestone ("NisServer module started");
 
-include "nis_server/wizards.ycp";
+// --------------------------------------------------------------------------
+// --------------------------------- cmd-line handlers
 
-/* main ui function */
-any ret = NisServerSequence();
+/**
+ * Print summary of basic options
+ * @return boolean false
+ */
+define boolean NisServerSummaryHandler (map options ) {
+
+    if (! isYPServerConfigured ())
+    {
+	CommandLine::Print (_("No NIS Server is configured."));
+	return false;
+    }
+
+    CommandLine::Print (sformat (_("A NIS %1 Server is configured."),
+	NisServer::ui_what == `master ?  _("Master") : _("Slave")));
+
+    CommandLine::Print (sformat ("%1: %2", _("NIS Domain"),
+	NisServer::domain !=""? NisServer::domain : Summary::NotConfigured()));
+    // summary label:
+    CommandLine::Print (_("Available Maps: ") +
+	mergestring (NisServer::maps, " "));
+    if (NisServer::ui_what == `master)
+    {
+	// summary label:
+	CommandLine::Print (_("YP Source directory: ") + NisServer::pwd_srcdir);
+    }
+    return false; // do not call Write...
+}
+
+
+/* the command line description map */
+map cmdline = $[
+    "id"		: "nis-server",
+    // translators: command line help text for Ldap client module
+    "help"		: _("NIS client configuration module."),
+    "guihandler"	: NisServerSequence,
+    "initialize"	: NisServer::Read,
+    "finish"		: NisServer::Write,
+    "actions"		: $[
+	"summary" :$[
+	    "handler"	: NisServerSummaryHandler,
+	    // command line help text for 'summary' action
+	    "help"	: _("Configuration summary of NIS server")
+	],
+    ],
+    "options"		: $[
+	"domain"	:$[
+	    // command line help text for the 'domain' option
+	    "help"	: _("NIS domain"),
+	    "type"	: "string"
+	],
+    ],
+    "mappings"		: $[
+	"summary"	: [],
+    ]
+];
+
+any ret = CommandLine::Run (cmdline);
+
 y2debug("ret=%1", ret);
 
 /* Finish */
