@@ -1,10 +1,11 @@
 #
-# Makefile.cvs for nis_server module
+# Makefile.cvs
 #
 configure: all
 	./configure
 
 all:
+	y2tool y2autoconf
 	y2tool y2automake
 	aclocal
 	autoconf
