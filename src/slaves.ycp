@@ -61,6 +61,8 @@
 
     /**
      * Popup for adjusting slave
+     * @param slave	hostname
+     * @return string	hostname or nil if canceled
      */
     global define YPSlavePopup (string slave) ``{
 
