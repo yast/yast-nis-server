@@ -65,10 +65,10 @@
 
         output = SCR (`Execute (.target.bash_output, command));
         masterentry_hostname = select (splitstring (lookup (output, "stdout", ""), " "), 1, "");
-	masterentry_hostname = select (splitstring (masterentry_hostname, "."), 0);
+	masterentry_hostname = select (splitstring (deletechars (masterentry_hostname, "\n"), "."), 0);
         output = SCR (`Execute (.target.bash_output, "/usr/lib/yp/yphelper --hostname"));
         yphelper_hostname = lookup (output, "stdout", "");
-	yphelper_hostname = select (splitstring (yphelper_hostname, "."), 0);
+	yphelper_hostname = select (splitstring (deletechars (yphelper_hostname, "\n"), "."), 0);
 
         return masterentry_hostname == yphelper_hostname;
     }
