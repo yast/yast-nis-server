@@ -45,7 +45,7 @@
 	// Let's call a yp map a table, not to get too confused.
 
 	// All tables that ypserv Makefile knows about
-	list all = ["passwd", "group", "hosts", "rpc", "services",
+	list<string> all = ["passwd", "group", "hosts", "rpc", "services",
 		    "netid", "protocols", "netgrp", "mail", "shadow",
 		    "publickey", "networks", "ethers", "bootparams",
 		    "printcap", "amd.home", "auto.master",
@@ -55,7 +55,7 @@
 	// Assign a source file to all tables.
 	// Some tables are built of more files while we only check for one.
 	// Still it's better than no checking at all.
-	list passwd_tables = ["passwd", "group", "passwd.adjunct", "shadow"];
+	list<string> passwd_tables = ["passwd", "group", "passwd.adjunct", "shadow"];
 	string passwd_dir = NisServer::pwd_srcdir;
 	map files = listmap (string table, all,
 			     {return $[table : sformat ("/etc/%1",table)]; });
@@ -68,7 +68,7 @@
 
 	// We want to construct a list of items:
 	// `item (`id (table), table, true|false)
-	map enabled = listmap (string table, all, {return $[table : false];});
+	map<string,boolean> enabled = listmap (string table, all, {return $[table : false];});
 	// filter out tables that are merged or their sources don't exist
 	if (NisServer::merge_passwd)
 	{

@@ -167,7 +167,7 @@ global define boolean Read() ``{
     string title = _("Initializing NIS server setup");
     string progress_title = " ";
 
-    list files = [
+    list<string> files = [
 	"/var/yp/Makefile",
 	"/etc/sysconfig/ypserv",
 	"/etc/defaultdomain",
@@ -185,7 +185,7 @@ global define boolean Read() ``{
 
     Progress::New (title, progress_title, size (files) + 2,
 		   // To translators: progress label %1 is filename
-		   maplist (`file, files, ``(sformat (_("Load '%1' file"), file)))
+		   maplist (string file, files, ``(sformat (_("Load '%1' file"), file)))
 		   + [
 		       // Trans: progress label
 		       _("Determine running services"),
@@ -193,7 +193,7 @@ global define boolean Read() ``{
 		       _("Determine server type"),
 		       ],
 		   // To translators: progress label %1 is filename
-		   maplist (`file, files, ``(sformat (_("Loading '%1'..."), file)))
+		   maplist (string file, files, ``(sformat (_("Loading '%1'..."), file)))
 		   + [
 		       // Trans: progress label
 		       _("Determining running services"),
@@ -374,7 +374,7 @@ global define boolean Write() ``{
     string title = _("Saving NIS server setup");
     string progress_title = " ";
 
-    list save_list = GetSaveList (ui_what);
+    list<map> save_list = GetSaveList (ui_what);
     integer step = 0;
 
     // To translators: dialog title
@@ -459,14 +459,14 @@ global define void YPGetMaps () ``{
 	addError (sformat (_("Cannot get list of maps.\n")));
 	addErrorDetail (output["stderr"]:"");
     }
-    list running_maps = splitstring (output["stdout"]:"", "\n");
+    list<string> running_maps = splitstring (output["stdout"]:"", "\n");
     // the element after the last newline is empty, remove it
     if (size (running_maps) > 0)
     {
 	running_maps = remove (running_maps, size (running_maps) - 1);
     }
 
-    maplist (`map_name, running_maps, ``{
+    maplist (string map_name, running_maps, ``{
 	output = (map) SCR::Execute (.target.bash_output,
 			       sformat ("/usr/lib/yp/ypxfr -f -h %1 -d %2 %3",
 					master,
@@ -552,7 +552,7 @@ global define void SaveVariables (symbol which) ``{
 
     if (which == `master)
     {
-	map settings = $[
+	map<string,any> settings = $[
 	    ".sysconfig.ypserv.YPPWD_SRCDIR": pwd_srcdir,
 	    ".sysconfig.ypserv.YPPWD_CHFN": (pwd_chfn? "yes": "no"),
 	    ".sysconfig.ypserv.YPPWD_CHSH": (pwd_chsh? "yes": "no"),
@@ -596,8 +596,8 @@ global define void SaveVariables (symbol which) ``{
  */
 global define void YPDaemons (symbol workflow) ``{
     map output    = $[];
-    list to_stop  = [];
-    list to_start = [];
+    list<string> to_stop  = [];
+    list<string> to_start = [];
 
     if (workflow == `none)
     {
@@ -624,7 +624,7 @@ global define void YPDaemons (symbol workflow) ``{
 	}
     }
 
-    map services = listmap (string s, to_stop, ``{
+    map<string,string> services = listmap (string s, to_stop, ``{
 	return $[s : "disable"];
     });
     foreach (string s, to_start, ``{
