@@ -50,7 +50,7 @@
     }
 
     /**
-     * Determinates if the current host is YP master or not
+     * Determines if the current host is YP master or not
      * @return boolean
      */
     global define isYPMaster () ``{
@@ -67,6 +67,7 @@
 
     /**
      * Checks if the YP server software is installed
+     * by querying RPM for ypserv
      * @return boolean
      */       
     global define isYPServerInstalled () ``{
@@ -83,7 +84,7 @@
 
     /**
      * Decides whether slave exists
-     * @return boolean
+     * @return symbol `have_slave or `none_slave
      */
     global define SlaveExists () ``{
         if (toboolean (lookup (user_settings, ".var.yp.makefile.NOPUSH", false)))

@@ -9,6 +9,7 @@ htmldir = $(docdir)
 
 html_DATA = 			\
 	index.html		\
+	implementation.html	\
 	user_settings.txt
 
 EXTRA_DIST = $(html_DATA)

@@ -25,7 +25,7 @@ reduce depth, now uses prefixes instead.
 
 ".var.yp.ypservers"                     <list>
 
-"ui_what"                               <symbol>
+"ui_what"                               <symbol> `master `slave `none
 "ui_master_ip"                          <string>
 "ui_also_client"                        <boolean>
 

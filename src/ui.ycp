@@ -38,6 +38,7 @@
 
     /**
      * Popup to confirm after finish is pressed
+     * @return symbol `yes or `back
      */
     global define FinishPopup () ``{
 			       // To translators: ContinueCancel Popup
@@ -68,7 +69,9 @@
     }
 
     /**
-     * Dialog displayed during reading configuration
+     * Dialog displayed during reading configuration.
+     * Sets user_settings.
+     * @return symbol `next
      */
     global define ReadConfigDialog () ``{
 
@@ -191,6 +194,7 @@
     /**
      * Checks if the YP server package is installed
      * and calls installation if not
+     * @return symbol `master or `slave
      */
     global define InstallServer () ``{
 

@@ -30,6 +30,7 @@
 
     /**
      * Master dialog
+     * @return symbol `back, `abort, `next or `details
      */
     global define MasterDialog () ``{
 

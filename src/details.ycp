@@ -30,6 +30,7 @@
 
     /**
      * Details dialog
+     * @return symbol `back, `abort or `next
      */
     global define DetailsDialog () ``{
 
