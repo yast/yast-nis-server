@@ -838,8 +838,37 @@ global define boolean Import (map settings) ``{
  */
 global define map Export () ``{
     // TODO FIXME: your code here (return the above mentioned variables)...
-    sleep(3000);
-    return $[];
+    map settings = $[];
+    settings["domain"] = domain;
+    settings["minuid"]: minuid;
+    settings["mingid"]: mingid;
+    settings["merge_passwd"] =  merge_passwd;
+
+    settings["merge_group"] = merge_group;
+
+    list slaves = [];
+    if (is(ypservers, string))
+    {
+	slaves = [ypservers];
+    }
+    else
+	slaves = ypservers;
+
+    global boolean start_ypbind = false;
+
+
+    settings["start_ypbind"] = start_ypbind;
+
+    settings["start_ypxfrd"] = start_ypxfrd;
+    settings["start_yppasswdd"] = start_yppasswdd;
+    settings["maps_to_serve"] = maps;
+    settings["pwd_srcdir"] =  pwd_srcdir;
+    settings["slaves"] = slaves;
+    settings["pwd_chsh"] = pwd_chsh;
+    settings["pwd_chfn"] = pwd_chfn;
+    settings["nopush"] = nopush;
+    settings["securenets"] = securenets;
+    return settings;
 }
 
 /**
