@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon Mar  8 19:42:01 CET 2004 - lslezak@suse.cz
+
+- use Sequencer::
+- set icon
+- version 2.9.5
+
+-------------------------------------------------------------------
 Mon Mar  8 13:49:31 CET 2004 - mvidner@suse.cz
 
 - switched from Runlevel to Service
