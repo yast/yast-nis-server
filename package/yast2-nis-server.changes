@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Jun 17 10:46:18 CEST 2004 - mvidner@suse.cz
+
+- Added "testedfiles" to test cases to make it work with the new testsuite.
+- 2.10.0
+
+-------------------------------------------------------------------
 Fri Jun  4 15:15:32 CEST 2004 - mvidner@suse.cz
 
 - Fixed editing and deleting securenets entries (#41493).
