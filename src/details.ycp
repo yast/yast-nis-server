@@ -82,6 +82,7 @@ file.</p>"));
                                 // To translators: intfield label
         minimals = add (minimals, `IntField (`id (`minuid), _("Minimal &UID"), 0, 50000,
                                              tointeger(lookup (user_settings, ".var.yp.makefile.MINUID", 100))));
+	minimals = add (minimals, `HSpacing ());
                                 // To translators: intfield label
         minimals = add (minimals, `IntField (`id (`mingid), _("Minimal &GUID"), 0, 50000,
                                              tointeger(lookup (user_settings, ".var.yp.makefile.MINGID", 100))));
