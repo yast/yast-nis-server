@@ -23,7 +23,7 @@
 
     textdomain "nis_server";
 
-    include "ui/wizard_dialog.ycp";
+    import "Wizard";
     include "ui/common_popups.ycp";
 
     include "nis_server/routines.ycp";
@@ -101,7 +101,7 @@ file.</p>");
 	contents = `HVSquash (contents);
 
 				// To translators: dialog label
-	UI::SetWizardContents (_("NIS Master Server Details Setup"), contents, helptext, true, true);
+	Wizard::SetContents (_("NIS Master Server Details Setup"), contents, helptext, true, true);
 				// To translators: button label
 	UI::ChangeWidget (`id (`next), `Label, OKButtonLabel());
 

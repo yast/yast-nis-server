@@ -23,7 +23,7 @@
 
     textdomain "nis_server";
 
-    include "ui/wizard_dialog.ycp";
+    import "Wizard";
     include "ui/common_popups.ycp";
 
     include "nis_server/routines.ycp";
@@ -89,7 +89,7 @@ used. You can simply add some more maps from the list on the right side, named
 
 
 	// To translators: dialog label
-	UI::SetWizardContents (_("NIS Server Maps Setup"), contents, helptext, true, true);
+	Wizard::SetContents (_("NIS Server Maps Setup"), contents, helptext, true, true);
 
 	symbol ui = nil;
 

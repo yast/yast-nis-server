@@ -23,7 +23,7 @@
 
     textdomain "nis_server";
 
-    include "ui/wizard_dialog.ycp";
+    import "Wizard";
     include "ui/common_popups.ycp";
 
     include "nis_server/routines.ycp";
@@ -132,7 +132,7 @@ with previous software install
 	contents = add (contents, `VStretch ());
 
 	// To translators: dialog label
-	UI::SetWizardContents (_("Network Information Service (NIS) Server Setup"), contents, helptext, true, true);
+	Wizard::SetContents (_("Network Information Service (NIS) Server Setup"), contents, helptext, true, true);
 
 	symbol ui = nil;
 	symbol current_button = nil;
@@ -144,12 +144,12 @@ with previous software install
 	    if (ui == `none)
 	    {
 		// To translators: button label
-		UI::ReplaceWizardNextButton(`PushButton (`id (`finish), `opt (`default), FinishButtonLabel()));
+		Wizard::ReplaceNextButton(`PushButton (`id (`finish), `opt (`default), FinishButtonLabel()));
 		UI::SetFocus (`id (`finish));
 	    }
 	    else if (contains ([`master, `slave], ui))
 	    {
-		UI::RestoreWizardNextButton();
+		Wizard::RestoreNextButton();
 		UI::SetFocus (`id (`next));
 	    }
 

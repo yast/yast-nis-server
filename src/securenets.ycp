@@ -24,7 +24,7 @@
 
     textdomain "nis_server";
 
-    include "ui/wizard_dialog.ycp";
+    import "Wizard";
     include "ui/common_popups.ycp";
     include "network/ip.ycp";
 
@@ -169,7 +169,7 @@ it gives access to all hosts.</p>
 
 
 				// To translators: dialog label
-	UI::SetWizardContents (_("NIS Server Query Hosts Setup"), contents, helptext, true, true);
+	Wizard::SetContents (_("NIS Server Query Hosts Setup"), contents, helptext, true, true);
 	UI::ChangeWidget (`id (`next), `Label, FinishButtonLabel());
 
 	symbol ui = nil;
