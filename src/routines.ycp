@@ -72,10 +72,12 @@
 	    list<string> running_maps_str = maplist (map m, running_maps, ``(m["map"]:""));
 	    if (contains (running_maps_str, "ypservers"))
 	    {
-		string slaves = lookup ((map)SCR::Execute (.target.bash_output, "/usr/bin/ypcat ypservers"), "stdout", "");
+		map out	= (map)SCR::Execute (.target.bash_output, "/usr/bin/ypcat ypservers");
+		string slaves = out["stdout"]:"";
 		if (slaves != nil)
 		{
-		    string hostname = lookup ((map)SCR::Execute (.target.bash_output, "/usr/lib/yp/yphelper --hostname"), "stdout", "");
+		    out	= (map)SCR::Execute (.target.bash_output, "/usr/lib/yp/yphelper --hostname");
+		    string hostname = out["stdout"]:"";
 		    if (hostname == "")
 		    {
 			return false;

@@ -44,7 +44,7 @@ y2debug("param=%1", param);
 
 /* Create a summary*/
 if(func == "Summary") {
-    ret = select(NisServer::Summary(), 0 , "");
+    ret = NisServer::Summary()[0]:"";
 }
 /* Reset configuration */
 else if (func == "Reset") {
