@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon Feb  3 17:31:30 CET 2003 - mvidner@suse.de
+
+- Added autoyast funcitionality (nashif).
+- Converted to a standard structure with a NisServer module.
+- 2.7.1
+
+-------------------------------------------------------------------
 Wed Jan 15 13:04:23 CET 2003 - mvidner@suse.de
 
 - Added function key shortcuts in ncurses.
