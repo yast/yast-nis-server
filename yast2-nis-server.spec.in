@@ -1,18 +1,15 @@
-## yast2-nis-server.spec.in, processed by y2tool create-spec,
-## invoked automatically from Makefile.am
 @HEADER-COMMENT@
-
 # neededforbuild yast2-devel-packages yast2-runlevel
-@HEADER@
 
-Summary:	YaST2 nis server configuration module
-Requires:	yast2
-Requires:	yast2-runlevel
-Requires:	yast2-packager
-Requires:	yast2-network
+@HEADER@
+Requires:	yast2 yast2-runlevel yast2-packager yast2-network
+
 Provides:	yast2-nis-server
 Obsoletes:	yast2-nis-server
+
 BuildArchitectures:	noarch
+
+Summary:	Configuration of NIS server
 
 %description
 -
