@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Aug 16 10:01:10 CEST 2004 - jsuchome@suse.cz
+
+- do not create gshadow file (#42646)
+- 2.10.2
+
+-------------------------------------------------------------------
 Tue Aug 10 09:10:39 CEST 2004 - jsuchome@suse.cz
 
 - merged proofread texts
