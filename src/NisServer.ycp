@@ -416,16 +416,20 @@ global define boolean Write() ``{
     foreach (map save_item, save_list, ``{
 	Progress::NextStage ();
 	list<any> fl = save_item["function"]:[];
-	y2milestone ("Calling: %1", fl);
+	y2debug ("Calling: %1", fl);
 	if (size (fl) == 1)
 	{
 	    void () fp = (void ()) fl[0]:nil;
 	    fp ();
 	}
-	else if (size (fl) == 1)
+	else if (size (fl) == 2)
 	{
 	    void (any) fp = (void (any)) fl[0]:nil;
 	    fp (fl[1]:nil);
+	}
+	else
+	{
+	    y2internal ("Bad save list item %1", fl);
 	}
     });
 

@@ -5,6 +5,12 @@ Fri Jun  4 15:15:32 CEST 2004 - mvidner@suse.cz
 - Prevented aborting after some error popups.
 
 -------------------------------------------------------------------
+Fri May  7 16:21:36 CEST 2004 - mvidner@suse.cz
+
+- Fixed a typo that made Write unfunctional (#40086)
+- 2.9.9
+
+-------------------------------------------------------------------
 Fri Apr  2 15:14:48 CEST 2004 - mvidner@suse.cz
 
 - changed license to GPL
