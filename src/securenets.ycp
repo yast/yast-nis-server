@@ -37,15 +37,12 @@
 	list not_comment = filter (`e, nets, ``(haskey (e, "netmask") || haskey (e, "network")));
 	list result = [];
 	integer i = 0;
-	map element = $[];
-	while (i < size (not_comment))
-	{
-	    element = select (not_comment, i, $[]);
+	foreach (map element, not_comment, ``{
 	    result = add (result, `item (`id (i),
 					 lookup (element, "netmask", ""),
 					 lookup (element, "network", "")));
 	    i = i + 1;
-	}
+	});
 	return result;
     }
 
@@ -114,7 +111,7 @@
 		netmask = UI::QueryWidget (`id (`netmask), `Value);
 		network = UI::QueryWidget (`id (`network), `Value);
 				// To translators: error message
-		error_msg = error_msg + (check_ip4 (netmask) ? "" : _("Wrong netmask!\n"));
+		error_msg = error_msg + (check_netmask (netmask) ? "" : _("Wrong netmask!\n"));
 				// To translators: error message
 		error_msg = error_msg + (check_ip4 (network) ? "" : _("Wrong network!\n"));
 
@@ -185,19 +182,19 @@ it gives access to all hosts.</p>
 	    if (ui == `delete)
 	    {
 		integer id = UI::QueryWidget (`id (`table), `CurrentItem);
-		allow_query = filter (`e, allow_query, ``(id != select (select (e, 0), 0)));
+		allow_query = filter (`e, allow_query, ``(id != select (select (e, 0, []), 0, -1)));
 		UI::ChangeWidget(`id(`table), `Items, allow_query);
 	    }
 
 	    else if (ui == `edit)
 	    {
 		integer id = UI::QueryWidget (`id (`table), `CurrentItem);
-		term item  = select (filter (`e, allow_query, ``(id == select (select (e, 0), 0))), 0);
+		term item  = find (`e, allow_query, ``(id == select (select (e, 0, []), 0, -1)));
 		item = NetsEditPopup (id, select (item, 1, ""), select (item, 2, ""));
 		if (item != nil)
 		{
 		    allow_query = maplist (`e, allow_query, ``{
-			return select(select (e, 0), 0) == id ? item : e;
+			return select (select (e, 0, []), 0, -1) == id ? item : e;
 		    });
 		    UI::ChangeWidget (`id (`table), `Items, allow_query);
 		}
