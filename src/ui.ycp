@@ -1,6 +1,6 @@
 /**
  *
- * File:             
+ * File:
  *   ui.ycp
  *
  * Module:
@@ -9,7 +9,7 @@
  * Summary:
  *   YPServer module.
  *
- * Authors:            
+ * Authors:
  *   Dan Vesely <dan@suse.cz>
  *
  * $Id$
@@ -40,10 +40,10 @@
      * Popup to confirm after finish is pressed
      */
     global define FinishPopup () ``{
-                               // To translators: ContinueCancel Popup
-        if (UI (`ContinueCancelHeadlinePopup (_("Finish"), _("Really save configuration ?"))))
-            return `yes;
-        return `back;
+			       // To translators: ContinueCancel Popup
+	if (UI (`ContinueCancelHeadlinePopup (_("Finish"), _("Really save configuration ?"))))
+	    return `yes;
+	return `back;
     }
 
     /**
@@ -51,10 +51,10 @@
      */
     global define ExitPopup () ``{
 
-                                // To translators: ContinueCancel Popup
-        if (UI (`ContinueCancelHeadlinePopup (_("Exit"), _("Really exit configuration without saving ?"))))
-            return `exit;
-        return `back;
+				// To translators: ContinueCancel Popup
+	if (UI (`ContinueCancelHeadlinePopup (_("Exit"), _("Really exit configuration without saving ?"))))
+	    return `exit;
+	return `back;
     }
 
     /**
@@ -62,9 +62,9 @@
      */
     global define DetailsPopup () ``{
 
-                                // To translators: popup label
-        UI (`LongTextPopup (_("Error details"), `RichText (lookup (user_settings, "error_details", "")), 50, 20 ));
-        return `ok;
+				// To translators: popup label
+	UI (`LongTextPopup (_("Error details"), `RichText (lookup (user_settings, "error_details", "")), 50, 20 ));
+	return `ok;
     }
 
     /**
@@ -72,54 +72,54 @@
      */
     global define ReadConfigDialog () ``{
 
-        // help text 1/1
-        locale help = UI (_("<p>Please wait while reading the configuration.</p>"));
-        locale title = UI (_("Initializing NIS server setup"));
-        locale progress_title = "";
+	// help text 1/1
+	locale help = UI (_("<p>Please wait while reading the configuration.</p>"));
+	locale title = UI (_("Initializing NIS server setup"));
+	locale progress_title = "";
 
-        list files = [
-            "/var/yp/Makefile", 
-            "/etc/rc.config.d/ypserv.rc.config",
-            "/etc/rc.config",
-            "/var/yp/securenets",
-            "/var/yp/ypservers"
-            ];
-        list vars = [
-            ``(YPMakefileVars ()),
-            ``(YPServerVars ()),
-            ``(YPSystemVars ()),
-            ``(YPSecurenets ()),
-            ``(YPServers ())
-            ];
-                                // To translators: dialog title
-        ProgressSetup (title, progress_title, size (files),
-                       // To translators: progress label %1 is filename
-                       maplist (`file, files, ``(sformat (UI (_("Load '%1' file")), file))),
-                       help);
+	list files = [
+	    "/var/yp/Makefile",
+	    "/etc/rc.config.d/ypserv.rc.config",
+	    "/etc/rc.config",
+	    "/var/yp/securenets",
+	    "/var/yp/ypservers"
+	    ];
+	list vars = [
+	    ``(YPMakefileVars ()),
+	    ``(YPServerVars ()),
+	    ``(YPSystemVars ()),
+	    ``(YPSecurenets ()),
+	    ``(YPServers ())
+	    ];
+				// To translators: dialog title
+	ProgressSetup (title, progress_title, size (files),
+		       // To translators: progress label %1 is filename
+		       maplist (`file, files, ``(sformat (UI (_("Load '%1' file")), file))),
+		       help);
 
-        integer i = 0;
-        while (i < size (files))
-        {
-            // To translators: progress label %1 is filename
-            locale msg = sformat (UI (_("Loading '%1'...")), select (files, i));
-            ProgressMilestone (i, msg, i);
-            user_settings = user_settings + ReadPathFile (eval (select (vars, i)), select (files, i));
-            i = i + 1;
-        }
-        
-        user_settings = add (user_settings, "ui_also_client",
-                             lookup (user_settings, ".rc.system.YPBIND_START", "yes") == "yes");
+	integer i = 0;
+	while (i < size (files))
+	{
+	    // To translators: progress label %1 is filename
+	    locale msg = sformat (UI (_("Loading '%1'...")), select (files, i));
+	    ProgressMilestone (i, msg, i);
+	    user_settings = user_settings + ReadPathFile (eval (select (vars, i)), select (files, i));
+	    i = i + 1;
+	}
 
-        if (!isYPServerInstalled ()) 
-        {
-            user_settings = add (user_settings, "ui_what", `none);
-        }
-        else 
-        {
-            user_settings = add (user_settings, "ui_what", isYPMaster () ? `master : `slave);
-        }
+	user_settings = add (user_settings, "ui_also_client",
+			     lookup (user_settings, ".rc.system.YPBIND_START", "yes") == "yes");
 
-        return `next;
+	if (!isYPServerInstalled ())
+	{
+	    user_settings = add (user_settings, "ui_what", `none);
+	}
+	else
+	{
+	    user_settings = add (user_settings, "ui_what", isYPMaster () ? `master : `slave);
+	}
+
+	return `next;
     }
 
     /**
@@ -127,37 +127,39 @@
      */
     global define SavingDialog () ``{
 
-        // help text 1/1
-        locale help = UI (_("<p>Please wait until the configuration is saved.</p>"));
-        locale title = UI (_("Saving NIS server setup"));
-        locale progress_title = "";
+	// help text 1/1
+	locale help = UI (_("<p>Please wait until the configuration is saved.</p>"));
+	locale title = UI (_("Saving NIS server setup"));
+	locale progress_title = "";
+        locale progress_label = "";
+	UI (`RestoreWizardNextButton());
+	UI (`ChangeWidget (`id (`next), `Enabled, false));
+	UI (`ChangeWidget (`id (`abort), `Enabled, false));
 
-        UI (`RestoreWizardNextButton());
-        UI (`ChangeWidget (`id (`next), `Enabled, false));
-        UI (`ChangeWidget (`id (`abort), `Enabled, false));
+	symbol workflow = lookup (user_settings, "ui_what");
+	list save_list = GetSaveList (workflow);
+	integer step = 0;
 
-        symbol workflow = lookup (user_settings, "ui_what");
-        list save_list = GetSaveList (workflow);
-        integer step = 0;
+	// To translators: dialog title
+	ProgressSetup (title, progress_title, size (save_list),
+		       maplist (`e, save_list, ``(lookup (e, "save_label", ""))), help);
+        
+	while (step < size (save_list))
+	{
+	    map save_item = select (save_list, step, $[]);
+	    progress_label = lookup (save_item, "progress_label", "");
+	    ProgressMilestone (step, progress_label, step);
+	    y2milestone ("Calling: %1", lookup (save_item, "function", ""));
+	    //sleep (1000);
+	    eval (lookup (save_item, "function", ""));
+	    step = step + 1;
+	}
 
-        // To translators: dialog title
-        ProgressSetup (title, progress_title, size (save_list), 
-                       maplist (`e, save_list, ``(lookup (e, "save_label", ""))), help);
+	// To translators: progress message
+        progress_label = _("Done.");
+	ProgressMilestone (step + 1, progress_label, step);
 
-        while (step < size (save_list))
-        {
-            map save_item = select (save_list, step, $[]);
-            ProgressMilestone (step, lookup (save_item, "progress_label", ""), step);
-            y2milestone ("Calling: %1", lookup (save_item, "function", ""));
-            //sleep (1000);
-            eval (lookup (save_item, "function", ""));
-            step = step + 1;
-        }
-
-        // To translators: progress message
-        ProgressMilestone (step + 1, _("Done."), step);
-
-        return `done;
+	return `done;
     }
 
     /**
@@ -165,25 +167,25 @@
      */
     global define ResultPopup () ``{
 
-        string message = "";
-        if (size (lookup (user_settings, "error", "")) > 0)
-        {
-                                // To translators: popup label
-            message = sformat (UI (_("Error during configuration:\n%1")), 
-                               lookup (user_settings, "error", ""));
+	string message = "";
+	if (size (lookup (user_settings, "error", "")) > 0)
+	{
+				// To translators: popup label
+	    message = sformat (UI (_("Error during configuration:\n%1")),
+			       lookup (user_settings, "error", ""));
 
-                                // To translators: Error popup
-            return UI (`AnyQuestionPopup (_("Error"), message, _("&Ok"), _("&Details"), `focus_yes)) ? `ok : `details;
-            //UI (`ErrorPopup (message));
-        }
-        else 
-        {
-                                // To translators: final popup
-            message = UI (_("The configuration was succesful!"));
-            UI (`NotifyPopup (message));
-        }
+				// To translators: Error popup
+	    return UI (`AnyQuestionPopup (_("Error"), message, _("&Ok"), _("&Details"), `focus_yes)) ? `ok : `details;
+	    //UI (`ErrorPopup (message));
+	}
+	else
+	{
+				// To translators: final popup
+	    message = UI (_("The configuration was succesful!"));
+	    UI (`NotifyPopup (message));
+	}
 
-        return `ok;
+	return `ok;
     }
 
     /**
@@ -191,24 +193,24 @@
      * and calls installation if not
      */
     global define InstallServer () ``{
-        
-        if (isYPServerInstalled ())
-        {
-            return lookup (user_settings, "ui_what", `master);
-        }
-        
-        map script = $[
-            "userInput" : false,
-            "install"   : ["ypserv"],
-            "delete"    : []
-            ];
 
-        string file = SCR (`Read (.target.tmpdir));
-        file = file + "/ypserv.sw_single";
-        SCR (`Write (.target.ycp, file, script));
-        CallFunction (`sw_single (file));
+	if (isYPServerInstalled ())
+	{
+	    return lookup (user_settings, "ui_what", `master);
+	}
+
+	map script = $[
+	    "userInput" : false,
+	    "install"   : ["ypserv"],
+	    "delete"    : []
+	    ];
+
+	string file = SCR (`Read (.target.tmpdir));
+	file = file + "/ypserv.sw_single";
+	SCR (`Write (.target.ycp, file, script));
+	CallFunction (`sw_single (file));
 
 
-        return lookup (user_settings, "ui_what", `master);
+	return lookup (user_settings, "ui_what", `master);
     }
 }
