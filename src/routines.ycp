@@ -120,7 +120,7 @@ settings and consider not running a DHCP client on a NIS server.
     define map<string,any> GetFirewallWidget () {
 
 	map<string,any> settings = $[
-	    "services" : [ "portmap" ],
+	    "services"	: [ "nis-server" ],
 	    "display_details" : true,
 	    // firewall openning help
 	    "help" : _("<p><b>Firewall Settings</b><br>
