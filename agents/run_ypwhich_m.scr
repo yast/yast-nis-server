@@ -18,7 +18,7 @@
 .run.ypwhich_m
 
 `ag_anyagent(
-  SCR::AnyAgent (
+  Description (
       ``(Run("/usr/bin/ypwhich -m")),	// real file name
       "\n",			// Comment
       true,			// read-only

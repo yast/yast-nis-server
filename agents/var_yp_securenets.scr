@@ -25,7 +25,7 @@
 .var.yp.securenets
 
 `ag_anyagent(
-  SCR::AnyAgent (
+  Description (
   ``(File ("/var/yp/securenets")),	// real file name
   "\n",                                   // Comment
   false,                                // read-only

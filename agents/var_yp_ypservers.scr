@@ -23,7 +23,7 @@
 .var.yp.ypservers
 
 `ag_anyagent(
-  SCR::AnyAgent (
+  Description (
   ``(File ("/var/yp/ypservers")),	// real file name
   "\n",                                   // Comment
   false,                                // read-only
