@@ -369,14 +369,16 @@
      * Calls NIS client configuration writing
      */
     global define void Client () ``{
+	import "Nis";
+
 	string error_msg = lookup (user_settings, "error", "");
 	map c = $[
-	    "start":	user_settings["start_ypbind"]:false,
-	    "domain":	user_settings[".etc.defaultdomain"]:"",
-	    "servers":	[ "127.0.0.1" ],
+	    "start_nis":	user_settings["start_ypbind"]:false,
+	    "nis_domain":	user_settings[".etc.defaultdomain"]:"",
+	    "nis_servers":	[ "127.0.0.1" ],
 	    ];
 
-	boolean ok = CallFunction (`nis_write (c));
+	boolean ok =  Nis::Import (c) && Nis::Write (false);
 	if (!ok)
 	{
 	    // To translators: message in the popup dialog
