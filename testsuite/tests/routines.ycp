@@ -11,6 +11,8 @@
  */
 
 {
+    // testedfiles: routines.ycp NisServer.ycp Testsuite.ycp
+
     include "testsuite.ycp";
     import "NisServer";
     include "nis_server/routines.ycp";
