@@ -25,6 +25,7 @@
     textdomain "nis_server";
 
     import "Wizard";
+    import "Nis";		// check_nisdomainname
     include "ui/common_popups.ycp";
     include "network/dns.ycp";
 
@@ -115,11 +116,13 @@ be used to set up these more specific options.</p>
 	UI::ChangeWidget (`id (`allow_gecos), `Enabled, a);
 
 	symbol ui = nil;
-	string error_msg = "";
 	repeat
 	{
-	    error_msg = "";
 	    ui = UI::UserInput ();
+	    if (ui == `cancel)
+	    {
+		ui = `abort;
+	    }
 
 	    if (ui == `change_passwords)
 	    {
@@ -131,18 +134,18 @@ be used to set up these more specific options.</p>
 	    else if (ui == `next)
 	    {
 		string domainname = UI::QueryWidget (`id (`domain), `Value);
-				// To translators: error message
-		error_msg = error_msg + ((check_domainname (domainname)) ? "" : _("Wrong domain!\n"));
 
-		if (size (error_msg) > 0)
+		if (!Nis::check_nisdomainname (domainname))
 		{
-		    UI::ErrorPopup (error_msg);
+		    UI::SetFocus (`id (`domain));
+		    UI::ErrorPopup (Nis::valid_nisdomainname ());
+		    ui = nil;
 		}
 	    }
 
 	    if (ui == `abort && !UI::ReallyAbortPopup (true)) continue;
 	}
-	until ((ui == `next && size (error_msg) == 0) || contains ([`back, `abort, `details], ui));
+	until (contains ([`next, `back, `abort, `details], ui));
 
 	user_settings = add (user_settings, "start_ypbind", UI::QueryWidget (`id (`also_client), `Value));
 	user_settings = add (user_settings, ".var.yp.makefile.NOPUSH",

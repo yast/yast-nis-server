@@ -61,32 +61,37 @@
 	Wizard::SetContents (_("Network Information Service -- Slave Server Setup"), contents, helptext, true, true);
 
 	symbol ui = nil;
-	string error_msg = "";
 
 	repeat
 	{
-	    error_msg = "";
 	    ui = UI::UserInput ();
+	    if (ui == `cancel)
+	    {
+		ui = `abort;
+	    }
 
 	    if (ui == `next)
 	    {
 		string master_ip  = UI::QueryWidget (`id (`master_ip), `Value);
 		string domainname = UI::QueryWidget (`id (`domain), `Value);
-				// To translators: error message
-		//master_ip can now be a hostname (retrieved from a map)
-		//error_msg = error_msg + ((check_ip4 (master_ip)) ? "" : _("Wrong master IP address!\n"));
-				// To translators: error message
-		error_msg = error_msg + ((check_domainname (domainname)) ? "" : _("Wrong domain!\n"));
-
-		if (size (error_msg) > 0)
+		if (!check_address (master_ip))
 		{
-		    UI::ErrorPopup (error_msg);
+		    // To translators: error message
+		    UI::SetFocus (`id (`master_ip));
+		    UI::ErrorPopup (valid_address ());
+		    ui = nil;
+		}
+		else if (!Nis::check_nisdomainname (domainname))
+		{
+		    UI::SetFocus (`id (`domain));
+		    UI::ErrorPopup (Nis::valid_nisdomainname ());
+		    ui = nil;
 		}
 	    }
 
 	    if (ui == `abort && !UI::ReallyAbortPopup (true)) continue;
 	}
-	until ((ui == `next && size (error_msg) == 0) || contains ([`back, `abort], ui));
+	until (contains ([`next, `back, `abort], ui));
 
 	user_settings = add (user_settings, "ui_master_ip", UI::QueryWidget (`id (`master_ip), `Value));
 	user_settings = add (user_settings, "start_ypbind", UI::QueryWidget (`id (`also_client), `Value));
