@@ -32,32 +32,6 @@
     include "nis_server/routines.ycp";
 
     /**
-     * Checks if this host is in the slaves list on master
-     * @return boolean 
-     */
-    global define hasMasterThisSlave () ``{
-        list running_maps = SCR (`Read (.run.ypwhich_m));
-        if (running_maps != nil)
-        {
-            running_maps = maplist (`m, running_maps, ``(lookup (m, "map")));
-            if (contains (running_maps, "ypservers"))
-            {
-                string slaves = lookup (SCR (`Execute (.target.bash_output, "/usr/bin/ypcat ypservers")), "stdout");
-                if (slaves != nil)
-                {
-                    string hostname = lookup (SCR (`Execute (.target.bash_output, "/usr/lib/yp/yphelper --hostname")), "stdout");
-                    hostname = substring (hostname, 0, size (hostname) - 1);
-                    if (contains (splitstring (slaves, "\n"), hostname))
-                    {
-                        return true;
-                    }
-                }
-            }
-        }
-        return false;
-    }
-
-    /**
      * Slave dialog
      * @return symbol `back, `abort or `next
      */
@@ -86,12 +60,6 @@
                                 // To translators: dialog label
         UI(`SetWizardContents (_("Network Information Service - Slave Server Setup"), contents, helptext, true, true));
 
-        if (!hasMasterThisSlave ()) 
-        {
-            // To translators: warning popup
-            UI (`WarningPopup (_("This host is not in the ypservers list.")));
-        }
-        
         symbol ui = nil;
         string error_msg = "";
         
