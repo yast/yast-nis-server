@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed Jul 31 19:03:19 CEST 2002 - mvidner@suse.cz
+
+- Added comments for translators
+- yast2-runlevel is no longer required.
+- 2.6.7
+
+-------------------------------------------------------------------
 Fri Jul 19 18:02:58 CEST 2002 - mvidner@suse.cz
 
 - Moved sysconfig/ypserv definition to yast2.rpm to share it with yast2-users.
