@@ -188,8 +188,18 @@
 	string error_msg     = lookup (user_settings, "error", "");
 	string error_details = lookup (user_settings, "error_details", "");
 	string dn = lookup (user_settings, ".rc.system.YP_DOMAINNAME");
-	map output = SCR (`Execute (.target.bash_output, "/usr/bin/make -e -C /var/yp", 
-				    $["NOPUSH" : "true", "LOCALDOMAIN" : dn]));
+
+	map output = SCR (`Execute (.target.bash_output, sformat ("/usr/bin/make -C /var/yp/%1 -f ../Makefile NOPUSH=true ypservers", dn)));
+
+	if (size (lookup (output, "stderr", "")) > 0)
+	{
+	    // FIXME: Error while creating ypservers
+	    // To translators: message in the popup dialog
+	    error_msg = error_msg + sformat (UI (_("Error while creating database.\n")));
+	    error_details = error_details + sformat ("<pre>%1</pre>", lookup (output, "stderr", ""));
+	}
+
+	output = SCR (`Execute (.target.bash_output, sformat ("/usr/bin/make -C /var/yp NOPUSH=true LOCALDOMAIN=%1", dn)));
 
 	if (size (lookup (output, "stderr", "")) > 0)
 	{
