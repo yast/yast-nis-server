@@ -826,8 +826,32 @@ global define list(map) GetSaveList (symbol workflow) ``{
  * @return boolean True on success
  */
 global define boolean Import (map settings) ``{
-    // TODO FIXME: your code here (fill the above mentioned variables)...
-    sleep(3000);
+    domain = settings["domain"]:"";
+    minuid = settings["minuid"]:0;
+    mingid = settings["mingid"]:0;
+    
+    merge_passwd = settings["merge_passwd"]:false;
+
+    merge_group = settings["merge_group"]:false;
+    ypservers = settings["slaves"]:[];
+
+        
+    start_ypbind = settings["start_ypbind"]:false;
+
+    start_ypxfrd = settings["start_ypxfrd"]:false;
+    start_yppasswdd  = settings["start_yppasswdd"]:false;
+
+  
+
+    maps = settings["maps_to_serve"]:[];
+    
+    pwd_srcdir = settings["pwd_srcdir"]:"";
+   
+    pwd_chsh =  settings["pwd_chsh"]:false;
+    pwd_chfn =   settings["pwd_chfn"]:false;
+    nopush = settings["nopush"]:false;
+    securenets =  settings["securenets"]:[];
+    
     return true;
 }
 
@@ -852,7 +876,9 @@ global define map Export () ``{
 	slaves = [ypservers];
     }
     else
+    {
 	slaves = ypservers;
+    }
 
     global boolean start_ypbind = false;
 
@@ -861,7 +887,17 @@ global define map Export () ``{
 
     settings["start_ypxfrd"] = start_ypxfrd;
     settings["start_yppasswdd"] = start_yppasswdd;
-    settings["maps_to_serve"] = maps;
+
+    if (is(maps, string))
+    {
+	settings["maps_to_serve"] = [maps];
+    }
+    else
+    {
+	settings["maps_to_serve"] = maps;
+    }
+
+    
     settings["pwd_srcdir"] =  pwd_srcdir;
     settings["slaves"] = slaves;
     settings["pwd_chsh"] = pwd_chsh;
@@ -877,8 +913,15 @@ global define map Export () ``{
  * @return summary of the current configuration
  */
 global define list Summary() ``{
-    // TODO FIXME: your code here...
-    return [ _("Configuration summary ..."), [] ];
+
+    string summary = "";
+    string nc = Summary::NotConfigured ();
+    summary = Summary::AddHeader(summary, _("NIS Domain"));
+    summary = Summary::AddLine(summary,	 ((domain != "") ? domain : nc));
+
+    
+    
+    return [ summary, [] ];
 }
 
 /* EOF */
