@@ -23,13 +23,13 @@
 .var.yp.ypservers
 
 `ag_anyagent(
-  Description (
-  ``(File ("/var/yp/ypservers")),	// real file name
+  `Description (
+  (`File ("/var/yp/ypservers")),	// real file name
   "\n",                                   // Comment
   false,                                // read-only
-  ``(List (
-         String ("^ \t\n"),
-//         String ("\n\t ")
+  (`List (
+         `String ("^ \t\n"),
+//         `String ("\n\t ")
 	 "\n"
          ))
       )

@@ -18,15 +18,15 @@
 .run.ypwhich_m
 
 `ag_anyagent(
-  Description (
-      ``(Run("/usr/bin/ypwhich -m")),	// real file name
+  `Description (
+      (`Run("/usr/bin/ypwhich -m")),	// real file name
       "\n",			// Comment
       true,			// read-only
-      ``(List (
-             Tuple (
-                 `map (String ("^ \t")),
-                 Whitespace (),
-                 `host (String ("^\n\t "))
+      (`List (
+             `Tuple (
+                 `map (`String ("^ \t")),
+                 `Whitespace (),
+                 `host (`String ("^\n\t "))
                  ),
              "\n"))
       )
