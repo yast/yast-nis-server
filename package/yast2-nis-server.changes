@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Mon Aug 26 17:18:59 CEST 2002 - mvidner@suse.cz
+
+- Use not only /etc/defaultdomain but also ypdomainname,
+  because dhcpcd may use it. (~#14232)
+- Adapted for the new packagemanager.
+- 2.6.10
+
+-------------------------------------------------------------------
 Wed Aug 14 09:46:44 CEST 2002 - mvidner@suse.cz
 
 - Make "yast2 nis-server" invoke "yast2 nis_server" (#17570).
