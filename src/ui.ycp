@@ -175,7 +175,7 @@
 			       lookup (user_settings, "error", ""));
 
 				// To translators: Error popup
-	    return UI (`AnyQuestionPopup (_("Error"), message, _("&Ok"), _("&Details"), `focus_yes)) ? `ok : `details;
+	    return UI (`AnyQuestionPopup (ErrorMsg(), message, OKButtonLabel(), _("&Details"), `focus_yes)) ? `ok : `details;
 	    //UI (`ErrorPopup (message));
 	}
 	else

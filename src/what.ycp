@@ -138,7 +138,7 @@ configure it.</p>"));
             if (ui == `none) 
             {
                 // To translators: button label
-                UI (`ReplaceWizardNextButton(`PushButton (`id (`finish), `opt (`default), _("&Finish"))));
+                UI (`ReplaceWizardNextButton(`PushButton (`id (`finish), `opt (`default), FinishButtonLabel())));
                 UI (`SetFocus (`id (`finish)));
             }
             else if (contains ([`master, `slave], ui)) 

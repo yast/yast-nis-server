@@ -79,9 +79,9 @@
 
         term buttons  = `HBox ();
                                 // To translators: pushbutton label
-        buttons = add (buttons, `PushButton (`id (`ok), `opt (`default), _("&OK")));
+        buttons = add (buttons, `PushButton (`id (`ok), `opt (`default), OKButtonLabel()));
                                 // To translators: pushbutton label
-        buttons = add (buttons, `PushButton (`id (`cancel), _("&Cancel")));
+        buttons = add (buttons, `PushButton (`id (`cancel), CancelButtonLabel()));
 
         term contents = `VBox ();
         contents = add (contents, `VSpacing (0.3));
@@ -168,7 +168,7 @@ it gives access to all hosts.</p>"));
                                 // To translators: dialog label
         UI(`SetWizardContents (_("NIS Server Query Hosts Setup"), contents, helptext, true, true));
                                 // To translators: pushbutton label
-        UI (`ChangeWidget (`id (`next), `Label, _("&Finish")));
+        UI (`ChangeWidget (`id (`next), `Label, FinishButtonLabel()));
         UI (`ChangeWidget (`id (`edit), `Enabled, false));
         UI (`ChangeWidget (`id (`delete), `Enabled, false));
 
@@ -227,7 +227,7 @@ it gives access to all hosts.</p>"));
         until (contains ([`back, `next, `abort], ui));
 
         // To translators: pushbutton label
-        if (ui == `back) UI (`ChangeWidget (`id (`next), `Label, _("&Next")));
+        if (ui == `back) UI (`ChangeWidget (`id (`next), `Label, NextButtonLabel()));
 
         // and finally merge
 
