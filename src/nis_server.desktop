@@ -1,0 +1,57 @@
+[Desktop Entry]
+Type=Application
+Categories=Qt;X-SuSE-YaST-Net_advanced;
+
+X-KDE-ModuleType=Library
+X-KDE-RootOnly=true
+X-KDE-HasReadOnlyMode=true
+X-KDE-Library=yast2
+X-KDE-FactoryName=nis_server
+
+X-SuSE-YaST-Group=Net_advanced
+X-SuSE-YaST-Argument=
+X-SuSE-YaST-RootOnly=true
+X-SuSE-YaST-AutoInst=all
+X-SuSE-YaST-Geometry=
+X-SuSE-YaST-SortKey=
+X-SuSE-YaST-AutoinstResource=
+
+Icon=nis_client
+Exec=/sbin/yast2 nis_server 
+
+Name=NIS Server
+GenericName=Configure NIS server
+Name[cs]=NIS server
+GenericName[cs]=Konfigurovat NIS server
+Name[de]=NIS-Server
+GenericName[de]=NIS-Server konfigurieren
+Name[es]=Servidor NIS
+GenericName[es]=Configuración del servidor NIS
+Name[hu]=NIS szerver
+GenericName[hu]=A NIS szerver beállítása
+Name[it]=Server NIS
+GenericName[it]=Configura il server NIS
+Name[ko]=NIS 서버
+GenericName[ko]=NIS 서버 구성
+Name[nl]=NIS server
+GenericName[nl]=NIS server configuratie
+Name[pt]=Servidor NIS
+GenericName[pt]=Configurar servidor NIS
+Name[sk]=NIS server
+GenericName[sk]=Konfigurovať NIS server
+Name[sv]=NIS-server
+GenericName[sv]=Ställ in NIS-server
+Name[da]=NIS-server
+GenericName[da]=Indstil NIS-server
+Name[el]=Εξυπηρετητής NIS
+GenericName[el]=Ρύθμιση του εξυπηρετητή NIS
+Name[fr]=Serveur NIS
+GenericName[fr]=Configurer le serveur NIS
+Name[ja]=NIS サーバ
+GenericName[ja]=NIS サーバの設定
+Name[lt]=NIS serveris
+GenericName[lt]=Konfigūruoti NIS serverį
+Name[sl]=NIS Strežnik
+GenericName[sl]=Nastavite NIS strežnik
+Name[tr]=NIS sunucusu
+GenericName[tr]=NFS sunucusunu yapılandır
