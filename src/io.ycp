@@ -372,6 +372,7 @@
 	import "Nis";
 
 	string error_msg = lookup (user_settings, "error", "");
+	string error_details = lookup (user_settings, "error_details", "");
 	map c = $[
 	    "start_nis":	user_settings["start_ypbind"]:false,
 	    "nis_domain":	user_settings[".etc.defaultdomain"]:"",
@@ -383,8 +384,10 @@
 	{
 	    // To translators: message in the popup dialog
 	    error_msg = error_msg + _("Error while configuring the client.\n");
+	    error_details = error_details + sformat ("<pre>%1</pre>", Nis::YpbindErrors);
 	}
 	user_settings = add (user_settings, "error", error_msg);
+	user_settings = add (user_settings, "error_details", error_details);
     }
 
     /**

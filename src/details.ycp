@@ -125,6 +125,17 @@ file.</p>");
 
 	    change_enabled = (ui == `srcdir);
 	    if (ui == `abort && !UI::ReallyAbortPopup (true)) continue;
+	    if (ui == `next)
+	    {
+		string dir = UI::QueryWidget (`id (`srcdir), `Value);
+		if (SCR::Read (.target.dir, dir) == nil)
+		{
+		    UI::SetFocus (`id (`srcdir));
+		    // Translators: error popup
+		    UI::ErrorPopup (sformat (_("The directory %1 does not exist."), dir));
+		    ui = nil;
+		}
+	    }
 	}
 	until (contains ([`back, `next, `abort], ui));
 
