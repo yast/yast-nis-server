@@ -83,7 +83,7 @@ configure it.</p>");
 	    master_setup_label = sformat (_("%1 NIS &Master Server"), master_action);
 				// To translators: label in the dialog %1 if Reconfigure or Change to
 	    slave_setup_label  = sformat (_("%1 NIS &Slave Server"), slave_action);
-	    none_setup_label   = _("Deactivate any NIS server configuration");
+	    none_setup_label   = _("&Deactivate any NIS server configuration");
 	}
 	else
 	{
