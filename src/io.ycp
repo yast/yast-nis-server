@@ -369,26 +369,26 @@
 	string error_msg     = lookup (user_settings, "error", "");
 	string error_details = lookup (user_settings, "error_details", "");
 	map output = $[];
+	string dn = lookup (user_settings, ".rc.system.YP_DOMAINNAME", "");
 
 	// first make sure that the directory exists
-	if (! EnsureDirectory (sformat ("/var/yp/%1", lookup (user_settings, ".rc.system.YP_DOMAINNAME", ""))))
+	if (! EnsureDirectory (sformat ("/var/yp/%1", dn)))
 	{
 	    return;
 	}
 
 	// and get the maps
 	string master = lookup (user_settings, "ui_master_ip", "");
-	output = SCR (`Execute (.target.bash_output, sformat ("/usr/lib/yp/yphelper --maps %1", master)));
+	output = SCR (`Execute (.target.bash_output, sformat ("/usr/lib/yp/yphelper --maps %1 --domainname %2", master, dn)));
 	if (lookup (output, "exit", 1) != 0)
 	{
 	    // To translators: message in the popup dialog
 	    error_msg = error_msg + sformat (UI (_("Can not get list of maps.\n")));
 	    error_details = error_details + sformat ("<pre>%1</pre>", lookup (output, "stderr", ""));
-	    return;
 	}
 	list running_maps = splitstring (lookup (output, "stdout", ""), "\n");
 	// the element after the last newline is empty, remove it
-	if (size (running_maps > 0))
+	if (size (running_maps) > 0)
 	{
 	    running_maps = remove (running_maps, size (running_maps) - 1); 
 	}
@@ -397,7 +397,7 @@
 	    output = SCR (`Execute (.target.bash_output,
 				    sformat ("/usr/lib/yp/ypxfr -f -h %1 -d %2 %3",
 					     master,
-					     lookup (user_settings, ".rc.system.YP_DOMAINNAME", ""),
+					     dn,
 					     map_name)));
 	    if (lookup (output, "exit", 1) != 0)
 	    {
