@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Tue Oct  2 14:08:28 CEST 2001 - mvidner@suse.cz
+
+- Two labels were not marked for translation. (2.5.0)
+
+-------------------------------------------------------------------
 Mon Sep 24 11:51:22 CEST 2001 - mvidner@suse.cz
 
 - Icon changed from "generic network" to "yellow book" used also
