@@ -15,10 +15,18 @@
     include "nis_server/io.ycp";
     include "nis_server/routines.ycp";
 
-    map user_settings = $[];
+    map user_settings = $[
+	"ui_also_client": true,
+	".rc.system.START_YPSERV": "yes",
+	".rc.ypserver.YPPWD_SRCDIR": "/etc",
+	".var.yp.makefile.MERGE_PASSWD": "true"
+	];
 
+    DUMP("none");
     TEST (``(SaveVariables (`none)), [], true);
+    DUMP("slave");
     TEST (``(SaveVariables (`slave)), [], true);
+    DUMP("master");
     TEST (``(SaveVariables (`master)), [], true);
 
 }
