@@ -90,7 +90,7 @@
 		}
 	    }
 
-	    if (ui == `abort && !Popup::ReallyAbort (true)) continue;
+	    if (ui == `abort && !Popup::ReallyAbort (true)) ui = `again;
 	}
 	until (contains ([`next, `back, `abort], ui));
 
