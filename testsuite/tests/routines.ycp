@@ -14,6 +14,21 @@
     // testedfiles: routines.ycp NisServer.ycp Testsuite.ycp
 
     include "testsuite.ycp";
+
+    map READ_INIT = $[
+	"target" : $[
+	    "size"	: 0,
+	],
+    ];
+    map EXEC_INIT = $[
+	"target" : $[
+	    "bash_output" : $[
+	    ],
+	],
+    ];
+
+    TESTSUITE_INIT ([READ_INIT, $[], EXEC_INIT], nil);
+
     import "NisServer";
     include "nis_server/routines.ycp";
 
