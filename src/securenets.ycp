@@ -187,6 +187,9 @@ to the  bitwise <i>AND</i> of the host's address and the <b>netmask</b>.</p>");
 	    UI::ChangeWidget (`id (`edit), `Enabled, anyitems);
 	    UI::ChangeWidget (`id (`delete), `Enabled, anyitems);
 
+	    // Kludge, because a `Table still does not have a shortcut. #16116
+	    UI::SetFocus (`id (`table));
+
 	    ui = UI::UserInput ();
 	    if (ui == `cancel)
 	    {
