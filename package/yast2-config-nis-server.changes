@@ -1,4 +1,13 @@
 -------------------------------------------------------------------
+Fri Dec  7 15:29:40 CET 2001 - mvidner@suse.cz
+
+- Obliterated START_ variables, using Runlevel.
+- Client config by calling nis_write.	
+- Using Wizard and Progress, syntax update.
+- Using y2autoconf and create-spec.
+- 2.5.3
+
+-------------------------------------------------------------------
 Tue Nov 13 11:32:20 CET 2001 - mvidner@suse.cz
 
 - Added default values for lookups. (2.5.2)
