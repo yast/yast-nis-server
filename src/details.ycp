@@ -120,7 +120,7 @@ file
 	boolean gshadow_exists = nil;
 	boolean change_enabled = true;
 
-	symbol ui = nil;
+	symbol ui = `again;
 
 	repeat
 	{
@@ -151,7 +151,7 @@ file
 		    // Translators: yes/no popup
 		    ui = Popup::YesNo (sformat (_("The directory %1 does not exist.
 Create it?
-"), srcdir)) ? `next : nil;
+"), srcdir)) ? `next : `again;
 		}
 	    }
 	}
