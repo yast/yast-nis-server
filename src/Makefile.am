@@ -1,10 +1,8 @@
-#
-# Makefile.am for nis-server/src
-#
+# Makefile.am for source/nis-server/src
 
 myincludedir = @yncludedir@/nis_server
 
-myinclude_DATA = \
+myinclude_DATA =	\
 	what.ycp 	\
 	slave.ycp 	\
 	master.ycp 	\
@@ -18,18 +16,20 @@ myinclude_DATA = \
 
 module_DATA = NisServer.ycp
 
-client_DATA = 	\
+client_DATA = 		\
+	nis-server.ycp	\
 	nis_server.ycp	\
-	nis_server_auto.ycp	\
-	nis-server.ycp
+	nis_server_auto.ycp
 
 config_DATA = nis_server.y2cc
 
 desktop_DATA = nis_server.desktop
 
-EXTRA_DIST = \
-	$(module_DATA) \
-	$(client_DATA) \
-	$(config_DATA) 	\
-	$(myinclude_DATA) \
-        $(desktop_DATA)
+EXTRA_DIST =		\
+	$(module_DATA)	\
+	$(client_DATA)	\
+	$(config_DATA)	\
+        $(desktop_DATA)	\
+	$(myinclude_DATA)
+
+include $(top_srcdir)/Makefile.am.common
