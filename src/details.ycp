@@ -23,12 +23,13 @@
 
     textdomain "nis_server";
 
-    import "Wizard";
-    import "Mode";
     import "Label";
-    import "Popup";
-
+    import "Message";
+    import "Mode";
     import "NisServer";
+    import "Popup";
+    import "Wizard";
+
     include "nis_server/routines.ycp";
 
     /**
@@ -145,13 +146,12 @@ file
 	    if (ui == `abort && !Popup::ReallyAbort (true)) ui = `again;
 	    if (ui == `next)
 	    {
-		if (SCR::Read (.target.dir, srcdir) == nil && !Mode::config)
+		if (SCR::Read (.target.dir, srcdir) == nil && !Mode::config ())
 		{
 		    UI::SetFocus (`id (`srcdir));
-		    // Translators: yes/no popup
-		    ui = Popup::YesNo (sformat (_("The directory %1 does not exist.
-Create it?
-"), srcdir)) ? `next : `again;
+		    ui = Popup::YesNo (
+			Message::DirectoryDoesNotExistCreate (srcdir))
+			? `next : `again;
 		}
 	    }
 	}

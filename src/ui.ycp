@@ -12,6 +12,7 @@
     textdomain "nis_server";
 
     import "Label";
+    import "Message";
     import "NisServer";
     import "Package";
     import "Popup";
@@ -113,9 +114,7 @@
 		NisServer::old_domainname != NisServer::domain)
 	    {
 		// To translators: final popup
-		Popup::Warning (_("The domain has changed.
-You must reboot for the changes to take effect."));
-
+		Popup::Warning (Message::DomainHasChangedMustReboot());
 	    }
 	}
 
