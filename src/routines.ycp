@@ -68,10 +68,12 @@
 
     /**
      * Checks if the YP server was already configured
+     * by reading the SCR, not user_settings
+     * (not to confuse the user if he backs up to the first dialog)
      * @return boolean
      */
     global define isYPServerConfigured () ``{
-        return (lookup (user_settings, ".rc.system.START_YPSERV", "no") == "yes");
+        return (SCR (`Read (.rc.system.START_YPSERV)) == "yes");
     }
 
     /**
