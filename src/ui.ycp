@@ -42,7 +42,7 @@
      */
     global define FinishPopup () ``{
 			       // To translators: ContinueCancel Popup
-	if (UI (`ContinueCancelHeadlinePopup (_("Finish"), _("Really save configuration ?"))))
+	if (UI::ContinueCancelHeadlinePopup (_("Finish"), _("Really save configuration ?")))
 	    return `yes;
 	return `back;
     }
@@ -53,7 +53,7 @@
     global define ExitPopup () ``{
 
 				// To translators: ContinueCancel Popup
-	if (UI (`ContinueCancelHeadlinePopup (_("Exit"), _("Really exit configuration without saving ?"))))
+	if (UI::ContinueCancelHeadlinePopup (_("Exit"), _("Really exit configuration without saving ?")))
 	    return `exit;
 	return `back;
     }
@@ -64,7 +64,7 @@
     global define DetailsPopup () ``{
 
 				// To translators: popup label
-	UI (`LongTextPopup (_("Error details"), `RichText (lookup (user_settings, "error_details", "")), 50, 20 ));
+	UI::LongTextPopup (_("Error details"), `RichText (lookup (user_settings, "error_details", "")), 50, 20 );
 	return `ok;
     }
 
@@ -76,8 +76,8 @@
     global define ReadConfigDialog () ``{
 
 	// help text 1/1
-	string help = UI (_("<p>Please wait while reading the configuration.</p>"));
-	string title = UI (_("Initializing NIS server setup"));
+	string help = _("<p>Please wait while reading the configuration.</p>");
+	string title = _("Initializing NIS server setup");
 	string progress_title = " ";
 
 	list files = [
@@ -97,14 +97,14 @@
 				// To translators: dialog title
 	ProgressSetup (title, progress_title, size (files),
 		       // To translators: progress label %1 is filename
-		       maplist (`file, files, ``(sformat (UI (_("Load '%1' file")), file))),
+		       maplist (`file, files, ``(sformat (_("Load '%1' file"), file))),
 		       help);
 
 	integer i = 0;
 	while (i < size (files))
 	{
 	    // To translators: progress label %1 is filename
-	    string msg = sformat (UI (_("Loading '%1'...")), select (files, i));
+	    string msg = sformat (_("Loading '%1'..."), select (files, i));
 	    ProgressMilestone (i, msg, i);
 	    user_settings = user_settings + ReadPathFile (eval (select (vars, i)), select (files, i));
 	    i = i + 1;
@@ -139,13 +139,13 @@
     global define SavingDialog () ``{
 
 	// help text 1/1
-	string help = UI (_("<p>Please wait until the configuration is saved.</p>"));
-	string title = UI (_("Saving NIS server setup"));
+	string help = _("<p>Please wait until the configuration is saved.</p>");
+	string title = _("Saving NIS server setup");
 	string progress_title = " ";
 	string progress_label = "";
-	UI (`RestoreWizardNextButton());
-	UI (`ChangeWidget (`id (`next), `Enabled, false));
-	UI (`ChangeWidget (`id (`abort), `Enabled, false));
+	UI::RestoreWizardNextButton();
+	UI::ChangeWidget (`id (`next), `Enabled, false);
+	UI::ChangeWidget (`id (`abort), `Enabled, false);
 
 	symbol workflow = lookup (user_settings, "ui_what", `error);
 	list save_list = GetSaveList (workflow);
@@ -182,12 +182,12 @@
 	if (size (lookup (user_settings, "error", "")) > 0)
 	{
 				// To translators: popup label
-	    message = sformat (UI (_("Error during configuration:\n%1")),
+	    message = sformat (_("Error during configuration:\n%1"),
 			       lookup (user_settings, "error", ""));
 
 				// To translators: Error popup
-	    return UI (`AnyQuestionPopup (ErrorMsg(), message, OKButtonLabel(), _("&Details"), `focus_yes)) ? `ok : `details;
-	    //UI (`ErrorPopup (message));
+	    return UI::AnyQuestionPopup (ErrorMsg(), message, OKButtonLabel(), _("&Details"), `focus_yes) ? `ok : `details;
+	    //UI::ErrorPopup (message);
 	}
 	else
 	{
@@ -197,15 +197,15 @@
 		lookup (user_settings, ".rc.system.YP_DOMAINNAME", nil))
 	    {
 		// To translators: final popup
-		UI (`WarningPopup (_("The domain has changed.
-You must reboot for the changes to take effect.")));
+		UI::WarningPopup (_("The domain has changed.
+You must reboot for the changes to take effect."));
 
 	    }
 	    else
 	    {
 		// To translators: final popup
-		message = UI (_("The configuration was succesful!"));
-		UI (`NotifyPopup (message));
+		message = _("The configuration was succesful!");
+		UI::NotifyPopup (message);
 	    }
 	}
 
@@ -230,9 +230,9 @@ You must reboot for the changes to take effect.")));
 	    "delete"    : []
 	    ];
 
-	string file = SCR (`Read (.target.tmpdir));
+	string file = SCR::Read (.target.tmpdir);
 	file = file + "/ypserv.sw_single";
-	SCR (`Write (.target.ycp, file, script));
+	SCR::Write (.target.ycp, file, script);
 	CallFunction (`sw_single (file));
 
 

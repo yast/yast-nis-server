@@ -50,9 +50,9 @@
 	}
 	string ddir = sformat ("/var/yp/%1", dn);
 	string any_map = nil;
-	if (SCR (`Read (.target.size, ddir)) >=0 )
+	if (SCR::Read (.target.size, ddir) >=0 )
 	{
-	    list maps = SCR (`Read (.target.dir, ddir));
+	    list maps = SCR::Read (.target.dir, ddir);
 	    any_map = select (maps, 0, nil);
 	}
 	if (any_map == nil)
@@ -61,7 +61,7 @@
 	}
 	string command = sformat ("/usr/lib/yp/makedbm -u /var/yp/%1/%2 | grep ^YP_MASTER_NAME", dn, any_map);
 
-	string output = lookup (SCR (`Execute (.target.bash_output, command)), "stdout", "");
+	string output = lookup (SCR::Execute (.target.bash_output, command), "stdout", "");
 	return select (splitstring (output, " \n"), 1, nil);
     }
 
@@ -76,7 +76,7 @@
 	    return false;	// can't decide
 	}
 
-	map output = SCR (`Execute (.target.bash_output, "/usr/lib/yp/yphelper --hostname"));
+	map output = SCR::Execute (.target.bash_output, "/usr/lib/yp/yphelper --hostname");
 	string yphelper_hostname = lookup (output, "stdout", "");
 
 	return master == deletechars (yphelper_hostname, "\n");
@@ -88,7 +88,7 @@
      * @return boolean
      */
     global define isYPServerInstalled () ``{
-	return (SCR (`Execute(.target.bash, "/bin/rpm -q ypserv")) == 0);
+	return (SCR::Execute(.target.bash, "/bin/rpm -q ypserv") == 0);
     }
 
     /**
@@ -98,7 +98,7 @@
      * @return boolean
      */
     global define isYPServerConfigured () ``{
-	return (SCR (`Read (.rc.system.START_YPSERV)) == "yes");
+	return (SCR::Read (.rc.system.START_YPSERV) == "yes");
     }
 
     /**
@@ -118,16 +118,16 @@
      */
     global define hasMasterThisSlave () ``{
 	// list of maps: $["host": "foo.com", "map":"passwd.byuid"]
-	list running_maps = SCR (`Read (.run.ypwhich_m));
+	list running_maps = SCR::Read (.run.ypwhich_m);
 	if (running_maps != nil)
 	{
 	    running_maps = maplist (`m, running_maps, ``(lookup (m, "map", "")));
 	    if (contains (running_maps, "ypservers"))
 	    {
-		string slaves = lookup (SCR (`Execute (.target.bash_output, "/usr/bin/ypcat ypservers")), "stdout", nil);
+		string slaves = lookup (SCR::Execute (.target.bash_output, "/usr/bin/ypcat ypservers"), "stdout", nil);
 		if (slaves != nil)
 		{
-		    string hostname = lookup (SCR (`Execute (.target.bash_output, "/usr/lib/yp/yphelper --hostname")), "stdout", "");
+		    string hostname = lookup (SCR::Execute (.target.bash_output, "/usr/lib/yp/yphelper --hostname"), "stdout", "");
 		    if (hostname == "")
 		    {
 			return false;

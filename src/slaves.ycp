@@ -38,22 +38,22 @@
     global define ChooseHostName(list hosts) ``{
 	string hname = nil;
 
-	UI(`OpenDialog(
+	UI::OpenDialog(
 	       `VBox(`HSpacing(40),
 		     `HBox(`VSpacing(10),
 			   // To translators: selection box label
 			   `SelectionBox(`id(`hosts), _("&Remote hosts"), hosts)),
 		     `HBox(`PushButton(`id(`ok), OKButtonLabel()),
-			   `PushButton(`id(`cancel), CancelButtonLabel())))));
+			   `PushButton(`id(`cancel), CancelButtonLabel()))));
 	any ret = nil;
 	do {
-	    ret = UI(`UserInput());
+	    ret = UI::UserInput();
 	} while (ret != `cancel && ret != `ok);
 
 	if (ret == `ok)
-	    hname = UI(`QueryWidget(`id(`hosts), `CurrentItem));
+	    hname = UI::QueryWidget(`id(`hosts), `CurrentItem);
 
-	UI(`CloseDialog());
+	UI::CloseDialog();
 
 	return hname;
     };
@@ -90,46 +90,46 @@
 	contents = add (contents, `VSpacing (0.3));
 	contents = `HBox (`HSpacing (), contents, `HSpacing ());
 
-	UI (`OpenDialog (contents));
+	UI::OpenDialog (contents);
 
 	symbol ui = nil;
 	string error_msg = "";
 
 	repeat {
 	    error_msg = "";
-	    ui = UI (`UserInput ());
+	    ui = UI::UserInput ();
 
 	    if (ui == `ok)
 	    {
-		slave = tolower (UI (`QueryWidget (`id (`slave), `Value)));
+		slave = tolower (UI::QueryWidget (`id (`slave), `Value));
 				// To translators: error message
-		error_msg = error_msg + (check_domainname (slave) ? "" : UI(_("Wrong host name!\n")));
+		error_msg = error_msg + (check_domainname (slave) ? "" : _("Wrong host name!\n"));
 
 		if (size (error_msg) > 0)
 		{
-		    UI (`ErrorPopup (error_msg));
+		    UI::ErrorPopup (error_msg);
 		}
 	    }
 	    else if (ui == `browse)
 	    {
 		if (hosts == nil) {
 				// To translators: label message
-		    UI(`OpenDialog(`Label(_("Scanning for hosts on this LAN..."))));
-		    hosts = sort(SCR(`Read(.net.hostnames)));
-		    UI(`CloseDialog());
+		    UI::OpenDialog(`Label(_("Scanning for hosts on this LAN...")));
+		    hosts = sort(SCR::Read(.net.hostnames));
+		    UI::CloseDialog();
 		    if (hosts == nil) hosts = [];
 		}
 		string host = ChooseHostName (hosts);
 		if (host != nil)
 		{
 		    slave = host;
-		    UI(`ChangeWidget(`id(`slave), `Value, host));
+		    UI::ChangeWidget(`id(`slave), `Value, host);
 		}
 	    }
 
 	} until ((error_msg == "" && ui == `ok) || ui == `cancel);
 
-	UI (`CloseDialog ());
+	UI::CloseDialog ();
 
 	return ui == `ok ? slave : nil;
 
@@ -141,7 +141,7 @@
     global define MastersSlavesDialog () ``{
 
 	// help text 1/1
-	string helptext = UI (_("<p>Here, enter the names of hosts to configure as NIS server slaves. Use <i>Add</i> to add a new one, <i>Edit</i>  to change an existing entry, and <i>Delete</i> to remove an entry.</p>"));
+	string helptext = _("<p>Here, enter the names of hosts to configure as NIS server slaves. Use <i>Add</i> to add a new one, <i>Edit</i>  to change an existing entry, and <i>Delete</i> to remove an entry.</p>");
 
 	list slaves = lookup (user_settings, ".var.yp.ypservers", []);
 	list hosts = nil;
@@ -161,21 +161,21 @@
 	contents = add (contents, buttons);
 
 				// To translators: dialog label
-	UI (`SetWizardContents (_("NIS Master Server Slaves Setup"), contents, helptext, true, true));
+	UI::SetWizardContents (_("NIS Master Server Slaves Setup"), contents, helptext, true, true);
 
 	symbol ui = nil;
 
 	repeat
 	{
-	    boolean anyslaves = UI (`QueryWidget (`id (`slaves), `CurrentItem)) != nil;
-	    UI (`ChangeWidget (`id (`edit),   `Enabled, anyslaves));
-	    UI (`ChangeWidget (`id (`delete), `Enabled, anyslaves));
+	    boolean anyslaves = UI::QueryWidget (`id (`slaves), `CurrentItem) != nil;
+	    UI::ChangeWidget (`id (`edit),   `Enabled, anyslaves);
+	    UI::ChangeWidget (`id (`delete), `Enabled, anyslaves);
 
-	    ui = UI (`UserInput ());
+	    ui = UI::UserInput ();
 
 	    if (ui == `edit)
 	    {
-		string selected = UI (`QueryWidget (`id (`slaves), `CurrentItem));
+		string selected = UI::QueryWidget (`id (`slaves), `CurrentItem);
 		if (selected == nil) continue;
 		string edited = YPSlavePopup (selected);
 		if (edited != nil)
@@ -183,17 +183,17 @@
 		    slaves = filter (`e, slaves, ``(e != selected));
 		    slaves = add (slaves, edited);
 				// To translators: selectionbox label
-		    UI (`ReplaceWidget (`id (`replace), `SelectionBox (`id (`slaves), `opt (`notify), _("&Slaves"), sort (slaves))));
+		    UI::ReplaceWidget (`id (`replace), `SelectionBox (`id (`slaves), `opt (`notify), _("&Slaves"), sort (slaves)));
 		}
 	    }
 
 	    else if (ui == `delete)
 	    {
-		string selected = UI (`QueryWidget (`id (`slaves), `CurrentItem));
+		string selected = UI::QueryWidget (`id (`slaves), `CurrentItem);
 		if (selected == nil) continue;
 		slaves = filter (`e, slaves, ``(e != selected));
 				// To translators: selectionbox label
-		UI (`ReplaceWidget (`id (`replace), `SelectionBox (`id (`slaves), `opt (`notify), _("&Slaves"), sort (slaves))));
+		UI::ReplaceWidget (`id (`replace), `SelectionBox (`id (`slaves), `opt (`notify), _("&Slaves"), sort (slaves)));
 	    }
 
 	    else if (ui == `add)
@@ -203,11 +203,11 @@
 		{
 		    slaves = add (slaves, edited);
 				// To translators: selectionbox label
-		    UI (`ReplaceWidget (`id (`replace), `SelectionBox (`id (`slaves), `opt (`notify), _("&Slaves"), sort (slaves))));
+		    UI::ReplaceWidget (`id (`replace), `SelectionBox (`id (`slaves), `opt (`notify), _("&Slaves"), sort (slaves)));
 		}
 	    }
 
-	    if (ui == `abort && !UI (`ReallyAbortPopup (true))) continue;
+	    if (ui == `abort && !UI::ReallyAbortPopup (true)) continue;
 	}
 	until (contains ([`back, `next, `abort], ui));
 

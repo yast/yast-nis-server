@@ -35,16 +35,16 @@
     global define DetailsDialog () ``{
 
 	// help text 1/3
-	string helptext = UI (_("<p>You can change NIS server source directory (usually
-<i>'/etc'</i>).</p>"));
+	string helptext = _("<p>You can change NIS server source directory (usually
+<i>'/etc'</i>).</p>");
 
 	// help text 2/3
-	helptext = helptext + UI (_("<p>Select if <i>passwd</i> file should be merged with <i>shadow</i>
+	helptext = helptext + _("<p>Select if <i>passwd</i> file should be merged with <i>shadow</i>
 file and if the <i>group</i> file should be merged with <i>gshadow</i>
-file.</p>"));
+file.</p>");
 
 	// help text 3/3
-	helptext = helptext + UI (_("<p>You can also adjust the minimum user and group id.</p>"));
+	helptext = helptext + _("<p>You can also adjust the minimum user and group id.</p>");
 
 	boolean merge_passwd = toboolean (lookup (user_settings, ".var.yp.makefile.MERGE_PASSWD", true));
 	boolean merge_groups = toboolean (lookup (user_settings, ".var.yp.makefile.MERGE_GROUP", true));
@@ -101,9 +101,9 @@ file.</p>"));
 	contents = `HVSquash (contents);
 
 				// To translators: dialog label
-	UI (`SetWizardContents (_("NIS Master Server Details Setup"), contents, helptext, true, true));
+	UI::SetWizardContents (_("NIS Master Server Details Setup"), contents, helptext, true, true);
 				// To translators: button label
-	UI (`ChangeWidget (`id (`next), `Label, OKButtonLabel()));
+	UI::ChangeWidget (`id (`next), `Label, OKButtonLabel());
 
 	boolean shadow_exist = nil;
 	boolean gshadow_exist = nil;
@@ -115,32 +115,32 @@ file.</p>"));
 	{
 	    if (change_enabled)
 	    {
-		shadow_exist  = SCR::Read (.target.size, sformat ("%1/shadow", UI (`QueryWidget (`id (`srcdir), `Value)))) != -1;
-		gshadow_exist = SCR::Read (.target.size, sformat ("%1/gshadow", UI (`QueryWidget (`id (`srcdir), `Value)))) != -1;
-		UI (`ChangeWidget (`id (`pass_frame), `Enabled, shadow_exist));
-		UI (`ChangeWidget (`id (`group_frame), `Enabled, gshadow_exist));
+		shadow_exist  = SCR::Read (.target.size, sformat ("%1/shadow", UI::QueryWidget (`id (`srcdir), `Value))) != -1;
+		gshadow_exist = SCR::Read (.target.size, sformat ("%1/gshadow", UI::QueryWidget (`id (`srcdir), `Value))) != -1;
+		UI::ChangeWidget (`id (`pass_frame), `Enabled, shadow_exist);
+		UI::ChangeWidget (`id (`group_frame), `Enabled, gshadow_exist);
 	    }
 
-	    ui = UI (`UserInput ());
+	    ui = UI::UserInput ();
 
 	    change_enabled = (ui == `srcdir);
-	    if (ui == `abort && !UI (`ReallyAbortPopup (true))) continue;
+	    if (ui == `abort && !UI::ReallyAbortPopup (true)) continue;
 	}
 	until (contains ([`back, `next, `abort], ui));
 
 	user_settings = add (user_settings, ".var.yp.makefile.MINUID",
-			     sformat ("%1", UI (`QueryWidget (`id (`minuid), `Value))));
+			     sformat ("%1", UI::QueryWidget (`id (`minuid), `Value)));
 	user_settings = add (user_settings, ".var.yp.makefile.MINGID",
-			     sformat ("%1", UI (`QueryWidget (`id (`mingid), `Value))));
+			     sformat ("%1", UI::QueryWidget (`id (`mingid), `Value)));
 	user_settings = add (user_settings, ".var.yp.makefile.MERGE_PASSWD",
-			     sformat ("%1", UI (`QueryWidget (`id (`pass_rb), `CurrentButton)) == `yes));
+			     sformat ("%1", UI::QueryWidget (`id (`pass_rb), `CurrentButton) == `yes));
 	user_settings = add (user_settings, ".var.yp.makefile.MERGE_GROUP",
-			     sformat ("%1", UI (`QueryWidget (`id (`group_rb), `CurrentButton)) == `yes));
+			     sformat ("%1", UI::QueryWidget (`id (`group_rb), `CurrentButton) == `yes));
 	user_settings = add (user_settings, ".rc.ypserver.YPPWD_SRCDIR",
-			     UI (`QueryWidget (`id (`srcdir), `Value)));
+			     UI::QueryWidget (`id (`srcdir), `Value));
 
 	// To translators: button label
-	UI (`ChangeWidget (`id (`next), `Label, NextButtonLabel()));
+	UI::ChangeWidget (`id (`next), `Label, NextButtonLabel());
 
 	return ui;
 

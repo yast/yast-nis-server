@@ -127,9 +127,9 @@
     // global variable
     map user_settings = $[];
 
-    UI (`CreateWizardDialog ());
+    UI::CreateWizardDialog ();
 
     any result = WizardSequencer (Aliases, Sequence);
 
-    return UI (`CloseDialog ());
+    return UI::CloseDialog ();
 }
