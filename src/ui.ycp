@@ -155,6 +155,7 @@
 	    // /etc/sysconfig/network/dhcp:DHCLIENT_SET_DOMAINNAME
 	    map out = SCR::Execute (.target.bash_output, "/bin/ypdomainname");
 	    dn = deletechars (out["stdout"]:"", "\n");
+	    user_settings = add (user_settings, ".etc.defaultdomain", dn);
 	}
 	user_settings = add (user_settings, "old_domainname", dn);
 
