@@ -1,6 +1,6 @@
 /**
  *
- * File:             
+ * File:
  *   details.ycp
  *
  * Module:
@@ -9,7 +9,7 @@
  * Summary:
  *   YPServer module.
  *
- * Authors:            
+ * Authors:
  *   Dan Vesely <dan@suse.cz>
  *
  * $Id$
@@ -22,7 +22,7 @@
 {
 
     textdomain "nis_server";
-    
+
     include "ui/wizard_dialog.ycp";
     include "ui/common_popups.ycp";
 
@@ -34,115 +34,115 @@
      */
     global define DetailsDialog () ``{
 
-        // help text 1/3
-        string helptext = UI (_("<p>You can change NIS server source directory (usually
+	// help text 1/3
+	string helptext = UI (_("<p>You can change NIS server source directory (usually
 <i>'/etc'</i>).</p>"));
 
-        // help text 2/3
-        helptext = helptext + UI (_("<p>Select if <i>passwd</i> file should be merged with <i>shadow</i>
+	// help text 2/3
+	helptext = helptext + UI (_("<p>Select if <i>passwd</i> file should be merged with <i>shadow</i>
 file and if the <i>group</i> file should be merged with <i>gshadow</i>
 file.</p>"));
 
-        // help text 3/3
-        helptext = helptext + UI (_("<p>You can also adjust the minimum user and group id.</p>"));
+	// help text 3/3
+	helptext = helptext + UI (_("<p>You can also adjust the minimum user and group id.</p>"));
 
-        boolean merge_passwd = toboolean (lookup (user_settings, ".var.yp.makefile.MERGE_PASSWD", true));
-        boolean merge_groups = toboolean (lookup (user_settings, ".var.yp.makefile.MERGE_GROUP", true));
+	boolean merge_passwd = toboolean (lookup (user_settings, ".var.yp.makefile.MERGE_PASSWD", true));
+	boolean merge_groups = toboolean (lookup (user_settings, ".var.yp.makefile.MERGE_GROUP", true));
 
-        term merge_pass_buttons = `VBox ();
-        merge_pass_buttons = add (merge_pass_buttons, `VSpacing (0.1));
-                                // To translators: button label
-        merge_pass_buttons = add (merge_pass_buttons, `Left (`RadioButton (`id(`no), _("No"), !merge_passwd)));
-        merge_pass_buttons = add (merge_pass_buttons, `VSpacing (0.3));
-                                // To translators: button label
-        merge_pass_buttons = add (merge_pass_buttons, `Left (`RadioButton (`id(`yes), _("Yes"), merge_passwd)));
-        merge_pass_buttons = add (merge_pass_buttons, `VSpacing (0.1));
-        merge_pass_buttons = `RadioButtonGroup (`id (`pass_rb), merge_pass_buttons);
-        
-        term merge_group_buttons = `VBox ();
-        merge_group_buttons = add (merge_group_buttons, `VSpacing (0.1));
-                                // To translators: button label
-        merge_group_buttons = add (merge_group_buttons, `Left (`RadioButton (`id(`no), _("No"), !merge_groups)));
-        merge_group_buttons = add (merge_group_buttons, `VSpacing (0.3));
-                                // To translators: button label
-        merge_group_buttons = add (merge_group_buttons, `Left (`RadioButton (`id(`yes), _("Yes"), merge_groups)));
-        merge_group_buttons = add (merge_group_buttons, `VSpacing (0.1));
-        merge_group_buttons = `RadioButtonGroup (`id (`group_rb), merge_group_buttons);
-        
-        
-        term merge  = `HBox ();
-                                // To translators: frame label
-        merge = add (merge, `HWeight (1, `Frame (`id (`pass_frame), _("Merge pa&sswords"), merge_pass_buttons)));
-        merge = add (merge, `HSpacing ());
-                                // To translators: frame label
-        merge = add (merge, `HWeight (1, `Frame (`id (`group_frame), _("Merge g&roups"), merge_group_buttons)));
-        
-        term minimals = `HBox ();
-        
-                                // To translators: intfield label
-        minimals = add (minimals, `IntField (`id (`minuid), _("Minimum &UID"), 0, 50000,
-                                             tointeger(lookup (user_settings, ".var.yp.makefile.MINUID", 100))));
+	term merge_pass_buttons = `VBox ();
+	merge_pass_buttons = add (merge_pass_buttons, `VSpacing (0.1));
+				// To translators: button label
+	merge_pass_buttons = add (merge_pass_buttons, `Left (`RadioButton (`id(`no), _("No"), !merge_passwd)));
+	merge_pass_buttons = add (merge_pass_buttons, `VSpacing (0.3));
+				// To translators: button label
+	merge_pass_buttons = add (merge_pass_buttons, `Left (`RadioButton (`id(`yes), _("Yes"), merge_passwd)));
+	merge_pass_buttons = add (merge_pass_buttons, `VSpacing (0.1));
+	merge_pass_buttons = `RadioButtonGroup (`id (`pass_rb), merge_pass_buttons);
+
+	term merge_group_buttons = `VBox ();
+	merge_group_buttons = add (merge_group_buttons, `VSpacing (0.1));
+				// To translators: button label
+	merge_group_buttons = add (merge_group_buttons, `Left (`RadioButton (`id(`no), _("No"), !merge_groups)));
+	merge_group_buttons = add (merge_group_buttons, `VSpacing (0.3));
+				// To translators: button label
+	merge_group_buttons = add (merge_group_buttons, `Left (`RadioButton (`id(`yes), _("Yes"), merge_groups)));
+	merge_group_buttons = add (merge_group_buttons, `VSpacing (0.1));
+	merge_group_buttons = `RadioButtonGroup (`id (`group_rb), merge_group_buttons);
+
+
+	term merge  = `HBox ();
+				// To translators: frame label
+	merge = add (merge, `HWeight (1, `Frame (`id (`pass_frame), _("Merge pa&sswords"), merge_pass_buttons)));
+	merge = add (merge, `HSpacing ());
+				// To translators: frame label
+	merge = add (merge, `HWeight (1, `Frame (`id (`group_frame), _("Merge g&roups"), merge_group_buttons)));
+
+	term minimals = `HBox ();
+
+				// To translators: intfield label
+	minimals = add (minimals, `IntField (`id (`minuid), _("Minimum &UID"), 0, 50000,
+					     tointeger(lookup (user_settings, ".var.yp.makefile.MINUID", 100))));
 	minimals = add (minimals, `HSpacing ());
-                                // To translators: intfield label
-        minimals = add (minimals, `IntField (`id (`mingid), _("Minimum &GUID"), 0, 50000,
-                                             tointeger(lookup (user_settings, ".var.yp.makefile.MINGID", 100))));
-        
-        
-        term contents = `VBox ();
-                                // To translators: textentry label
-        contents = add (contents, `TextEntry (`id (`srcdir), `opt(`notify), _("&YP Source directory"),
-                                              lookup (user_settings, ".rc.ypserver.YPPWD_SRCDIR", "")));
-        contents = add (contents, `VSpacing (0.5));
-        contents = add (contents, merge);
-        contents = add (contents, `VSpacing (0.5));
-        contents = add (contents, minimals);
-        
-        
-        contents = `HVSquash (contents);
-        
-                                // To translators: dialog label
-        UI (`SetWizardContents (_("NIS Master Server Details Setup"), contents, helptext, true, true));
-                                // To translators: button label
-        UI (`ChangeWidget (`id (`next), `Label, OKButtonLabel()));
+				// To translators: intfield label
+	minimals = add (minimals, `IntField (`id (`mingid), _("Minimum &GUID"), 0, 50000,
+					     tointeger(lookup (user_settings, ".var.yp.makefile.MINGID", 100))));
 
-        boolean shadow_exist = nil;
-        boolean gshadow_exist = nil;
+
+	term contents = `VBox ();
+				// To translators: textentry label
+	contents = add (contents, `TextEntry (`id (`srcdir), `opt(`notify), _("&YP Source directory"),
+					      lookup (user_settings, ".rc.ypserver.YPPWD_SRCDIR", "")));
+	contents = add (contents, `VSpacing (0.5));
+	contents = add (contents, merge);
+	contents = add (contents, `VSpacing (0.5));
+	contents = add (contents, minimals);
+
+
+	contents = `HVSquash (contents);
+
+				// To translators: dialog label
+	UI (`SetWizardContents (_("NIS Master Server Details Setup"), contents, helptext, true, true));
+				// To translators: button label
+	UI (`ChangeWidget (`id (`next), `Label, OKButtonLabel()));
+
+	boolean shadow_exist = nil;
+	boolean gshadow_exist = nil;
 	boolean change_enabled = true;
 
-        symbol ui = nil;
+	symbol ui = nil;
 
-        repeat 
-        {
+	repeat
+	{
 	    if (change_enabled)
 	    {
 		shadow_exist  = SCR::Read (.target.size, sformat ("%1/shadow", UI (`QueryWidget (`id (`srcdir), `Value)))) != -1;
 		gshadow_exist = SCR::Read (.target.size, sformat ("%1/gshadow", UI (`QueryWidget (`id (`srcdir), `Value)))) != -1;
-                UI (`ChangeWidget (`id (`pass_frame), `Enabled, shadow_exist));
-                UI (`ChangeWidget (`id (`group_frame), `Enabled, gshadow_exist));
+		UI (`ChangeWidget (`id (`pass_frame), `Enabled, shadow_exist));
+		UI (`ChangeWidget (`id (`group_frame), `Enabled, gshadow_exist));
 	    }
 
-            ui = UI (`UserInput ());
+	    ui = UI (`UserInput ());
 
-            change_enabled = (ui == `srcdir);
-            if (ui == `abort && !UI (`ReallyAbortPopup (true))) continue;
-        }
-        until (contains ([`back, `next, `abort], ui));
+	    change_enabled = (ui == `srcdir);
+	    if (ui == `abort && !UI (`ReallyAbortPopup (true))) continue;
+	}
+	until (contains ([`back, `next, `abort], ui));
 
-        user_settings = add (user_settings, ".var.yp.makefile.MINUID",
-                             sformat ("%1", UI (`QueryWidget (`id (`minuid), `Value))));        
-        user_settings = add (user_settings, ".var.yp.makefile.MINGID",
-                             sformat ("%1", UI (`QueryWidget (`id (`mingid), `Value))));
-        user_settings = add (user_settings, ".var.yp.makefile.MERGE_PASSWD",
-                             sformat ("%1", UI (`QueryWidget (`id (`pass_rb), `CurrentButton)) == `yes));
-        user_settings = add (user_settings, ".var.yp.makefile.MERGE_GROUP",
-                             sformat ("%1", UI (`QueryWidget (`id (`group_rb), `CurrentButton)) == `yes));
-        user_settings = add (user_settings, ".rc.ypserver.YPPWD_SRCDIR",
-                             UI (`QueryWidget (`id (`srcdir), `Value)));                             
+	user_settings = add (user_settings, ".var.yp.makefile.MINUID",
+			     sformat ("%1", UI (`QueryWidget (`id (`minuid), `Value))));
+	user_settings = add (user_settings, ".var.yp.makefile.MINGID",
+			     sformat ("%1", UI (`QueryWidget (`id (`mingid), `Value))));
+	user_settings = add (user_settings, ".var.yp.makefile.MERGE_PASSWD",
+			     sformat ("%1", UI (`QueryWidget (`id (`pass_rb), `CurrentButton)) == `yes));
+	user_settings = add (user_settings, ".var.yp.makefile.MERGE_GROUP",
+			     sformat ("%1", UI (`QueryWidget (`id (`group_rb), `CurrentButton)) == `yes));
+	user_settings = add (user_settings, ".rc.ypserver.YPPWD_SRCDIR",
+			     UI (`QueryWidget (`id (`srcdir), `Value)));
 
-        // To translators: button label
-        UI (`ChangeWidget (`id (`next), `Label, NextButtonLabel()));
+	// To translators: button label
+	UI (`ChangeWidget (`id (`next), `Label, NextButtonLabel()));
 
-        return ui;
+	return ui;
 
     }
 

@@ -142,7 +142,7 @@
 	string help = UI (_("<p>Please wait until the configuration is saved.</p>"));
 	string title = UI (_("Saving NIS server setup"));
 	string progress_title = " ";
-        string progress_label = "";
+	string progress_label = "";
 	UI (`RestoreWizardNextButton());
 	UI (`ChangeWidget (`id (`next), `Enabled, false));
 	UI (`ChangeWidget (`id (`abort), `Enabled, false));
@@ -154,7 +154,7 @@
 	// To translators: dialog title
 	ProgressSetup (title, progress_title, size (save_list),
 		       maplist (`e, save_list, ``(lookup (e, "save_label", ""))), help);
-        
+
 	while (step < size (save_list))
 	{
 	    map save_item = select (save_list, step, $[]);
@@ -167,7 +167,7 @@
 	}
 
 	// To translators: progress message
-        progress_label = _("Done.");
+	progress_label = _("Done.");
 	ProgressMilestone (step + 1, progress_label, step);
 
 	return `done;
@@ -193,7 +193,7 @@
 	{
 	    if (lookup (user_settings, "ui_also_client", false) &&
 		lookup (user_settings, "old_domainname", nil) != "" &&
-		lookup (user_settings, "old_domainname", nil) != 
+		lookup (user_settings, "old_domainname", nil) !=
 		lookup (user_settings, ".rc.system.YP_DOMAINNAME", nil))
 	    {
 		// To translators: final popup

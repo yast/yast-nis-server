@@ -357,7 +357,7 @@
 	string error_msg     = lookup (user_settings, "error", "");
 	string error_details = lookup (user_settings, "error_details", "");
 	map output = $[];
- 
+
 	if (SCR::Read (.target.size, directory) == -1)
 	{
 	    output = SCR (`Execute (.target.bash_output, sformat ("/bin/mkdir %1", directory)));
@@ -401,7 +401,7 @@
 	// the element after the last newline is empty, remove it
 	if (size (running_maps) > 0)
 	{
-	    running_maps = remove (running_maps, size (running_maps) - 1); 
+	    running_maps = remove (running_maps, size (running_maps) - 1);
 	}
 
 	maplist (`map_name, running_maps, ``{

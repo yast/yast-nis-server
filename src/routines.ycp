@@ -1,6 +1,6 @@
 /**
  *
- * File:             
+ * File:
  *   routines.ycp
  *
  * Module:
@@ -9,7 +9,7 @@
  * Summary:
  *   YPServer module.
  *
- * Authors:            
+ * Authors:
  *   Dan Vesely <dan@suse.cz>
  *
  * $Id$
@@ -24,18 +24,18 @@
     textdomain "nis_server";
 
     /**
-     * Converts from any type to boolean: 
+     * Converts from any type to boolean:
      * true, "true" and nonzero integers are true,
      * everything else including nil is false.
      * @param arg argument to convert
      * @return boolean converted value
      */
     global define toboolean (any arg) ``{
-    	if (arg == nil) return false;
-        else if (is (arg, boolean)) return arg;
-        else if (is (arg, string))  return arg == "true";
-        else if (is (arg, integer)) return arg != 0;
-        else return false;
+	if (arg == nil) return false;
+	else if (is (arg, boolean)) return arg;
+	else if (is (arg, string))  return arg == "true";
+	else if (is (arg, integer)) return arg != 0;
+	else return false;
     }
 
     /**
@@ -86,9 +86,9 @@
      * Checks if the YP server software is installed
      * by querying RPM for ypserv
      * @return boolean
-     */       
+     */
     global define isYPServerInstalled () ``{
-        return (SCR (`Execute(.target.bash, "/bin/rpm -q ypserv")) == 0);
+	return (SCR (`Execute(.target.bash, "/bin/rpm -q ypserv")) == 0);
     }
 
     /**
@@ -98,7 +98,7 @@
      * @return boolean
      */
     global define isYPServerConfigured () ``{
-        return (SCR (`Read (.rc.system.START_YPSERV)) == "yes");
+	return (SCR (`Read (.rc.system.START_YPSERV)) == "yes");
     }
 
     /**
@@ -106,15 +106,15 @@
      * @return symbol `have_slave or `none_slave
      */
     global define SlaveExists () ``{
-        if (! toboolean (lookup (user_settings, ".var.yp.makefile.NOPUSH", false)))
-            return `have_slave;
-        
-        return `none_slave;
+	if (! toboolean (lookup (user_settings, ".var.yp.makefile.NOPUSH", false)))
+	    return `have_slave;
+
+	return `none_slave;
     }
 
     /**
      * Checks if this host is in the slaves list on master
-     * @return boolean 
+     * @return boolean
      */
     global define hasMasterThisSlave () ``{
 	// list of maps: $["host": "foo.com", "map":"passwd.byuid"]
