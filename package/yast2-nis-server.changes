@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Aug 31 00:19:07 CEST 2004 - nashif@suse.de
+
+- use modified flag (#43904)
+- 2.10.4
+
+-------------------------------------------------------------------
 Mon Aug 30 14:47:28 CEST 2004 - jsuchome@suse.cz
 
 - firewall: use "nis-server" service instead of "portmap"
