@@ -45,5 +45,6 @@ make check
 @YAST2DIR@/clients/nis_server.ycp
 @YAST2DIR@/include/nis_server/*.ycp
 @YAST2DIR@/menuentries/menuentry_nis_server.ycp
+@YAST2DIR@/scrconf/*.scr
 %dir @DOCDIR@
 @DOCDIR@/*
