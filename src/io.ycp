@@ -111,7 +111,7 @@
 	string error_msg     = lookup (user_settings, "error", "");
 	string error_details = lookup (user_settings, "error_details", "");
 	map output = $[];
-	string dn = lookup (user_settings, ".rc.system.YP_DOMAINNAME", "");
+	string dn = lookup (user_settings, ".etc.defaultdomain", "");
 
 	// first make sure that the directory exists
 	if (! EnsureDirectory (sformat ("/var/yp/%1", dn)))
@@ -214,26 +214,22 @@
 
     /**
      * Saves config variables according to workflow
-     * @param which workflow one of `none, `slave, `master
+     * @param which workflow one of `slave, `master
      */
     global define SaveVariables (symbol which) ``{
 	string error_msg     = lookup (user_settings, "error", "");
 	string error_details = lookup (user_settings, "error_details", "");
 
-	if (which != `none)
+	if (!SCR::Write(.etc.defaultdomain, user_settings[".etc.defaultdomain"]:""))
 	{
-	    if (!SCR::Write(.rc.system.YP_DOMAINNAME, user_settings[".rc.system.YP_DOMAINNAME"]:""))
-	    {
-		// To translators: message in the popup dialog
-		error_msg = error_msg + sformat (_("Error setting up variable %1\n"), "YP_DOMAINNAME");
-	    }
+	    // To translators: message in the popup dialog
+	    error_msg = error_msg + _("Error setting up domain name\n");
 	}
 
 	if (which == `master)
 	{
 	    maplist (`var, `value, user_settings, ``{
-		if (/*substring (var, 0, 10) == ".rc.system"   ||*/
-		    substring (var, 0, 12) == ".rc.ypserver" ||
+		if (substring (var, 0, 12) == ".rc.ypserver" ||
 		    substring (var, 0, 16) == ".var.yp.makefile")
 		{
 		    if (!SCR::Write (topath (var), value))
@@ -244,20 +240,11 @@
 		    }
 		}
 	    });
-	}
 
-	if (!SCR::Write (.rc.system, nil))
-	{
-	    // To translators: message in the popup dialog
-	    error_msg = error_msg + sformat (_("Error saving file %1\n"), "/etc/rc.config");
-	}
-
-	if (which == `master)
-	{
 	    if (!SCR::Write (.rc.ypserver, nil))
 	    {
 		// To translators: message in the popup dialog
-		error_msg = error_msg + sformat (_("Error saving file %1\n"), "/etc/rc.config.d/ypserv.rc.config");
+		error_msg = error_msg + sformat (_("Error saving file %1\n"), "/etc/sysconfig/ypserv");
 	    }
 	    if (!SCR::Write (.var.yp.makefile, nil))
 	    {
@@ -348,7 +335,7 @@
 	string error_msg     = lookup (user_settings, "error", "");
 	string error_details = lookup (user_settings, "error_details", "");
 	map output =$[];
-	string dn = lookup (user_settings, ".rc.system.YP_DOMAINNAME", "");
+	string dn = lookup (user_settings, ".etc.defaultdomain", "");
 
 	if (! EnsureDirectory (sformat ("/var/yp/%1", dn)))
 	{
@@ -385,7 +372,7 @@
 	string error_msg = lookup (user_settings, "error", "");
 	map c = $[
 	    "start":	user_settings["start_ypbind"]:false,
-	    "domain":	user_settings[".rc.system.YP_DOMAINNAME"]:"",
+	    "domain":	user_settings[".etc.defaultdomain"]:"",
 	    "servers":	[ "127.0.0.1" ],
 	    ];
 
@@ -408,9 +395,9 @@
 	list result = [];
 
 	// do this remove for all workflows
-	if (size (lookup (user_settings, ".rc.system.YP_DOMAINNAME", "")) > 0)
+	if (size (lookup (user_settings, ".etc.defaultdomain", "")) > 0)
 	{
-	    string domain         = lookup (user_settings, ".rc.system.YP_DOMAINNAME", "");
+	    string domain         = lookup (user_settings, ".etc.defaultdomain", "");
 	    // To translators: progress label
 	    string save_label     = sformat (_("Remove /var/yp/%1"), domain);
 	    // To translators: progress label
@@ -429,12 +416,6 @@
 	if (workflow == `none)
 	{
 	    result = result + [
-				// To translators: progress label
-		$["save_label"     : _("Set config variables."),
-				// To translators: progress label
-		  "progress_label" : _("Setting config variables."),
-		  "function"       : ``(SaveVariables (`none))
-		    ],
 				// To translators: progress label
 		$["save_label"     : _("Stop running daemons."),
 				// To translators: progress label
@@ -578,7 +559,7 @@
 
     global define YPSystemVars () ``{
 	return $[
-	    ".rc.system.YP_DOMAINNAME"       : "local"
+	    ".etc.defaultdomain"       : "local"
 	    ];
     }
 

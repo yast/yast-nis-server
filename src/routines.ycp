@@ -45,7 +45,7 @@
      * @return string	nil if no map is found or it has no YP_MASTER_NAME
      */
     global define getMaster () ``{
-	string dn = lookup (user_settings, ".rc.system.YP_DOMAINNAME", "");
+	string dn = lookup (user_settings, ".etc.defaultdomain", "");
 	if (dn == "")
 	{
 	    return nil;

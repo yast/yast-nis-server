@@ -2,7 +2,7 @@
  * File:
  *   rc_ypserv.scr
  * Summary:
- *   SCR Agent for reading/writing /etc/rc.config using the rc-agent
+ *   SCR Agent for reading/writing /etc/sysconfig/ypserv using the rc-agent
  * Access:
  *   read/write
  * Authors:
@@ -22,11 +22,12 @@
  * 
  * $Id$
  *
- * Read/Sets the values defined in <tt>/etc/rc.config.d/ypserv.rc.config</tt>
+ * Read/Sets the values defined in <tt>/etc/sysconfig/ypserv</tt>
+ * (formerly <tt>/etc/rc.config.d/ypserv.rc.config</tt>)
  * in an easy manner.
  */
 .rc.ypserver
 
 `ag_rcconfig(
-  RcFile("/etc/rc.config.d/ypserv.rc.config")
+  RcFile("/etc/sysconfig/ypserv")
 )

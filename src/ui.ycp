@@ -83,8 +83,8 @@
 
 	list files = [
 	    "/var/yp/Makefile",
-	    "/etc/rc.config.d/ypserv.rc.config",
-	    "/etc/rc.config",
+	    "/etc/sysconfig/ypserv",
+	    "/etc/defaultdomain",
 	    "/var/yp/securenets",
 	    "/var/yp/ypservers"
 	    ];
@@ -135,7 +135,7 @@
 	});
 
 	user_settings = add (user_settings, "old_domainname",
-			     lookup (user_settings, ".rc.system.YP_DOMAINNAME", ""));
+			     lookup (user_settings, ".etc.defaultdomain", ""));
 
 	Progress::NextStage ();
 	if (!isYPServerInstalled ())
@@ -215,7 +215,7 @@
 	    if (lookup (user_settings, "start_ypbind", false) &&
 		lookup (user_settings, "old_domainname", nil) != "" &&
 		lookup (user_settings, "old_domainname", nil) !=
-		lookup (user_settings, ".rc.system.YP_DOMAINNAME", nil))
+		lookup (user_settings, ".etc.defaultdomain", nil))
 	    {
 		// To translators: final popup
 		UI::WarningPopup (_("The domain has changed.
