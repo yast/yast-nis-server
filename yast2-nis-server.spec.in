@@ -38,6 +38,8 @@ Summary:	Configuration of NIS server
 @clientdir@/nis-server.ycp
 %dir @configdir@
 @configdir@/nis_server.y2cc
+%dir @desktopdir@
+@desktopdir@/nis_server.desktop
 %dir @scrconfdir@
 @scrconfdir@/run_ypwhich_m.scr
 @scrconfdir@/var_yp_securenets.scr
