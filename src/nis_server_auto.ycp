@@ -67,7 +67,7 @@ else if (func == "Import") {
     ret = NisServer::Import(param);
 }
 /* Return actual state */
-else if (func == "Result") {
+else if (func == "Export") {
     ret = NisServer::Export();
 }
 /* Write givven settings */
