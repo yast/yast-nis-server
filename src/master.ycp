@@ -24,7 +24,7 @@
 
     textdomain "nis_server";
 
-    include "ui/wizard_dialog.ycp";
+    import "Wizard";
     include "ui/common_popups.ycp";
     include "network/dns.ycp";
 
@@ -109,7 +109,7 @@ be used to set up these more specific options.</p>
 	contents = `HBox (`HSpacing (4), contents, `HSpacing (6));
 
 				// To translators: dialog label
-	UI::SetWizardContents (_("Network Information Service -- Master Server Setup"), contents, helptext, true, true);
+	Wizard::SetContents (_("Network Information Service -- Master Server Setup"), contents, helptext, true, true);
 	UI::ChangeWidget (`id (`allow_shell), `Enabled,
 			   lookup (user_settings, ".rc.system.START_YPPASSWDD", "no") == "yes");
 	UI::ChangeWidget (`id (`allow_gecos), `Enabled,

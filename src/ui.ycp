@@ -34,7 +34,7 @@
     include "nis_server/io.ycp";
     include "nis_server/routines.ycp";
 
-    include "ui/progress.ycp";
+    import "Progress";
 
     /**
      * Popup to confirm after finish is pressed
@@ -95,20 +95,23 @@
 	    ``(YPServers ())
 	    ];
 				// To translators: dialog title
-	ProgressSetup (title, progress_title, size (files),
+	Progress::New (title, progress_title, size (files),
 		       // To translators: progress label %1 is filename
 		       maplist (`file, files, ``(sformat (_("Load '%1' file"), file))),
+		       // To translators: progress label %1 is filename
+		       maplist (`file, files, ``(sformat (_("Loading '%1'..."), file)))
+		       // To translators: progress message
+		       + [_("Done.")],
 		       help);
 
 	integer i = 0;
 	while (i < size (files))
 	{
-	    // To translators: progress label %1 is filename
-	    string msg = sformat (_("Loading '%1'..."), select (files, i));
-	    ProgressMilestone (i, msg, i);
+	    Progress::NextStage ();
 	    user_settings = user_settings + ReadPathFile (eval (select (vars, i)), select (files, i));
 	    i = i + 1;
 	}
+	Progress::NextStage ();
 
 	user_settings = add (user_settings, "ui_also_client",
 			     lookup (user_settings, ".rc.system.START_YPBIND", "no") == "yes");
@@ -142,8 +145,7 @@
 	string help = _("<p>Please wait until the configuration is saved.</p>");
 	string title = _("Saving NIS server setup");
 	string progress_title = " ";
-	string progress_label = "";
-	UI::RestoreWizardNextButton();
+	Wizard::RestoreNextButton();
 	UI::ChangeWidget (`id (`next), `Enabled, false);
 	UI::ChangeWidget (`id (`abort), `Enabled, false);
 
@@ -152,23 +154,21 @@
 	integer step = 0;
 
 	// To translators: dialog title
-	ProgressSetup (title, progress_title, size (save_list),
-		       maplist (`e, save_list, ``(lookup (e, "save_label", ""))), help);
+	Progress::New (title, progress_title, size (save_list),
+		       maplist (`e, save_list, ``(e["save_label"]:"")),
+		       maplist (`e, save_list, ``(e["progress_label"]:""))
+		       // To translators: progress message
+		       + [_("Done.")],
+		       help);
 
-	while (step < size (save_list))
-	{
-	    map save_item = select (save_list, step, $[]);
-	    progress_label = lookup (save_item, "progress_label", "");
-	    ProgressMilestone (step, progress_label, step);
-	    y2milestone ("Calling: %1", lookup (save_item, "function", ""));
+	foreach (map save_item, save_list, ``{
+	    Progress::NextStage ();
+	    y2milestone ("Calling: %1", save_item["function"]:"");
 	    //sleep (1000);
-	    eval (lookup (save_item, "function", ""));
-	    step = step + 1;
-	}
+	    eval (save_item["function"]:"");
+	});
 
-	// To translators: progress message
-	progress_label = _("Done.");
-	ProgressMilestone (step + 1, progress_label, step);
+	Progress::NextStage ();
 
 	return `done;
     }

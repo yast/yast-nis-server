@@ -24,7 +24,7 @@
 
     textdomain "nis_server";
 
-    include "ui/wizard_dialog.ycp";
+    import "Wizard";
     include "ui/common_popups.ycp";
     include "network/ip.ycp";
     include "network/dns.ycp";
@@ -58,7 +58,7 @@
 	contents = `HVSquash (contents);
 
 				// To translators: dialog label
-	UI::SetWizardContents (_("Network Information Service -- Slave Server Setup"), contents, helptext, true, true);
+	Wizard::SetContents (_("Network Information Service -- Slave Server Setup"), contents, helptext, true, true);
 
 	symbol ui = nil;
 	string error_msg = "";

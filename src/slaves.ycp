@@ -24,7 +24,7 @@
 
     textdomain "nis_server";
 
-    include "ui/wizard_dialog.ycp";
+    import "Wizard";
     include "ui/common_popups.ycp";
     include "network/dns.ycp";
 
@@ -161,7 +161,7 @@
 	contents = add (contents, buttons);
 
 				// To translators: dialog label
-	UI::SetWizardContents (_("NIS Master Server Slaves Setup"), contents, helptext, true, true);
+	Wizard::SetContents (_("NIS Master Server Slaves Setup"), contents, helptext, true, true);
 
 	symbol ui = nil;
 
