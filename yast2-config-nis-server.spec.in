@@ -16,7 +16,7 @@ Copyright:	(c) 2000 SuSE GmbH
 Group:		System Environment/YaST
 Requires:	yast2 yast2-trans-nis-server
 Requires:	yast2-config-package-manager
-Requires:	ypserv
+Requires:	yast2-lib-network
 BuildArchitectures:	noarch
 
 Packager:	@MAINTAINER@
