@@ -57,10 +57,10 @@ be used to set up these more specific options.</p>
 
 	term pass_yes_buttons = `VBox ();
 				// To translators: checkbox label
-	pass_yes_buttons = add (pass_yes_buttons, `Left (`CheckBox (`id (`allow_shell), _("Allow changes to &GECOS field"),
+	pass_yes_buttons = add (pass_yes_buttons, `Left (`CheckBox (`id (`allow_gecos), _("Allow changes to &GECOS field"),
 				lookup (user_settings, ".sysconfig.ypserv.YPPWD_CHFN", "no") == "yes")));
 				// To translators: checkbox label
-	pass_yes_buttons = add (pass_yes_buttons, `Left (`CheckBox (`id (`allow_gecos), _("Allow changes to login &shell"),
+	pass_yes_buttons = add (pass_yes_buttons, `Left (`CheckBox (`id (`allow_shell), _("Allow changes to login &shell"),
 				lookup (user_settings, ".sysconfig.ypserv.YPPWD_CHSH", "no") == "yes")));
 	pass_yes_buttons = `HBox (`HSpacing (3), pass_yes_buttons);
 
