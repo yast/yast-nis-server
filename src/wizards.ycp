@@ -13,7 +13,7 @@
 
     import "Wizard";
     import "Label";
-    include "wizard/sequencer.ycp";
+    import "Sequencer";
 
     include "nis_server/ui.ycp";
 
@@ -87,7 +87,7 @@ define symbol MainSequence() ``{
 	    ],
 	];
 
-    symbol ret = WizardSequencer(aliases, sequence);
+    symbol ret = Sequencer::Run(aliases, sequence);
 
     return ret;
 }
@@ -131,7 +131,8 @@ define symbol NisServerSequence() ``{
 	];
 
     Wizard::CreateDialog();
-    symbol ret = WizardSequencer(aliases, sequence);
+    Wizard::SetDesktopIcon("nis_server");
+    symbol ret = Sequencer::Run(aliases, sequence);
 
     UI::CloseDialog();
     return ret;
