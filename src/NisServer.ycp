@@ -827,28 +827,27 @@ global define list(map) GetSaveList (symbol workflow) ``{
  */
 global define boolean Import (map settings) ``{
 
-	// Get default variables
+    // Get default variables
 
 
     string type = settings["server_type"]:"none";
-	if (type == "master")
-		ui_what = `master;
-	else if (type == "slave")
-		ui_what = `slave;
-	else
-		ui_what = `none;
+    if (type == "master")
+	ui_what = `master;
+    else if (type == "slave")
+	ui_what = `slave;
+    else
+	ui_what = `none;
 
     domain = settings["domain"]:"";
     minuid = settings["minuid"]:0;
     mingid = settings["mingid"]:0;
 
     merge_passwd = settings["merge_passwd"]:false;
-
     merge_group = settings["merge_group"]:false;
-    ypservers = settings["slaves"]:[];
-	if (ypservers == [])
-		YPServers ();
 
+    ypservers = settings["slaves"]:[];
+    if (ypservers == [])
+	YPServers ();
 
     start_ypbind = settings["start_ypbind"]:false;
 
@@ -856,23 +855,18 @@ global define boolean Import (map settings) ``{
     start_yppasswdd  = settings["start_yppasswdd"]:false;
 
 
-
     maps = settings["maps_to_serve"]:[];
-	if (maps == [] )
-		YPMakefileVars ();
-
+    if (maps == [] )
+	YPMakefileVars ();
 
     pwd_srcdir = settings["pwd_srcdir"]:"/etc";
     pwd_chsh =  settings["pwd_chsh"]:false;
     pwd_chfn =   settings["pwd_chfn"]:false;
     nopush = settings["nopush"]:false;
 
-
     securenets =  settings["securenets"]:[];
-	if (securenets == [])
-		YPSecurenets ();
-
-
+    if (securenets == [])
+	YPSecurenets ();
 
     return true;
 }
@@ -888,7 +882,7 @@ global define map Export () ``{
     settings["domain"] = domain;
 
 
-	string type = "none";
+    string type = "none";
     if (ui_what == `master)
         type = "master";
     else if (ui_what == `slave)
