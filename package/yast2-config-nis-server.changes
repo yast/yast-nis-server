@@ -1,4 +1,16 @@
 -------------------------------------------------------------------
+Tue Nov 13 11:32:20 CET 2001 - mvidner@suse.cz
+
+- Added default values for lookups. (2.5.2)
+
+-------------------------------------------------------------------
+Mon Oct 29 10:55:13 CET 2001 - mvidner@suse.cz
+
+- Added a missing CloseDialog (#12090, ncurses cc only).
+- Removed a spurious percent sign confusing gettext.
+- 2.5.1
+
+-------------------------------------------------------------------
 Tue Oct  2 14:08:28 CEST 2001 - mvidner@suse.cz
 
 - Two labels were not marked for translation. (2.5.0)
