@@ -96,6 +96,10 @@
 	repeat
 	{
 	    ui = UI::UserInput ();
+	    if (ui == `cancel)
+	    {
+		ui = `abort;
+	    }
 
 	    if (ui == `abort && !UI::ReallyAbortPopup (true)) continue;
 	}
