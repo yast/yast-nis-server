@@ -20,13 +20,8 @@
     include "nis_server/maps.ycp";
     include "nis_server/securenets.ycp";
 
-//   include "nis_server/io.ycp";
-//   include "nis_server/routines.ycp";
-
-    include "require.ycp";
-
-//    import "Progress";
-//    import "Runlevel";
+    import "Require";
+    import "Wizard";
 
 
     /**
@@ -43,6 +38,10 @@
      * @return `abort if aborted and `next otherwise
      */
     global define symbol WriteDialog() ``{
+	Wizard::RestoreNextButton();
+	UI::ChangeWidget (`id (`next), `Enabled, false);
+	UI::ChangeWidget (`id (`abort), `Enabled, false);
+
 	boolean ret = NisServer::Write();
 	return ret ? `next : `abort;
     }
@@ -135,9 +134,9 @@ You must reboot for the changes to take effect."));
      * @return `master or `slave
      */
     global define symbol InstallServer () ``{
-	if (!isYPServerInstalled ())
+	if (!Require::AreAllPackagesInstalled (["ypserv"]))
 	{
-	    DoInstallAndRemove (["ypserv"], []);
+	    Require::DoInstallAndRemove (["ypserv"], []);
 	}
 
 	return NisServer::ui_what;
