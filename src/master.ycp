@@ -68,7 +68,7 @@ be used to set up these more specific options.</p>
 	pass_buttons = add (pass_buttons, `Left (`CheckBox (`id (`change_passwords), `opt (`notify),
 							    // To translators: checkbox label
 			    _("Allow changing of &passwords"),
-			    lookup (user_settings, ".rc.system.START_YPPASSWDD", "no") == "yes")));
+			    lookup (user_settings, "start_yppasswdd", false))));
 	pass_buttons = add (pass_buttons, `VSpacing (0.3));
 	pass_buttons = add (pass_buttons, pass_yes_buttons);
 	pass_buttons = add (pass_buttons, `VSpacing (0.3));
@@ -81,7 +81,7 @@ be used to set up these more specific options.</p>
 	domain_frame = add (domain_frame, `VSpacing (0.3));
 				// To translators: checkbox label
 	domain_frame = add (domain_frame, `Left (`CheckBox (`id (`also_client), _("This host is also a NIS &client"),
-							    lookup (user_settings, "ui_also_client", false))));
+							    lookup (user_settings, "start_ypbind", false))));
 	domain_frame = add (domain_frame, `VSpacing (0.3));
 	domain_frame = `HBox (`HSpacing (), domain_frame, `HSpacing (4));
 
@@ -96,7 +96,7 @@ be used to set up these more specific options.</p>
 	contents = add (contents, `VSpacing (0.5));
 				// To translators: checkbox label
 	contents = add (contents, `HBox (`HSpacing (),`Left (`CheckBox (`id (`fast_map), _("&Fast Map distribution (rpc.ypxfrd)"),
-			lookup (user_settings, ".rc.system.START_YPXFRD", "no") == "yes"))));
+			lookup (user_settings, "start_ypxfrd", false)))));
 	contents = add (contents, `VSpacing (0.5));
 				// To translators: frame label
 	contents = add (contents, `Frame (_("Changing of passwords"), pass_buttons));
@@ -110,10 +110,9 @@ be used to set up these more specific options.</p>
 
 				// To translators: dialog label
 	Wizard::SetContents (_("Network Information Service -- Master Server Setup"), contents, helptext, true, true);
-	UI::ChangeWidget (`id (`allow_shell), `Enabled,
-			   lookup (user_settings, ".rc.system.START_YPPASSWDD", "no") == "yes");
-	UI::ChangeWidget (`id (`allow_gecos), `Enabled,
-			   lookup (user_settings, ".rc.system.START_YPPASSWDD", "no") == "yes");
+	boolean a = lookup (user_settings, "start_yppasswdd", false);
+	UI::ChangeWidget (`id (`allow_shell), `Enabled, a);
+	UI::ChangeWidget (`id (`allow_gecos), `Enabled, a);
 
 	symbol ui = nil;
 	string error_msg = "";
@@ -145,31 +144,18 @@ be used to set up these more specific options.</p>
 	}
 	until ((ui == `next && size (error_msg) == 0) || contains ([`back, `abort, `details], ui));
 
-	// query the widgets
-	list widgets_to_query = [`have_slave, `also_client, `fast_map, `allow_gecos, `allow_shell, `change_passwords];
-	maplist (`widget, widgets_to_query, ``{
-	    string key = sformat ("ui_%1", substring (sformat ("%1", widget), 1));
-	    user_settings = add (user_settings, key, UI::QueryWidget (`id (widget), `Value));
-	});
-
-	user_settings = add (user_settings, "ui_also_client", UI::QueryWidget (`id (`also_client), `Value));
+	user_settings = add (user_settings, "start_ypbind", UI::QueryWidget (`id (`also_client), `Value));
 	user_settings = add (user_settings, ".var.yp.makefile.NOPUSH",
 			     sformat ("%1", ! UI::QueryWidget (`id (`have_slave), `Value)));
 	user_settings = add (user_settings, ".rc.ypserver.YPPWD_CHFN",
 			     UI::QueryWidget (`id (`allow_gecos), `Value) ? "yes" : "no");
 	user_settings = add (user_settings, ".rc.ypserver.YPPWD_CHSH",
 			     UI::QueryWidget (`id (`allow_shell), `Value) ? "yes" : "no");
-	user_settings = add (user_settings, ".rc.system.START_YPPASSWDD",
-			     UI::QueryWidget (`id (`change_passwords), `Value) ? "yes" : "no");
-	user_settings = add (user_settings, ".rc.system.START_YPXFRD",
-			     UI::QueryWidget (`id (`fast_map), `Value) ? "yes" : "no");
+	user_settings = add (user_settings, "start_yppasswdd",
+			     UI::QueryWidget (`id (`change_passwords), `Value));
+	user_settings = add (user_settings, "start_ypxfrd",
+			     UI::QueryWidget (`id (`fast_map), `Value));
 	user_settings = add (user_settings, ".rc.system.YP_DOMAINNAME", UI::QueryWidget (`id (`domain), `Value));
-	user_settings = add (user_settings, ".rc.system.START_YPSERV", "yes");
-
-	if (lookup (user_settings, ".rc.system.START_YPPASSWDD", "no") == "yes")
-	{
-	    user_settings = add (user_settings, ".rc.system.START_PORTMAP", "yes");
-	}
 
 	return ui;
     }
