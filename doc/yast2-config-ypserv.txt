@@ -1,0 +1,179 @@
+
+Configuring ypserv over YaST2
+=============================
+
+Draft 0.2 - 2001-05-31
+
+======================================================================
+
+Startscreen:
+
+-----------------------------------------
+This machine should be a
+  o NIS Master server
+  o NIS Slave server
+  x no NIS server
+-----------------------------------------
+
+You can select one of the 3 ypserv options (Master/Slave/None).
+ypserv is "Master" or "Slave", if START_YPSERV is set. ypserv
+is "Master", if the Masterentry of/var/yp/<domain>/passwd.byname
+contains the same hostname as '/usr/lib/yp/yphelper --hostname'
+reports, else "Slave".
+Support of multiple Master for one Domain will not be supported
+(If we wish to support it: The host is Master, if the Masterentry
+ of one map in /var/yp/<domain> contains the correct hostname. In
+ this case rpc.ypxfrd is enabled. rpc.yppasswdd will only be enabled
+ if passwd.byname and passwd.byuid contain the correct host name,
+ not if only one of the other contains it).
+If ypserv is master or slave, we must make sure that START_PORTMAP
+is set to "yes".
+
+We have 3 different workflows: No server, Slave and Master
+
+======================================================================
+
+Configuration for ypserv if we will not start it:
+
+Remove /var/yp/<domainname> if YP_DOMAINNAME is set. Stop running
+rpc.ypxfrd, rpc.yppasswdd and ypserv. set all three START_* variables
+to "no".
+
+Exit workflow
+
+======================================================================
+
+Configuration for ypserv as SLAVE:
+
+-----------------------------------------
+ NIS Domainname: ___________
+ NIS Master Server: ___________ (IP)
+-----------------------------------------
+
+
+1. Ask for YP_DOMAINNAME (/etc/rc.config)
+
+2. Ask for the host running the master ypserv
+
+3. Remove /var/yp/<YP_DOMAINNAME>
+
+4. Run /usr/lib/yp/ypxfr -f -h <master> -d <YP_DOMAINNAME> mapname
+   and get maps from master
+
+5. Check, if we are in the ypservers map and warn if not
+
+6. set START_YPSERV to yes, START_YPXFRD and START_YPPASSWDD to no.
+
+7. Create /var/yp/securenets (Look at "MASTER" for specification)
+
+8. If ypserv is running, restart it.
+   If rpc.yppasswdd or rpc.ypxfrd are running, stop them.
+
+Exit workflow.
+
+======================================================================
+
+Configuration for ypserv as MASTER:
+(There is nothing special to do if we switch between Master
+ and Slave. This is also safe if we reconfigure ypserv as Master).
+
+-----------------------------------------
+NIS Domainname: __________________
+o Do we have Slave NIS server
+Fast Map distribution (rpc.ypxfrd)
+  o Yes   x NO
+
+Allow changing of passwords:
+    0 NO
+  +- X YES -----------------------+
+  |  o Allow changing GECOS field |
+  |  o Allow changing of SHELL    |
+  +-------------------------------+
+------------------------------------------
+
+1. a) Ask for rc.config variable YP_DOMAINNAME
+   b) Ask if we have Slave NIS server (toggle button)
+      This is variable NOPUSH (true or false) in /var/yp/Makefile.
+   c) Ask if we should start rpc.ypxfrd (START_YPXFRD)
+   d) If rpc.yppasswdd is set to "Yes":
+      START_PORTMAP and START_YPPASSWDD must be set
+      to "yes" in /etc/rc.config and YPPWD_CHSH/YPPWD_CHFN
+      must be set in /etc/rc.config.d/ypserv.rc.config
+
+      If rpc.yppasswdd should not be started (for example because "Slave"
+      or "None" are set) START_YPPASSWDD must be set to "no". START_PORTMAP,
+      YPPWD_CHSH and YPPWD_CHFN should not be changed.
+
+      The YaST2 module can start rpc.yppasswdd only after ypserv is
+      configured, not before.
+
+----
+I'm not sure what the best workflow would be now ...
+I think 2 - 6 could be an extra window, which you only
+reach with "Details" from above mask ?
+----
+
+
+2. YP Source directory for passwd, shadow and
+   group: YPPWD_SRCDIR=/etc (ypserv.rc.config)
+   (The files passwd and group must exist in this
+    directory).
+
+3. Ask for YP_INTERDOMAIN (/var/yp/Makefile)
+   (Only usefull for old SunOS clients, I think we should ignore
+    this).
+
+4. if $YPPWD_SRCDIR/shadow exists:
+   Ask for MERGE_PASSWD (true or false, /var/yp/Makefile)
+   If set to "true", make sure shadow is removed from "all:"
+   and the shadow.byname map is removed from /var/yp/<domain>.
+
+5. if $YPPWD_SRCDIR/gshadow exists:
+   Ask for MERGE_GROUP (true or false, /var/yp/Makefile)
+   There is nothing special to do if this changes.
+
+6. Ask for MINUID and MINGID (/var/yp/Makefile)
+
+
+---
+ 7 should only be shown if we have slave NIS server (depends
+ on NOPUSH).
+---
+
+
+7. if NOPUSH is false, ask for hostname of all slaves
+   and add them to /etc/yp/ypservers
+
+---
+I think 8 should be moved to the above "Detailed" mask ?
+---
+
+8. Ask, which maps should be created and served. By default this are:
+   passwd, group, rpc, services, netid (all: Rule in /var/yp/Makefile)
+
+   Possible are: passwd group hosts rpc services netid protocols
+   netgrp mail publickey networks ethers bootparams printcap
+   shadow auto.master auto.home auto.local netmasks
+
+   Allow the following maps only:
+   shadow, if MERGE_PASSWD=false and $YPPWD_SRCDIR/shadow exists
+   publickey, if /etc/publickey exists
+   bootparams, if /etc/botparams exists
+   auto.*, if /etc/auto.* exists
+
+---
+ 10. is the same for SLAVE, 11. and 12. only for Master.
+---
+
+10. Ask which hosts are allowed to query ypserv and store
+    them in /var/yp/securenets. This is a list of netmask/network
+    entries, where "255.0.0.0 127.0.0.0" must exist. If the user
+    does not wish access control with securenets, the above and the
+    following entry must be added: "0.0.0.0 0.0.0.0" All other entries
+    must be removed.
+
+11. Delete /var/yp/<domain>/* to make sure we will not leave old
+    Maps.
+
+12. Run make -C /var/yp with NOPUSH=true to create initial database.
+    ypserv should be run and the domainname must be set before.
