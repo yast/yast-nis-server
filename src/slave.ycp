@@ -45,7 +45,7 @@
 	term contents = `VBox ();
 				// To translators: textentry label
 	contents = add (contents, `TextEntry (`id (`domain), _("NIS &Domain name:"),
-					      lookup (user_settings, ".rc.system.YP_DOMAINNAME", "")));
+					      lookup (user_settings, ".etc.defaultdomain", "")));
 	contents = add (contents, `VSpacing (0.5));
 				// To translators: text entry label
 	contents = add (contents, `TextEntry (`id (`master_ip), _("NIS &Master Server:"),
@@ -90,7 +90,7 @@
 
 	user_settings = add (user_settings, "ui_master_ip", UI::QueryWidget (`id (`master_ip), `Value));
 	user_settings = add (user_settings, "start_ypbind", UI::QueryWidget (`id (`also_client), `Value));
-	user_settings = add (user_settings, ".rc.system.YP_DOMAINNAME", UI::QueryWidget (`id (`domain), `Value));
+	user_settings = add (user_settings, ".etc.defaultdomain", UI::QueryWidget (`id (`domain), `Value));
 
 	return ui;
     }

@@ -21,7 +21,7 @@
     TEST (``(toboolean (0)), [], nil);
     TEST (``(toboolean (true)), [], nil);
     TEST (``(toboolean (false)), [], nil);
-    
+
     // all other values are false
     TEST (``(toboolean ([])), [], nil);
     TEST (``(toboolean ($[])), [], nil);
@@ -33,19 +33,19 @@
     map user_settings = $[];
     TEST (``(getMaster ()), [], nil);
     // no map dir
-    user_settings = $[ ".rc.system.YP_DOMAINNAME": "testdomain" ];
+    user_settings = $[ ".etc.defaultdomain": "testdomain" ];
     TEST (``(getMaster ()), [], -1); // .target.size
     // no maps in dir
-    map READ = $[ 
-	"target": $[ 
+    map READ = $[
+	"target": $[
 	    "size":	42,
 	    "dir":	[]
 	    ]
 	];
     TEST (``(getMaster ()), [ READ ], nil);
     // no master entry in map
-    READ = $[ 
-	"target": $[ 
+    READ = $[
+	"target": $[
 	    "size":	42,
 	    "dir":	["map1", "map2"]
 	    ]

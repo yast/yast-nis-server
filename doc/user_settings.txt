@@ -8,9 +8,10 @@ reduce depth, now uses prefixes instead.
 "start_yppasswdd"			<boolean>
 "start_ypxfrd"				<boolean>
 
-".rc.system.YP_DOMAINNAME"              <string>
+".etc.defaultdomain"			<string> (was .rc.system.YP_DOMAINNAME)
 "old_domainname"			<string>
 
+(now actually in /etc/sysconfig/ypserv)
 ".rc.ypserver.YPPWD_CHFN"               <string>
 ".rc.ypserver.YPPWD_CHSH"               <string>
 ".rc.ypserver.YPPWD_SRCDIR"             <string>

@@ -77,7 +77,7 @@ be used to set up these more specific options.</p>
 	term domain_frame = `VBox ();
 	domain_frame = add (domain_frame, `VSpacing (0.3));
 	domain_frame = add (domain_frame, `TextEntry (`id (`domain), "",
-						      lookup (user_settings, ".rc.system.YP_DOMAINNAME", "")));
+						      lookup (user_settings, ".etc.defaultdomain", "")));
 	domain_frame = add (domain_frame, `VSpacing (0.3));
 				// To translators: checkbox label
 	domain_frame = add (domain_frame, `Left (`CheckBox (`id (`also_client), _("This host is also a NIS &client"),
@@ -155,7 +155,7 @@ be used to set up these more specific options.</p>
 			     UI::QueryWidget (`id (`change_passwords), `Value));
 	user_settings = add (user_settings, "start_ypxfrd",
 			     UI::QueryWidget (`id (`fast_map), `Value));
-	user_settings = add (user_settings, ".rc.system.YP_DOMAINNAME", UI::QueryWidget (`id (`domain), `Value));
+	user_settings = add (user_settings, ".etc.defaultdomain", UI::QueryWidget (`id (`domain), `Value));
 
 	return ui;
     }

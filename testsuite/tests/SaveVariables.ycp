@@ -18,14 +18,11 @@
 
     map user_settings = $[
 	"ui_also_client": true,
-	".rc.system.START_YPSERV": "yes",
-	".rc.system.YP_DOMAINNAME": "thedomain",
+	".etc.defaultdomain": "thedomain",
 	".rc.ypserver.YPPWD_SRCDIR": "/etc",
 	".var.yp.makefile.MERGE_PASSWD": "true"
 	];
 
-    DUMP("none");
-    TEST (``(SaveVariables (`none)), [], true);
     DUMP("slave");
     TEST (``(SaveVariables (`slave)), [], true);
     DUMP("master");
