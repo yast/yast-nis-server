@@ -214,7 +214,7 @@
 		}
 	    }
 
-	    if (ui == `abort && !Popup::ReallyAbort (true)) continue;
+	    if (ui == `abort && !Popup::ReallyAbort (true)) ui = `again;
 	}
 	until (contains ([`back, `next, `abort], ui));
 

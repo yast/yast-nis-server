@@ -142,7 +142,7 @@ file
 
 	    change_enabled = (ui == `srcdir);
 	    srcdir = (string) UI::QueryWidget (`id (`srcdir), `Value);
-	    if (ui == `abort && !Popup::ReallyAbort (true)) continue;
+	    if (ui == `abort && !Popup::ReallyAbort (true)) ui = `again;
 	    if (ui == `next)
 	    {
 		if (SCR::Read (.target.dir, srcdir) == nil && !Mode::config)

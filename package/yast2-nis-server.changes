@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Mon Jul 12 13:37:57 CEST 2004 - mvidner@suse.cz
+
+- Fixed cancelling Abort (#42730).
+
+-------------------------------------------------------------------
 Thu Jun 17 10:46:18 CEST 2004 - mvidner@suse.cz
 
 - Added "testedfiles" to test cases to make it work with the new testsuite.
