@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Fri Aug 31 00:49:12 CEST 2001 - ro@suse.de
+
+- added <libycp-devel> to neededforbuild (for testsuite)
+
+-------------------------------------------------------------------
 Mon Aug 27 15:21:56 CEST 2001 - mvidner@suse.cz
 
 - Fixed starting the client (write yp.conf, set START_PORTMAP).
