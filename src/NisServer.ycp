@@ -18,7 +18,7 @@ textdomain "nis_server";
 
 import "Progress";
 import "Report";
-import "Runlevel";
+import "Service";
 import "Summary";
 
 //TODO: make it work like Mail::Touch
@@ -214,9 +214,9 @@ global define boolean Read() ``{
 
     Progress::NextStage ();
     // "ypserv" is handled elsewhere
-    start_ypbind = Runlevel::ServiceEnabled ("ypbind");
-    start_ypxfrd = Runlevel::ServiceEnabled ("ypxfrd");
-    start_yppasswdd = Runlevel::ServiceEnabled ("yppasswdd");
+    start_ypbind = Service::Enabled ("ypbind");
+    start_ypxfrd = Service::Enabled ("ypxfrd");
+    start_yppasswdd = Service::Enabled ("yppasswdd");
 
     // TODOm: fix like the client (?)
     if (domain == "")
@@ -631,13 +631,13 @@ global define void YPDaemons (symbol workflow) ``{
 	services[s] = "enable";
     });
     foreach (string s, string action, services, ``{
-	Runlevel::ServiceAdjust (s, action);
+	Service::Adjust (s, action);
     });
 
     foreach (string d, to_stop, ``{
 	y2milestone ("Stopping daemon %1", d);
 	// $#@! broken by bug 9648
-	integer ret = Runlevel::RunInitScript (d, "stop");
+	integer ret = Service::RunInitScript (d, "stop");
 	if (ret != 0)
 	{
 	    // To translators: message in the popup dialog
@@ -648,8 +648,8 @@ global define void YPDaemons (symbol workflow) ``{
     foreach (string d, to_start, ``{
 	y2milestone ("Starting daemon %1", d);
 	// start only if not running. essential for portmap! (bug #9999)
-	if (Runlevel::ServiceStatus (d) != 0) {
-	    integer ret = Runlevel::RunInitScript (d, "start");
+	if (Service::Status (d) != 0) {
+	    integer ret = Service::RunInitScript (d, "start");
 	    if (ret != 0)
 	    {
 		// To translators: message in the popup dialog
