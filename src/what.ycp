@@ -58,13 +58,9 @@ configure it.</p>");
 	    labels = add (labels, `Left (`Label (_("No NIS Server is configured."))));
 
 				// To translators: label in the dialog
-	    master_setup_label = _("Install and set up  
-an NIS &Master Server
-");
+	    master_setup_label = _("Install and set up an NIS &Master Server");
 				// To translators: label in the dialog
-	    slave_setup_label  = _("Install and set up 
-an NIS &Slave Server
-");
+	    slave_setup_label  = _("Install and set up an NIS &Slave Server");
 				// To translators: label in the dialog
 	    none_setup_label   = _("&Do nothing and leave set up");
 	}
