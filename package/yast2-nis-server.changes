@@ -1,7 +1,7 @@
 -------------------------------------------------------------------
-Mon Jul  1 19:18:21 CEST 2002 - msvec@suse.cz
+Thu Jul 04 21:31:21 CEST 2002 - arvin@suse.de
 
-- 2.6.3
+- moved non binary files to /usr/share/YaST2
 
 -------------------------------------------------------------------
 Fri Jun 28 15:14:27 CEST 2002 - mvidner@suse.cz
@@ -67,7 +67,7 @@ Fri Jan 11 09:43:46 CET 2002 - mvidner@suse.cz
 Fri Dec  7 15:29:40 CET 2001 - mvidner@suse.cz
 
 - Obliterated START_ variables, using Runlevel.
-- Client config by calling nis_write.	
+- Client config by calling nis_write.
 - Using Wizard and Progress, syntax update.
 - Using y2autoconf and create-spec.
 - 2.5.3
@@ -213,10 +213,10 @@ Mon Jul 30 13:36:16 CEST 2001 - mvidner@suse.cz
 -------------------------------------------------------------------
 Fri Jul 20 15:59:43 CEST 2001 - dan@suse.cz
 
-- help text and locale fixes 
+- help text and locale fixes
 
 -------------------------------------------------------------------
 Tue Jul 17 10:28:18 CEST 2001 - dan@suse.cz
 
-- initial version 
+- initial version
 
