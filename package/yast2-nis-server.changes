@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Thu Jun 27 11:56:40 CEST 2002 - kkaempf@suse.de
+
+- rename to "yast2-nis-server"
+
+-------------------------------------------------------------------
 Tue Apr 16 15:44:42 CEST 2002 - mvidner@suse.cz
 
 - Rewrote the maps selection dialog:
