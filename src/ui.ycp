@@ -147,7 +147,7 @@
 	UI (`ChangeWidget (`id (`next), `Enabled, false));
 	UI (`ChangeWidget (`id (`abort), `Enabled, false));
 
-	symbol workflow = lookup (user_settings, "ui_what");
+	symbol workflow = lookup (user_settings, "ui_what", `error);
 	list save_list = GetSaveList (workflow);
 	integer step = 0;
 
