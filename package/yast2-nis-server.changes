@@ -1,4 +1,13 @@
 -------------------------------------------------------------------
+Thu Jul 11 21:06:46 CEST 2002 - mvidner@suse.cz
+
+- Create YPPWD_SRCDIR if it does not exist (#15624).
+- Nis domain names are not as strict as DNS ones (#16648).
+- Fixed client Write invocation.
+- Abort on WM close button.
+- 2.6.5
+
+-------------------------------------------------------------------
 Thu Jul 04 21:31:21 CEST 2002 - arvin@suse.de
 
 - moved non binary files to /usr/share/YaST2
