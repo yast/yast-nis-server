@@ -19,8 +19,7 @@ textdomain "nis_server";
 import "Progress";
 import "Report";
 import "Summary";
-
-include "nis_server/routines.ycp";
+import "Runlevel";
 
 //TODO: make it work like Mail::Touch
 /**
@@ -271,6 +270,61 @@ define void YPServers () ``{
     ypservers = SCRGet (.var.yp.ypservers, []);
 }
 
+// --------------------
+// read-routines
+
+    /**
+     * Gets the master server (name or IP?) from any of this server's maps
+     * @return	nil if no map is found or it has no YP_MASTER_NAME
+     */
+    global define string getMaster () ``{
+	string dn = domain;
+	if (dn == "")
+	{
+	    return nil;
+	}
+	string ddir = sformat ("/var/yp/%1", dn);
+	string any_map = nil;
+	if (SCR::Read (.target.size, ddir) >=0 )
+	{
+	    list dmaps = SCR::Read (.target.dir, ddir);
+	    any_map = dmaps[0]:nil;
+	}
+	if (any_map == nil)
+	{
+	    return nil;
+	}
+	string command = sformat ("/usr/lib/yp/makedbm -u /var/yp/%1/%2 | grep ^YP_MASTER_NAME", dn, any_map);
+
+	string output = lookup (SCR::Execute (.target.bash_output, command), "stdout", "");
+	return select (splitstring (output, " \n"), 1, nil);
+    }
+
+    /**
+     * @return Determines if the current host is YP master or not
+     */
+    global define boolean isYPMaster () ``{
+	string master = getMaster();
+	if (master == nil)
+	{
+	    return false;	// can't decide
+	}
+
+	map output = SCR::Execute (.target.bash_output, "/usr/lib/yp/yphelper --hostname");
+	string yphelper_hostname = output["stdout"]:"";
+
+	return master == deletechars (yphelper_hostname, "\n");
+    }
+
+    /**
+     * @return Checks if the YP server software is installed
+     * by querying RPM for ypserv
+     */
+    global define boolean isYPServerInstalled () ``{
+	return (SCR::Execute(.target.bash, "/bin/rpm -q ypserv") == 0);
+    }
+
+
 // ----------------------------------------
 
 // plain text
@@ -304,9 +358,6 @@ global define boolean Write() ``{
     // dialog heading
     string title = _("Saving NIS server setup");
     string progress_title = " ";
-    Wizard::RestoreNextButton();
-    UI::ChangeWidget (`id (`next), `Enabled, false);
-    UI::ChangeWidget (`id (`abort), `Enabled, false);
 
     list save_list = GetSaveList (ui_what);
     integer step = 0;
@@ -884,9 +935,9 @@ global define map Export () ``{
 
     string type = "none";
     if (ui_what == `master)
-        type = "master";
+	type = "master";
     else if (ui_what == `slave)
-        type = "slave";
+	type = "slave";
 
     settings["server_type"] = type;
     settings["minuid"]= minuid;
