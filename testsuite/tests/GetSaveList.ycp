@@ -13,7 +13,6 @@
 {
     include "testsuite.ycp";
     include "nis_server/io.ycp";
-    include "nis_server/routines.ycp";
 
     map user_settings = $[];
 

@@ -21,7 +21,9 @@
 
 {
 
-    textdomain "nis_server";    
+    textdomain "nis_server";
+    
+    include "nis_server/routines.ycp";
 
     /**
      * Read variables, checks the file and each variable
@@ -484,7 +486,7 @@
                     ]
                 ];
 
-            if (!tooboolean (lookup (user_settings, ".var.yp.makefile.NOPUSH", true)) &&
+            if (!toboolean (lookup (user_settings, ".var.yp.makefile.NOPUSH", true)) &&
                 size (lookup (user_settings, ".var.yp.ypservers", [])) > 0)
             {
                 result = result + [
