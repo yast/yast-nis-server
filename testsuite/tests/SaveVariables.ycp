@@ -1,0 +1,24 @@
+/*
+ * YaST2: Modules testsuite
+ *
+ * Description:
+ *   Testsuite for the SaveVariables function
+ *
+ * Authors:
+ *   Dan Vesely <dan@suse.cz>
+ *
+ * $Id$
+ */
+
+{
+    include "testsuite.ycp";
+    include "nis_server/io.ycp";
+    include "nis_server/routines.ycp";
+
+    map user_settings = $[];
+
+    TEST (``(SaveVariables (`none)), [], true);
+    TEST (``(SaveVariables (`slave)), [], true);
+    TEST (``(SaveVariables (`master)), [], true);
+
+}

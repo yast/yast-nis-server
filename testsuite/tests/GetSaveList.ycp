@@ -1,0 +1,24 @@
+/*
+ * YaST2: Modules testsuite
+ *
+ * Description:
+ *   Testsuite for the GetSaveList function
+ *
+ * Authors:
+ *   Dan Vesely <dan@suse.cz>
+ *
+ * $Id$
+ */
+
+{
+    include "testsuite.ycp";
+    include "nis_server/io.ycp";
+    include "nis_server/routines.ycp";
+
+    map user_settings = $[];
+
+    TEST (``(GetSaveList (`none)), [], true);
+    TEST (``(GetSaveList (`slave)), [], true);
+    TEST (``(GetSaveList (`master)), [], true);
+
+}

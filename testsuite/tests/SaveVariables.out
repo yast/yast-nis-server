@@ -1,0 +1,14 @@
+Write	.rc.system.START_YPXFRD "no" true
+Write	.rc.system.START_YPSERV "no" true
+Write	.rc.system.START_YPPASSWDD "no" true
+Write	.rc.system nil true
+Return	nil
+Write	.rc.system.START_YPXFRD "no" true
+Write	.rc.system.START_YPPASSWDD "no" true
+Write	.rc.system.START_YPSERV "yes" true
+Write	.rc.system nil true
+Return	nil
+Write	.rc.system nil true
+Write	.rc.ypserver nil true
+Write	.var.yp.makefile nil true
+Return	nil

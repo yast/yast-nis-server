@@ -203,7 +203,7 @@
 
     /**
      * Saves config variables according to workflow
-     * @param which workflow
+     * @param which workflow one of `none, `slave, `master
      */
     global define SaveVariables (symbol which) ``{
         string error_msg     = lookup (user_settings, "error", "");
@@ -391,7 +391,7 @@
 
     /**
      * Returns list of progress labels
-     * @param workflow symbol of what workflow was choosed
+     * @param workflow symbol of what workflow was choosed (`none, `slave, `master)
      * @return list of localized strings
      */
     global define GetSaveList (symbol workflow) ``{
@@ -513,7 +513,7 @@
         }
         
         // slave or master is also client ?
-        if (contains ([`slave, `master], which) && lookup (user_settings, "ui_also_client", false))
+        if (contains ([`slave, `master], workflow) && lookup (user_settings, "ui_also_client", false))
         {
             result = result + [    
                                 // To translators: progress label
