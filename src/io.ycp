@@ -190,9 +190,15 @@
     global define YPMake () ``{
 	string error_msg     = lookup (user_settings, "error", "");
 	string error_details = lookup (user_settings, "error_details", "");
+	map output =$[];
 	string dn = lookup (user_settings, ".rc.system.YP_DOMAINNAME");
 
-	map output = SCR (`Execute (.target.bash_output, sformat ("/usr/bin/make -C /var/yp/%1 -f ../Makefile NOPUSH=true ypservers", dn)));
+	if (! EnsureDirectory (sformat ("/var/yp/%1", dn)))
+	{
+	    return;
+	}
+
+	output = SCR (`Execute (.target.bash_output, sformat ("/usr/bin/make -C /var/yp/%1 -f ../Makefile NOPUSH=true ypservers", dn)));
 
 	if (size (lookup (output, "stderr", "")) > 0)
 	{
@@ -331,6 +337,29 @@
 	user_settings = add (user_settings, "error_details", error_details);
     }
 
+    /**
+     * Ensures that the domain directory exists.
+     * @param	directory	the path
+     * @return	boolean		false if not and cannot be created
+     */
+    global define EnsureDirectory (string directory) ``{
+	string error_msg     = lookup (user_settings, "error", "");
+	string error_details = lookup (user_settings, "error_details", "");
+	map output = $[];
+ 
+	if (SCR::Read (.target.size, directory) == -1)
+	{
+	    output = SCR (`Execute (.target.bash_output, sformat ("/bin/mkdir %1", directory)));
+	    if (size (lookup (output, "stderr", "")) > 0)
+	    {
+		// To translators: message in the popup dialog
+		error_msg = error_msg + sformat (UI (_("Directory %1 can not be created.\n")), directory);
+		error_details = error_details + sformat ("<pre>%1</pre>", lookup (output, "stderr", ""));
+		return false;
+	    }
+	}
+	return true;
+    }
 
     /**
      * Gets the YP maps from master for slave
@@ -341,18 +370,10 @@
 	string error_details = lookup (user_settings, "error_details", "");
 	map output = $[];
 
-	// firts make sure that the directory exists
-	string directory = sformat ("/var/yp/%1", lookup (user_settings, ".rc.system.YP_DOMAINNAME", ""));
-	if (SCR::Read (.target.size, directory) == -1)
+	// first make sure that the directory exists
+	if (! EnsureDirectory (sformat ("/var/yp/%1", lookup (user_settings, ".rc.system.YP_DOMAINNAME", ""))))
 	{
-	    output = SCR (`Execute (.target.bash_output, sformat ("/bin/mkdir %1", directory)));
-	    if (size (lookup (output, "stderr", "")) > 0)
-	    {
-		// To translators: message in the popup dialog
-		error_msg = error_msg + sformat (UI (_("Directory %1 can not be created.\n")), directory);
-		error_details = error_details + sformat ("<pre>%1</pre>", lookup (output, "stderr", ""));
-		return;
-	    }
+	    return;
 	}
 
 	// and get the maps
