@@ -1,4 +1,14 @@
 -------------------------------------------------------------------
+Wed Aug  8 14:53:11 CEST 2001 - mvidner@suse.cz
+
+- Better error formatting.
+- LSB-compatible daemon restarting.
+- Warn about needing to reboot when client of a changed domain.
+- Changed from RPM Requires to sw_single
+- Using common routines from yast2-lib-network.
+- 2.4.4
+
+-------------------------------------------------------------------
 Tue Jul 31 14:58:41 CEST 2001 - mvidner@suse.cz
 
 - New maintainer.
