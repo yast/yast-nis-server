@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Fri Jul 19 18:02:58 CEST 2002 - mvidner@suse.cz
+
+- Moved sysconfig/ypserv definition to yast2.rpm to share it with yast2-users.
+- Labels internally reorganized, preventing a babelfish effect (#17002).
+- Merged proofread texts.
+- 2.6.6
+
+-------------------------------------------------------------------
 Thu Jul 11 21:06:46 CEST 2002 - mvidner@suse.cz
 
 - Create YPPWD_SRCDIR if it does not exist (#15624).
