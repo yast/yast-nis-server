@@ -70,8 +70,11 @@ configure it.</p>");
 	    boolean isMaster = (detected == `master);
 
 	    labels = add (labels, `Left (`Label (_("NIS Software is installed."))));
+	    string slave_or_master = isMaster ?
 	    // To translators: part of the label in the dialog
-	    string slave_or_master = isMaster ? _("Master") : _("Slave");
+		_("Master") :
+	    // To translators: part of the label in the dialog
+		_("Slave");
 	    // To translators: label in the dialog, %1 is Master or Slave above
 	    labels = add (labels, `Left (`Label (sformat (_("A NIS %1 Server is configured."),
 							  slave_or_master))));
@@ -87,6 +90,7 @@ configure it.</p>");
 
 	    master_setup_label = isMaster? reconfigure_master: change_to_master;
 	    slave_setup_label  = isMaster? change_to_slave: reconfigure_slave;
+	    // To translators: label in the dialog
 	    none_setup_label   = _("&Deactivate any NIS server configuration");
 	}
 	else

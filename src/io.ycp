@@ -350,6 +350,7 @@
 	});
 	if (!create_ok)
 	{
+	    // error popup
 	    addError (sformat (_("Error while creating an empty user database.\n")));
 	}
 

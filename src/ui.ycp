@@ -42,9 +42,14 @@
      * @return `yes or `back
      */
     global define symbol FinishPopup () ``{
-			       // To translators: ContinueCancel Popup
-	if (UI::ContinueCancelHeadlinePopup (_("Finish"), _("Really save configuration ?")))
+	if (UI::ContinueCancelHeadlinePopup (
+		// To translators: ContinueCancel Popup headline
+		_("Finish"),
+		// To translators: ContinueCancel Popup
+		_("Really save configuration ?")))
+	{
 	    return `yes;
+	}
 	return `back;
     }
 
@@ -53,10 +58,14 @@
      * @return `exit or `back
      */
     global define symbol ExitPopup () ``{
-
-				// To translators: YesNo Popup
-	if (UI::YesNoHeadlinePopup (_("Exit"), _("Really exit configuration without saving ?")))
+	if (UI::YesNoHeadlinePopup (
+		// To translators: YesNo Popup headline
+		_("Exit"),
+		// To translators: YesNo Popup
+		_("Really exit configuration without saving ?")))
+	{
 	    return `exit;
+	}
 	return `back;
     }
 
@@ -80,6 +89,7 @@
 
 	// help text 1/1
 	string help = _("<p>Please wait while reading the configuration.</p>");
+	// dialog heading
 	string title = _("Initializing NIS server setup");
 	string progress_title = " ";
 
@@ -167,6 +177,7 @@
 
 	// help text 1/1
 	string help = _("<p>Please wait until the configuration is saved.</p>");
+	// dialog heading
 	string title = _("Saving NIS server setup");
 	string progress_title = " ";
 	Wizard::RestoreNextButton();

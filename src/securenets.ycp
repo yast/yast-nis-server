@@ -166,8 +166,12 @@ to the  bitwise <i>AND</i> of the host's address and the <b>netmask</b>.</p>");
 
 	term contents = `VBox ();
 	contents = add (contents, `Table (`id (`table), `opt (`notify, `immediate),
-					  // To translators: table headers
-					  `header (_("Netmask"), _("Network")), allow_query));
+					  `header (
+					      // To translators: table headers
+					      _("Netmask"),
+					      // To translators: table headers
+					      _("Network")),
+					  allow_query));
 	contents = add (contents, buttons);
 
 
