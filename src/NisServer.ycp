@@ -16,6 +16,7 @@
 module "NisServer";
 textdomain "nis_server";
 
+import "FileUtils";
 import "NetworkDevices";
 import "Progress";
 import "Service";
@@ -149,7 +150,7 @@ global boolean start_yppasswdd = false;
 /**
  * YPPWD_SRCDIR - source directory for passwd data
  */
-global string pwd_srcdir = "";
+global string pwd_srcdir = "/etc";
 
 /**
  * YPPWD_CHFN - allow changing the full name?
@@ -312,9 +313,9 @@ global define boolean Read() ``{
 
     Progress::NextStage ();
 
-    Progress::off ();
+    boolean progress_orig = Progress::set (false);
     SuSEFirewall::Read ();
-    Progress::on ();
+    Progress::set (progress_orig);
 
     Progress::NextStage ();
 
@@ -322,39 +323,56 @@ global define boolean Read() ``{
     return true;
 }
 
-define any SCRGet (path p, any default) ``{
+define any SCRGet (path p, any default) {
     any v = SCR::Read (p);
     return v != nil ? v : default;
 }
 
-define void YPMakefileVars () ``{
+define integer SCRGetInt (path p, integer default) {
+    any v = SCR::Read (p);
+    return (v != nil && v != "" && is (v,string))
+	? tointeger ((string)v) : default;
+}
+
+define void YPMakefileVars () {
     maps = (list<string>) SCRGet (.var.yp.makefile.maps, ["passwd", "group", "rpc", "services", "netid"]);
-    minuid = tointeger ((string) SCRGet (.var.yp.makefile.MINUID, "100"));
-    mingid = tointeger ((string) SCRGet (.var.yp.makefile.MINGID, "100"));
+    minuid = SCRGetInt (.var.yp.makefile.MINUID, 100);
+    mingid = SCRGetInt (.var.yp.makefile.MINGID, 100);
     merge_passwd = (string) SCRGet (.var.yp.makefile.MERGE_PASSWD, "true") == "true";
     merge_group = (string) SCRGet (.var.yp.makefile.MERGE_GROUP, "true") == "true";
     nopush = (string) SCRGet (.var.yp.makefile.NOPUSH, "true") == "true";
 }
 
-define void YPServerVars () ``{
-    pwd_srcdir = (string) SCRGet (.sysconfig.ypserv.YPPWD_SRCDIR, "/etc");
-    pwd_chfn = SCRGet (.sysconfig.ypserv.YPPWD_CHFN, "no") == "yes";
-    pwd_chsh = SCRGet (.sysconfig.ypserv.YPPWD_CHSH, "no") == "yes";
+define void YPServerVars () {
+
+    if (FileUtils::Exists ("/etc/sysconfig/ypserv"))
+    {
+	pwd_srcdir = (string) SCRGet (.sysconfig.ypserv.YPPWD_SRCDIR, "/etc");
+	pwd_chfn = SCRGet (.sysconfig.ypserv.YPPWD_CHFN, "no") == "yes";
+	pwd_chsh = SCRGet (.sysconfig.ypserv.YPPWD_CHSH, "no") == "yes";
+    }
 }
 
-define void YPSystemVars () ``{
+define void YPSystemVars () {
     domain = (string) SCRGet (.etc.defaultdomain, "local");
 }
 
-define void YPSecurenets () ``{
-    securenets = (list<map>) SCRGet (.var.yp.securenets, [$[
-				 "network" : "127.0.0.0",
-				 "netmask" : "255.0.0.0",
-				 ]]);
+define void YPSecurenets () {
+    securenets	= [ $[
+	"network" : "127.0.0.0",
+	"netmask" : "255.0.0.0"
+    ]];
+    if (FileUtils::Exists ("/var/yp/securenets"))
+    {
+	securenets = (list<map>) SCRGet (.var.yp.securenets, securenets);
+    }
 }
 
-define void YPServers () ``{
-    ypservers = (list<string>) SCRGet (.var.yp.ypservers, []);
+define void YPServers () {
+    if (FileUtils::Exists ("/var/yp/ypservers"))
+    {
+	ypservers = (list<string>) SCRGet (.var.yp.ypservers, []);
+    }
 }
 
 // --------------------
@@ -514,9 +532,9 @@ global define boolean Write() ``{
 
     Progress::NextStage ();
 
-    Progress::off ();
+    boolean progress_orig = Progress::set (false);
     SuSEFirewall::Write ();
-    Progress::on ();
+    Progress::set (progress_orig);
 
     Progress::NextStage ();
     return true;
@@ -855,9 +873,9 @@ global define void Client () ``{
 	"nis_servers":	[ "127.0.0.1" ],
 	];
 
-    Progress::off ();
+    boolean progress_orig = Progress::set (false);
     boolean ok =  Nis::Import (c) && Nis::Write ();
-    Progress::on ();
+    Progress::set (progress_orig);
     if (!ok)
     {
 	// To translators: message in the popup dialog
