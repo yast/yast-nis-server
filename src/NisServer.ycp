@@ -383,8 +383,9 @@ define void YPServers () ``{
 	}
 	string command = sformat ("/usr/lib/yp/makedbm -u /var/yp/%1/%2 | grep ^YP_MASTER_NAME", dn, any_map);
 
-	string output = (string) lookup ((map) SCR::Execute (.target.bash_output, command), "stdout", "");
-	return select (splitstring (output, " \n"), 1, nil);
+	map out		= (map) SCR::Execute (.target.bash_output, command);
+	list<string> l	= splitstring (out["stdout"]:"", " \n");
+	return l[1]:nil;
     }
 
     /**

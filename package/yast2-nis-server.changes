@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Nov  5 10:06:01 CET 2004 - jsuchome@suse.cz
+
+- lookup's and select's replaced by brackets
+- 2.11.1 
+
+-------------------------------------------------------------------
 Fri Oct 29 09:24:42 CEST 2004 - jsuchome@suse.cz
 
 - adapted for new Mode:: interface

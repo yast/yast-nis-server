@@ -36,15 +36,14 @@
      *		<br>$["netmask": "255.0.0.0", "network": "10.0.0.0"]
      * @return a list of items formated for a UI table
      */
-    define list<term> ItemizeSecurenets (list<map> nets) ``{
-	list<map> not_comment = filter (map e, nets, ``(haskey (e, "netmask") ||
-						haskey (e, "network")));
+    define list<term> ItemizeSecurenets (list<map> nets) {
+	list<map> not_comment = filter (map e, nets, ``(
+	    haskey (e, "netmask") || haskey (e, "network")));
 	list<term> result = [];
 	integer i = 0;
-	foreach (map element, not_comment, ``{
-	    result = add (result, `item (`id (i),
-					 lookup (element, "netmask", ""),
-					 lookup (element, "network", "")));
+	foreach (map element, not_comment, {
+	    result = add (result,
+		`item (`id (i), element["netmask"]:"", element["network"]:""));
 	    i = i + 1;
 	});
 	return result;
@@ -59,8 +58,8 @@
     define list<map> MergeNetsEntries (list<map> orig, list<term> edit) ``{
 
 	list<map> edit_maps = maplist (term e, edit, ``(
-				      $["netmask" : select (e, 1, ""),
-					"network" : select (e, 2, "")]
+				      $["netmask" : e[1]:"",
+					"network" : e[2]:""]
 	));
 
 
@@ -210,7 +209,7 @@ to the  bitwise <i>AND</i> of the host's address and the <b>netmask</b>.</p>");
 	    {
 		integer id = (integer) UI::QueryWidget (`id (`table), `CurrentItem);
 		term item  = find (term e, allow_query, ``(id == e[0, 0]:-1));
-		item = NetsEditPopup (id, select (item, 1, ""), select (item, 2,""));
+		item = NetsEditPopup (id, item[1]:"", item[2]:"");
 		if (item != nil)
 		{
 		    allow_query = maplist (term e, allow_query, ``{
