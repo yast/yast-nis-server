@@ -163,7 +163,7 @@ Create it?
 	NisServer::merge_group = UI::QueryWidget (`id (`group_rb), `CurrentButton) == `yes;
 	NisServer::pwd_srcdir = srcdir;
 
-	UI::ChangeWidget (`id (`next), `Label, Label::NextButton());
+	Wizard::RestoreNextButton();
 	return ui;
     }
 }
