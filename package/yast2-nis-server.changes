@@ -1,7 +1,9 @@
 -------------------------------------------------------------------
-Thu Jun 27 11:56:40 CEST 2002 - kkaempf@suse.de
+Fri Jun 28 15:14:27 CEST 2002 - mvidner@suse.cz
 
-- rename to "yast2-nis-server"
+- Renamed to "yast2-nis-server"
+- menuentry -> config
+- 2.6.2
 
 -------------------------------------------------------------------
 Tue Apr 16 15:44:42 CEST 2002 - mvidner@suse.cz
