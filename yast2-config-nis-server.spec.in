@@ -15,6 +15,7 @@ Requires:	yast2-config-runlevel
 Requires:	yast2-lib-network
 Requires:	yast2-config-nis
 Requires:	yast2-agent-ini >= 2.5.8
+Requires:	yast2-agent-any >= 2.6.2
 BuildArchitectures:	noarch
 
 %description
