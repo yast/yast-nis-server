@@ -87,9 +87,9 @@ configure it.</p>"));
         else
         {
                                 // To translators: label in the dialog
-            labels = add (labels, `Left (`Label ("NIS Software is installed.")));
+            labels = add (labels, `Left (`Label (_("NIS Software is installed."))));
                                 // To translators: label in the dialog
-            labels = add (labels, `Left (`Label ("No NIS Server is configured.")));
+            labels = add (labels, `Left (`Label (_("No NIS Server is configured."))));
 
                                 // To translators: checkbox label
             master_setup_label = UI (_("Create NIS &Master Server"));
