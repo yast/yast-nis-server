@@ -79,7 +79,7 @@
         <dia:boolean val="true"/>
       </dia:attribute>
       <dia:attribute name="file">
-        <dia:string>#0-load.jpg#</dia:string>
+        <dia:string>#0-load.png#</dia:string>
       </dia:attribute>
     </dia:object>
     <dia:object type="Standard - Image" version="0" id="O1">
@@ -105,7 +105,7 @@
         <dia:boolean val="true"/>
       </dia:attribute>
       <dia:attribute name="file">
-        <dia:string>#1-which.jpg#</dia:string>
+        <dia:string>#1-which.png#</dia:string>
       </dia:attribute>
     </dia:object>
     <dia:object type="Standard - Image" version="0" id="O2">
@@ -131,7 +131,7 @@
         <dia:boolean val="true"/>
       </dia:attribute>
       <dia:attribute name="file">
-        <dia:string>#2-master.jpg#</dia:string>
+        <dia:string>#2-master.png#</dia:string>
       </dia:attribute>
     </dia:object>
     <dia:object type="Standard - Image" version="0" id="O3">
@@ -157,7 +157,7 @@
         <dia:boolean val="true"/>
       </dia:attribute>
       <dia:attribute name="file">
-        <dia:string>#2-slave.jpg#</dia:string>
+        <dia:string>#2-slave.png#</dia:string>
       </dia:attribute>
     </dia:object>
     <dia:object type="Standard - Image" version="0" id="O4">
@@ -183,7 +183,7 @@
         <dia:boolean val="true"/>
       </dia:attribute>
       <dia:attribute name="file">
-        <dia:string>#21-details.jpg#</dia:string>
+        <dia:string>#21-details.png#</dia:string>
       </dia:attribute>
     </dia:object>
     <dia:object type="Standard - Image" version="0" id="O5">
@@ -209,7 +209,7 @@
         <dia:boolean val="true"/>
       </dia:attribute>
       <dia:attribute name="file">
-        <dia:string>#3-slaves.jpg#</dia:string>
+        <dia:string>#3-slaves.png#</dia:string>
       </dia:attribute>
     </dia:object>
     <dia:object type="Standard - Image" version="0" id="O6">
@@ -261,7 +261,7 @@
         <dia:boolean val="true"/>
       </dia:attribute>
       <dia:attribute name="file">
-        <dia:string>#4-maps.jpg#</dia:string>
+        <dia:string>#4-maps.png#</dia:string>
       </dia:attribute>
     </dia:object>
     <dia:object type="Standard - Image" version="0" id="O8">
@@ -287,7 +287,7 @@
         <dia:boolean val="true"/>
       </dia:attribute>
       <dia:attribute name="file">
-        <dia:string>#5-nets.jpg#</dia:string>
+        <dia:string>#5-nets.png#</dia:string>
       </dia:attribute>
     </dia:object>
     <dia:object type="Standard - Image" version="0" id="O9">
@@ -313,7 +313,7 @@
         <dia:boolean val="true"/>
       </dia:attribute>
       <dia:attribute name="file">
-        <dia:string>#6-saving.jpg#</dia:string>
+        <dia:string>#6-saving.png#</dia:string>
       </dia:attribute>
     </dia:object>
     <dia:object type="Standard - Image" version="0" id="O10">
