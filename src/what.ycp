@@ -135,19 +135,20 @@ configure it.</p>");
 
 	repeat
 	{
-	    ui = UI::UserInput ();
+	    current_button = UI::QueryWidget (`id (`rb), `CurrentButton);
 
-	    if (ui == `none)
+	    if (current_button == `none)
 	    {
-		// To translators: button label
 		Wizard::ReplaceNextButton(`PushButton (`id (`finish), `opt (`default), FinishButtonLabel()));
 		UI::SetFocus (`id (`finish));
 	    }
-	    else if (contains ([`master, `slave], ui))
+	    else if (contains ([`master, `slave], current_button))
 	    {
 		Wizard::RestoreNextButton();
 		UI::SetFocus (`id (`next));
 	    }
+
+	    ui = UI::UserInput ();
 
 	    if (ui == `abort && !UI::ReallyAbortPopup (true)) continue;
 
