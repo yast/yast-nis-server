@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Tue Sep 11 11:00:06 CEST 2001 - mvidner@suse.cz
+
+- Client: run SuSEconfig only after flushing rc-files. (2.4.15)
+
+-------------------------------------------------------------------
 Mon Sep 10 10:20:41 CEST 2001 - mvidner@suse.cz
 
 - Slave server saves the domain name too.
