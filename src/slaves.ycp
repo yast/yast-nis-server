@@ -24,12 +24,12 @@
 
     textdomain "nis_server";
 
-    import "Wizard";
+    import "Address";
     import "Label";
-    import "Popup";
-    import "IP";
-
     import "NisServer";
+    import "Popup";
+    import "Wizard";
+
     include "nis_server/routines.ycp";
 
     list<string> hosts = nil;
@@ -106,10 +106,10 @@
 	    {
 		slave = tolower ((string) UI::QueryWidget (`id (`slave), `Value));
 
-		if (!IP::Check4(slave))
+		if (!Address::Check4(slave))
 		{
 		    UI::SetFocus (`id (`slave));
-		    Popup::Error(IP::Valid4());
+		    Popup::Error(Address::Valid4());
 		    ui = `again;
 		}
 	    }
