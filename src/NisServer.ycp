@@ -710,7 +710,9 @@ global define void Client () ``{
 	"nis_servers":	[ "127.0.0.1" ],
 	];
 
+    Progress::off ();
     boolean ok =  Nis::Import (c) && Nis::Write ();
+    Progress::on ();
     if (!ok)
     {
 	// To translators: message in the popup dialog

@@ -118,12 +118,6 @@
 You must reboot for the changes to take effect."));
 
 	    }
-	    else
-	    {
-		// To translators: final popup
-		message = _("The configuration was succesful!");
-		Popup::Notify (message);
-	    }
 	}
 
 	return `ok;
