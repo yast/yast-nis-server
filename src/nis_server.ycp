@@ -54,7 +54,7 @@ define boolean NisServerSummaryHandler (map options ) {
     if (NisServer::ui_what == `master)
     {
 	// summary label:
-	CommandLine::Print (_("YP Source directory: ") + NisServer::pwd_srcdir);
+	CommandLine::Print (_("YP Source Directory: ") + NisServer::pwd_srcdir);
     }
     return false; // do not call Write...
 }

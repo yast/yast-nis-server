@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Fri Aug 27 14:00:29 CEST 2004 - jsuchome@suse.cz
+
+- merged proofread texts
+
+-------------------------------------------------------------------
 Mon Aug 16 10:01:10 CEST 2004 - jsuchome@suse.cz
 
 - do not create gshadow file (#42646)
