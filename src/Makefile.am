@@ -1,13 +1,10 @@
 #
-# Makefile.am for modules/y2c_nis_server/src
+# Makefile.am for nis-server/src
 #
 
-menudir = $(YAST2DIR)/menuentries
-modulesdir = $(YAST2DIR)/clients
-yincludedir = $(YAST2DIR)/include/nis_server
-bindir = $(YAST2DIR)/bin
+myincludedir = @yncludedir@/nis_server
 
-yinclude_DATA = \
+myinclude_DATA = \
 	what.ycp 	\
 	slave.ycp 	\
 	master.ycp 	\
@@ -19,12 +16,12 @@ yinclude_DATA = \
 	ui.ycp		\
 	routines.ycp
 
-modules_DATA = 	\
+module_DATA = 	\
 	nis_server.ycp
 
-menu_DATA = menuentry_nis_server.y2cc
+config_DATA = nis_server.y2cc
 
 EXTRA_DIST = \
-	$(modules_DATA) \
-	$(menu_DATA) 	\
-	$(yinclude_DATA)
+	$(module_DATA) \
+	$(config_DATA) 	\
+	$(myinclude_DATA)

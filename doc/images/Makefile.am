@@ -1,8 +1,7 @@
 #
-# Makefile.am for y2c_nis_server/doc/images
+# Makefile.am for nis-server/doc/images
 #
 
-docdir = @DOCDIR@
 htmldir = $(docdir)/images
 
 screenshots = \
