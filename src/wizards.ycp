@@ -59,7 +59,7 @@ global define symbol NisServerSequence() ``{
 	];
 
     // Translators: dialog caption
-    string caption = _("NIS server configuration");
+    string caption = _("NIS Server Configuration");
     // label
     term contents = `Label(_("Initializing..."));
 
@@ -80,7 +80,7 @@ global define symbol NisServerSequence() ``{
  */
 global define symbol NisServerAutoSequence() ``{
     // Translators: dialog caption
-    string caption = _("NIS server configuration");
+    string caption = _("NIS Server Configuration");
     // label
     term contents = `Label(_("Initializing..."));
 
