@@ -11,7 +11,12 @@
 {
     textdomain "nis_server";
 
+    import "Label";
     import "NisServer";
+    import "Package";
+    import "Popup";
+    import "Wizard";
+
     include "nis_server/what.ycp";
     include "nis_server/slave.ycp";
     include "nis_server/master.ycp";
@@ -19,11 +24,6 @@
     include "nis_server/slaves.ycp";
     include "nis_server/maps.ycp";
     include "nis_server/securenets.ycp";
-
-    import "Require";
-    import "Wizard";
-    import "Label";
-    import "Popup";
 
     /**
      * Read settings dialog
@@ -105,7 +105,6 @@
 
 				// To translators: Error popup
 	    return Popup::AnyQuestion (Label::ErrorMsg(), message, Label::OKButton(), _("&Details"), `focus_yes) ? `ok : `details;
-	    //Popup::Error (message);
 	}
 	else
 	{
@@ -129,9 +128,9 @@ You must reboot for the changes to take effect."));
      * @return `master or `slave
      */
     define symbol InstallServer () ``{
-	if (!Require::AreAllPackagesInstalled (NisServer::required_packages))
+	if (!Package::InstalledAll (NisServer::required_packages))
 	{
-	    Require::DoInstallAndRemove (NisServer::required_packages, []);
+	    Package::DoInstallAndRemove (NisServer::required_packages, []);
 	}
 
 	return NisServer::ui_what;
