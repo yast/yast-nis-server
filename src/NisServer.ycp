@@ -16,8 +16,8 @@
 module "NisServer";
 textdomain "nis_server";
 
+import "NetworkDevices";
 import "Progress";
-import "Report";
 import "Service";
 import "Summary";
 
@@ -109,9 +109,14 @@ global list<string> ypservers = [];
 global list<map> securenets = [];
 
 /**
- * Start also the client?
+ * Start also the client? (only when client is configured locally)
  */
-global boolean start_ypbind = false;
+global boolean start_ypbind	= false;
+
+/**
+ * NIS client is configured localy (with current machine as server)
+ */
+global boolean nisclient_local	= true;
 
 /**
  * Start also the map transfer daemon?
@@ -137,6 +142,11 @@ global boolean pwd_chfn = false;
  * YPPWD_CHSH - allow changing the login shell?
  */
 global boolean pwd_chsh = false;
+
+/**
+ * If DHCP client could change domain name (#28727)
+ */
+global boolean dhcp_changes_domain	= false;
 
 /**
  * Packages to be installed for this module to operate
@@ -217,6 +227,28 @@ global define boolean Read() ``{
     Progress::NextStage ();
     // "ypserv" is handled elsewhere
     start_ypbind = Service::Enabled ("ypbind");
+    // Check if nis client is configured localy or not
+    // -> client configuration should not be touched when it uses remote server
+    if (start_ypbind)
+    {
+	import "Nis";
+	import "DNS";
+	Nis::Read ();
+	boolean remote	= false;
+	foreach (string server, splitstring (Nis::GetServers (), " "),
+	{
+	    if (!DNS::IsHostLocal (server))
+	    {
+		remote		= true;
+	    }
+	});
+	if (remote || Nis::dhcp_wanted)
+	{
+	    start_ypbind	= false;
+	    nisclient_local	= false;
+	}
+    }
+
     start_ypxfrd = Service::Enabled ("ypxfrd");
     start_yppasswdd = Service::Enabled ("yppasswdd");
 
@@ -230,6 +262,15 @@ global define boolean Read() ``{
 
     }
     old_domainname = domain;
+
+    // Check if any device one is configured with DHCP, to know if domain name
+    // won't be replaced by dhcp (#28727)
+    NetworkDevices::Read ();
+    if (size (NetworkDevices::Locate("BOOTPROTO", "dhcp")) > 0 &&
+	SCR::Read (.sysconfig.network.dhcp.DHCLIENT_SET_DOMAINNAME) == "yes")
+    {
+	dhcp_changes_domain	= true;
+    }
 
     Progress::NextStage ();
     if (!isYPServerInstalled ())
@@ -912,7 +953,7 @@ global define list<map> GetSaveList (symbol workflow) ``{
 		    ]
 		];
 	}
-	else
+	else if (nisclient_local)
 	{
 	    result = result + [
 		// To translators: progress label

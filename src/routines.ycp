@@ -19,11 +19,11 @@
  *
  */
 
-
 {
-
     textdomain "nis_server";
+
     import "NisServer";
+    import "Popup";
     import "Service";
 
     /**
@@ -88,5 +88,26 @@
 	    }
 	}
 	return false;
+    }
+
+    /**
+     * Do the check if DHCP client is able to change domain name and
+     * warn user about this (see bug #28727)
+     */
+    define void CheckForDHCPClient (string domain) {
+
+	if (NisServer::dhcp_changes_domain)
+	{
+	    if (NisServer::start_ypbind)
+	    {
+		Popup::Warning (
+// warning popup
+_("Your machine is set up to change the NIS domain name via DHCP.
+This may replace the domain name you just entered. Check your
+settings and consider not running DHCP client at NIS server."));
+	    }
+	}
+	// TODO: check
+	// if domain from dhcp client is different then the one currently set
     }
 }

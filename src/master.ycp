@@ -38,7 +38,7 @@
     define symbol MasterDialog () ``{
 
 	// help text 1/3
-	string helptext = _("<p>Please enter a NIS <b>domain</b>. If this host is also a NIS client, check
+	string helptext = _("<p>Please enter a NIS <b>domain</b>. If this host is also a NIS client using this machine as a server, check
 the appropriate button.</p>");
 
 	// help text 2/3
@@ -140,6 +140,12 @@ be used to set up these more specific options.</p>
 		    UI::SetFocus (`id (`domain));
 		    Popup::Error (Nis::valid_nisdomainname ());
 		    ui = `again;
+		}
+		if (ui == `next)
+		{
+		    NisServer::start_ypbind = (boolean)
+			UI::QueryWidget (`id (`also_client), `Value);
+		    CheckForDHCPClient (domainname);
 		}
 	    }
 
