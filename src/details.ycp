@@ -70,12 +70,12 @@ file.</p>");
 	merge_group_buttons = `RadioButtonGroup (`id (`group_rb), merge_group_buttons);
 
 
-	term merge  = `HBox ();
+	term merge_all  = `HBox ();
 				// To translators: frame label
-	merge = add (merge, `HWeight (1, `Frame (`id (`pass_frame), _("Merge pa&sswords"), merge_pass_buttons)));
-	merge = add (merge, `HSpacing ());
+	merge_all = add (merge_all, `HWeight (1, `Frame (`id (`pass_frame), _("Merge pa&sswords"), merge_pass_buttons)));
+	merge_all = add (merge_all, `HSpacing ());
 				// To translators: frame label
-	merge = add (merge, `HWeight (1, `Frame (`id (`group_frame), _("Merge g&roups"), merge_group_buttons)));
+	merge_all = add (merge_all, `HWeight (1, `Frame (`id (`group_frame), _("Merge g&roups"), merge_group_buttons)));
 
 	term minimals = `HBox ();
 
@@ -93,7 +93,7 @@ file.</p>");
 	contents = add (contents, `TextEntry (`id (`srcdir), `opt(`notify), _("&YP Source directory"),
 					      lookup (user_settings, ".rc.ypserver.YPPWD_SRCDIR", "")));
 	contents = add (contents, `VSpacing (0.5));
-	contents = add (contents, merge);
+	contents = add (contents, merge_all);
 	contents = add (contents, `VSpacing (0.5));
 	contents = add (contents, minimals);
 
