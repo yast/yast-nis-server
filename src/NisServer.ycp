@@ -826,6 +826,18 @@ global define list(map) GetSaveList (symbol workflow) ``{
  * @return boolean True on success
  */
 global define boolean Import (map settings) ``{
+
+	// Get default variables
+
+
+    string type = settings["server_type"]:"none";
+	if (type == "master")
+		ui_what = `master;
+	else if (type == "slave")
+		ui_what = `slave;
+	else
+		ui_what = `none;
+
     domain = settings["domain"]:"";
     minuid = settings["minuid"]:0;
     mingid = settings["mingid"]:0;
@@ -834,6 +846,8 @@ global define boolean Import (map settings) ``{
 
     merge_group = settings["merge_group"]:false;
     ypservers = settings["slaves"]:[];
+	if (ypservers == [])
+		YPServers ();
 
 
     start_ypbind = settings["start_ypbind"]:false;
@@ -844,13 +858,21 @@ global define boolean Import (map settings) ``{
 
 
     maps = settings["maps_to_serve"]:[];
+	if (maps == [] )
+		YPMakefileVars ();
 
-    pwd_srcdir = settings["pwd_srcdir"]:"";
 
+    pwd_srcdir = settings["pwd_srcdir"]:"/etc";
     pwd_chsh =  settings["pwd_chsh"]:false;
     pwd_chfn =   settings["pwd_chfn"]:false;
     nopush = settings["nopush"]:false;
+
+
     securenets =  settings["securenets"]:[];
+	if (securenets == [])
+		YPSecurenets ();
+
+
 
     return true;
 }
@@ -864,8 +886,17 @@ global define map Export () ``{
     // TODO FIXME: your code here (return the above mentioned variables)...
     map settings = $[];
     settings["domain"] = domain;
-    settings["minuid"]: minuid;
-    settings["mingid"]: mingid;
+
+
+	string type = "none";
+    if (ui_what == `master)
+        type = "master";
+    else if (ui_what == `slave)
+        type = "slave";
+
+    settings["server_type"] = type;
+    settings["minuid"]= minuid;
+    settings["mingid"]= mingid;
     settings["merge_passwd"] =  merge_passwd;
 
     settings["merge_group"] = merge_group;
