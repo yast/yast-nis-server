@@ -1,6 +1,7 @@
 -------------------------------------------------------------------
 Mon Jul 30 13:36:16 CEST 2001 - mvidner@suse.cz
 
+- Added missing files.
 - Turned off autoheader.
 - Replaced _("&OK") by OKButtonLabel() etc.
 - version 2.4.2
