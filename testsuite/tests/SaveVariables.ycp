@@ -13,19 +13,17 @@
 
 {
     include "testsuite.ycp";
-    include "nis_server/io.ycp";
+    import "NisServer";
     include "nis_server/routines.ycp";
 
-    map user_settings = $[
-	"ui_also_client": true,
-	".etc.defaultdomain": "thedomain",
-	".sysconfig.ypserv.YPPWD_SRCDIR": "/etc",
-	".var.yp.makefile.MERGE_PASSWD": "true"
-	];
+    NisServer::start_ypbind = true;
+    NisServer::domain = "thedomain";
+    NisServer::pwd_srcdir = "/etc";
+    NisServer::merge_passwd = true;
 
     DUMP("slave");
-    TEST (``(SaveVariables (`slave)), [], true);
+    TEST (``(NisServer::SaveVariables (`slave)), [], true);
     DUMP("master");
-    TEST (``(SaveVariables (`master)), [], true);
+    TEST (``(NisServer::SaveVariables (`master)), [], true);
 
 }
