@@ -27,17 +27,19 @@
     import "Wizard";
     import "Label";
     import "Popup";
-    include "network/dns.ycp";
+    import "IP";
 
     import "NisServer";
     include "nis_server/routines.ycp";
+
+    list<string> hosts = nil;
 
     /**
      * Give me one name from the list of hosts
      * @param hosts list of hosts
      * @return hostname or nil
      */
-    global define string ChooseHostName(list(string) hosts) ``{
+    define string ChooseHostName(list<string> hosts) ``{
 	string hname = nil;
 
 	UI::OpenDialog(
@@ -55,7 +57,7 @@
 	} while (ret != `cancel && ret != `ok);
 
 	if (ret == `ok)
-	    hname = UI::QueryWidget(`id(`hosts), `CurrentItem);
+	    hname = (string) UI::QueryWidget(`id(`hosts), `CurrentItem);
 
 	UI::CloseDialog();
 
@@ -68,7 +70,7 @@
      * @param slave	hostname
      * @return	hostname or nil if canceled
      */
-    global define string YPSlavePopup (string slave) ``{
+    define string YPSlavePopup (string slave) ``{
 
 	term hbox = `HBox ();
 				// To translators: textentry label
@@ -98,16 +100,16 @@
 	symbol ui = nil;
 
 	repeat {
-	    ui = UI::UserInput ();
+	    ui = (symbol) UI::UserInput ();
 
 	    if (ui == `ok)
 	    {
-		slave = tolower (UI::QueryWidget (`id (`slave), `Value));
+		slave = tolower ((string) UI::QueryWidget (`id (`slave), `Value));
 
-		if (!check_address (slave))
+		if (!IP::Check4(slave))
 		{
 		    UI::SetFocus (`id (`slave));
-		    Popup::Error (valid_address ());
+		    Popup::Error(IP::Valid4());
 		    ui = nil;
 		}
 	    }
@@ -116,7 +118,7 @@
 		if (hosts == nil) {
 				// To translators: label message
 		    UI::OpenDialog(`Label(_("Scanning for hosts on this LAN...")));
-		    hosts = sort(SCR::Read(.net.hostnames));
+		    hosts = sort((list<string>) SCR::Read(.net.hostnames));
 		    UI::CloseDialog();
 		    if (hosts == nil) hosts = [];
 		}
@@ -140,13 +142,12 @@
      * Slaves dialog
      * @return `back, `abort or `next
      */
-    global define symbol MastersSlavesDialog () ``{
+    define symbol MastersSlavesDialog () ``{
 
 	// help text 1/1
 	string helptext = _("<p>Here, enter the names of hosts to configure as NIS server slaves. Use <i>Add</i> to add a new one, <i>Edit</i>  to change an existing entry, and <i>Delete</i> to remove an entry.</p>");
 
-	list slaves = NisServer::ypservers;
-	list hosts = nil;
+	list<string> slaves = NisServer::ypservers;
 
 	term buttons = `HBox ();
 				// To translators: pushbutton label
@@ -173,7 +174,7 @@
 	    UI::ChangeWidget (`id (`edit),   `Enabled, anyslaves);
 	    UI::ChangeWidget (`id (`delete), `Enabled, anyslaves);
 
-	    ui = UI::UserInput ();
+	    ui = (symbol) UI::UserInput ();
 	    if (ui == `cancel)
 	    {
 		ui = `abort;
@@ -181,7 +182,7 @@
 
 	    if (ui == `edit)
 	    {
-		string selected = UI::QueryWidget (`id (`slaves), `CurrentItem);
+		string selected = (string) UI::QueryWidget (`id (`slaves), `CurrentItem);
 		if (selected == nil) continue;
 		string edited = YPSlavePopup (selected);
 		if (edited != nil)
@@ -195,7 +196,7 @@
 
 	    else if (ui == `delete)
 	    {
-		string selected = UI::QueryWidget (`id (`slaves), `CurrentItem);
+		string selected = (string) UI::QueryWidget (`id (`slaves), `CurrentItem);
 		if (selected == nil) continue;
 		slaves = filter (`e, slaves, ``(e != selected));
 				// To translators: selectionbox label

@@ -28,7 +28,7 @@
     import "Wizard";
     import "Label";
     import "Popup";
-    include "network/ip.ycp";
+    import "IP";
 
     /**
      * Creates items for table from var_yp_securenets.scr any agent
@@ -36,10 +36,10 @@
      *		<br>$["netmask": "255.0.0.0", "network": "10.0.0.0"]
      * @return a list of items formated for a UI table
      */
-    global define list(term) ItemizeSecurenets (list nets) ``{
-	list not_comment = filter (`e, nets, ``(haskey (e, "netmask") ||
+    define list<term> ItemizeSecurenets (list nets) ``{
+	list not_comment = filter (map e, nets, ``(haskey (e, "netmask") ||
 						haskey (e, "network")));
-	list result = [];
+	list<term> result = [];
 	integer i = 0;
 	foreach (map element, not_comment, ``{
 	    result = add (result, `item (`id (i),
@@ -56,18 +56,18 @@
      * @param edit list with edited entries (as placed in the table)
      * @return list with merged entries
      */
-    global define MergeNetsEntries (list orig, list edit) ``{
+    define list<map> MergeNetsEntries (list<map> orig, list<term> edit) ``{
 
-	list edit_maps = maplist (`e, edit, ``(
+	list<map> edit_maps = maplist (term e, edit, ``(
 				      $["netmask" : select (e, 1, ""),
 					"network" : select (e, 2, "")]
 	));
 
 
-	list result = filter (`e, orig, ``(haskey (e, "hash") ||
+	list<map> result = filter (map e, orig, ``(haskey (e, "hash") ||
 					   haskey (e, "comment") ||
 					   contains (edit_maps, e)));
-	edit_maps = filter (`e, edit_maps, ``(!contains (result, e)));
+	edit_maps = filter (map e, edit_maps, ``(!contains (result, e)));
 	result = result + edit_maps;
 
 	return result;
@@ -80,7 +80,7 @@
      * @param network network
      * @return a new item or nil on cancel
      */
-    global define term NetsEditPopup (integer id, string netmask, string network) ``{
+    define term NetsEditPopup (integer id, string netmask, string network) ``{
 
 	term buttons  = `HBox ();
 	buttons = add (buttons, `PushButton (`id (`ok), `opt (`default, `key_F10), Label::OKButton()));
@@ -109,20 +109,20 @@
 
 	repeat {
 	    error_msg = "";
-	    ui = UI::UserInput ();
+	    ui = (symbol) UI::UserInput ();
 
 	    if (ui == `ok)
 	    {
-		netmask = UI::QueryWidget (`id (`netmask), `Value);
-		network = UI::QueryWidget (`id (`network), `Value);
+		netmask = (string) UI::QueryWidget (`id (`netmask), `Value);
+		network = (string) UI::QueryWidget (`id (`network), `Value);
 		// explicitly allow 0.0.0.0
-		if (netmask != "0.0.0.0" && !check_netmask (netmask))
+		if (netmask != "0.0.0.0" && !IP::Check4(netmask))
 		{
 		    // To translators: error message
 		    error_msg = error_msg + _("Wrong netmask!\n");
 		}
 				// To translators: error message
-		error_msg = error_msg + (check_ip4 (network) ? "" : _("Wrong network!\n"));
+		error_msg = error_msg + (IP::Check4(network) ? "" : _("Wrong network!\n"));
 
 		if (size (error_msg) > 0)
 		{
@@ -141,7 +141,7 @@
      * Securenets dialog
      * @return `back, `next or `abort
      */
-    global define symbol QueryHosts () ``{
+    define symbol QueryHosts () ``{
 
 	// help text 1/4
 	string helptext = _("<p>Please enter which hosts are allowed to query the NIS server.</p>");
@@ -156,7 +156,7 @@ to the  bitwise <i>AND</i> of the host's address and the <b>netmask</b>.</p>");
 	helptext = helptext + _("<p>Entering <b>netmask</b> <tt>0.0.0.0</tt> and
 <b>network</b> <tt>0.0.0.0</tt> gives access to all hosts.</p>");
 
-	list allow_query = ItemizeSecurenets (NisServer::securenets);
+	list<term> allow_query = ItemizeSecurenets (NisServer::securenets);
 	integer n_items = size (allow_query);
 
 	term buttons = `HBox ();
@@ -193,7 +193,7 @@ to the  bitwise <i>AND</i> of the host's address and the <b>netmask</b>.</p>");
 	    // Kludge, because a `Table still does not have a shortcut. #16116
 	    UI::SetFocus (`id (`table));
 
-	    ui = UI::UserInput ();
+	    ui = (symbol) UI::UserInput ();
 	    if (ui == `cancel)
 	    {
 		ui = `abort;
@@ -201,19 +201,19 @@ to the  bitwise <i>AND</i> of the host's address and the <b>netmask</b>.</p>");
 
 	    if (ui == `delete)
 	    {
-		integer id = UI::QueryWidget (`id (`table), `CurrentItem);
-		allow_query = filter (`e, allow_query, ``(id != select (select (e, 0, []), 0, -1)));
+		integer id = (integer) UI::QueryWidget (`id (`table), `CurrentItem);
+		allow_query = filter(term e, allow_query, ``(id != select (select (e, 0, []), 0, -1)));
 		UI::ChangeWidget(`id(`table), `Items, allow_query);
 	    }
 
 	    else if (ui == `edit)
 	    {
-		integer id = UI::QueryWidget (`id (`table), `CurrentItem);
-		term item  = find (`e, allow_query, ``(id == select (select (e, 0, []), 0, -1)));
+		integer id = (integer) UI::QueryWidget (`id (`table), `CurrentItem);
+		term item  = find (term e, allow_query, ``(id == select (select (e, 0, []), 0, -1)));
 		item = NetsEditPopup (id, select (item, 1, ""), select (item, 2,""));
 		if (item != nil)
 		{
-		    allow_query = maplist (`e, allow_query, ``{
+		    allow_query = maplist (term e, allow_query, ``{
 			return select (select (e, 0, []), 0, -1) == id ? item : e;
 		    });
 		    UI::ChangeWidget (`id (`table), `Items, allow_query);

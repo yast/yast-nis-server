@@ -21,15 +21,19 @@ client_DATA = 		\
 	nis_server.ycp	\
 	nis_server_auto.ycp
 
-config_DATA = nis_server.y2cc
-
 desktop_DATA = nis_server.desktop
 
 EXTRA_DIST =		\
 	$(module_DATA)	\
 	$(client_DATA)	\
-	$(config_DATA)	\
         $(desktop_DATA)	\
 	$(myinclude_DATA)
+
+nis_server:
+	ln -sf . nis_server
+
+ycpchook = nis_server
+
+YCPCFLAGS=-I.
 
 include $(top_srcdir)/Makefile.am.common

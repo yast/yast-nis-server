@@ -29,7 +29,7 @@
      * Read settings dialog
      * @return `abort if aborted and `next otherwise
      */
-    global define symbol ReadDialog() ``{
+    define symbol ReadDialog() ``{
 	boolean ret = NisServer::Read();
 	return ret ? `next : `abort;
     }
@@ -38,7 +38,7 @@
      * Write settings dialog
      * @return `abort if aborted and `next otherwise
      */
-    global define symbol WriteDialog() ``{
+    define symbol WriteDialog() ``{
 	Wizard::RestoreNextButton();
 	UI::ChangeWidget (`id (`next), `Enabled, false);
 	UI::ChangeWidget (`id (`abort), `Enabled, false);
@@ -51,7 +51,7 @@
      * Popup to confirm after finish is pressed
      * @return `yes or `back
      */
-    global define symbol FinishPopup () ``{
+    define symbol FinishPopup () ``{
 	if (Popup::ContinueCancelHeadline (
 		// To translators: ContinueCancel Popup headline
 		_("Finish"),
@@ -67,7 +67,7 @@
      * Popup to confirm vhen exitting without saving
      * @return `exit or `back
      */
-    global define symbol ExitPopup () ``{
+    define symbol ExitPopup () ``{
 	if (Popup::YesNoHeadline (
 		// To translators: YesNo Popup headline
 		_("Exit"),
@@ -83,7 +83,7 @@
      * Popup with details error
      * @return `ok
      */
-    global define symbol DetailsPopup () ``{
+    define symbol DetailsPopup () ``{
 
 				// To translators: popup label
 	Popup::LongText (_("Error details"), `RichText (NisServer::error_details), 50, 20 );
@@ -94,7 +94,7 @@
      * Popup displaying configuration result
      * @return `ok or `details
      */
-    global define symbol ResultPopup () ``{
+    define symbol ResultPopup () ``{
 
 	string message = "";
 	if (size (NisServer::error_msg) > 0)
@@ -128,7 +128,7 @@ You must reboot for the changes to take effect."));
      * and calls installation if not
      * @return `master or `slave
      */
-    global define symbol InstallServer () ``{
+    define symbol InstallServer () ``{
 	if (!Require::AreAllPackagesInstalled (NisServer::required_packages))
 	{
 	    Require::DoInstallAndRemove (NisServer::required_packages, []);

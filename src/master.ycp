@@ -27,7 +27,6 @@
     import "Wizard";
     import "Nis";		// check_nisdomainname
     import "Popup";
-    include "network/dns.ycp";
 
     import "NisServer";
     include "nis_server/routines.ycp";
@@ -36,7 +35,7 @@
      * Master dialog
      * @return `back, `abort, `next or `details
      */
-    global define symbol MasterDialog () ``{
+    define symbol MasterDialog () ``{
 
 	// help text 1/3
 	string helptext = _("<p>Please enter a NIS <b>domain</b>. If this host is also a NIS client, check
@@ -119,7 +118,7 @@ be used to set up these more specific options.</p>
 	symbol ui = nil;
 	repeat
 	{
-	    ui = UI::UserInput ();
+	    ui = (symbol) UI::UserInput ();
 	    if (ui == `cancel)
 	    {
 		ui = `abort;
@@ -127,14 +126,14 @@ be used to set up these more specific options.</p>
 
 	    if (ui == `change_passwords)
 	    {
-		boolean enabled = UI::QueryWidget (`id (`change_passwords), `Value);
+		boolean enabled = (boolean) UI::QueryWidget (`id (`change_passwords), `Value);
 		UI::ChangeWidget (`id (`allow_shell), `Enabled, enabled);
 		UI::ChangeWidget (`id (`allow_gecos), `Enabled, enabled);
 	    }
 
 	    else if (ui == `next)
 	    {
-		string domainname = UI::QueryWidget (`id (`domain), `Value);
+		string domainname = (string) UI::QueryWidget (`id (`domain), `Value);
 
 		if (!Nis::check_nisdomainname (domainname))
 		{
@@ -148,13 +147,13 @@ be used to set up these more specific options.</p>
 	}
 	until (contains ([`next, `back, `abort, `details], ui));
 
-	NisServer::start_ypbind = UI::QueryWidget (`id (`also_client), `Value);
-	NisServer::nopush = ! UI::QueryWidget (`id (`have_slave), `Value);
-	NisServer::pwd_chfn = UI::QueryWidget (`id (`allow_gecos), `Value);
-	NisServer::pwd_chsh = UI::QueryWidget (`id (`allow_shell), `Value);
-	NisServer::start_yppasswdd = UI::QueryWidget (`id (`change_passwords), `Value);
-	NisServer::start_ypxfrd = UI::QueryWidget (`id (`fast_map), `Value);
-	NisServer::domain = UI::QueryWidget (`id (`domain), `Value);
+	NisServer::start_ypbind = (boolean) UI::QueryWidget (`id (`also_client), `Value);
+	NisServer::nopush = ! (boolean) UI::QueryWidget (`id (`have_slave), `Value);
+	NisServer::pwd_chfn = (boolean) UI::QueryWidget (`id (`allow_gecos), `Value);
+	NisServer::pwd_chsh = (boolean) UI::QueryWidget (`id (`allow_shell), `Value);
+	NisServer::start_yppasswdd = (boolean) UI::QueryWidget (`id (`change_passwords), `Value);
+	NisServer::start_ypxfrd = (boolean) UI::QueryWidget (`id (`fast_map), `Value);
+	NisServer::domain = (string) UI::QueryWidget (`id (`domain), `Value);
 
 	return ui;
     }
