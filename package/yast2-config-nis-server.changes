@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon Mar 11 15:40:47 CET 2002 - mvidner@suse.cz
+
+- Check that the source directory exists. (#14708)
+- Show also init.d/ypbind output on error. (#14706)
+- 2.5.9
+
+-------------------------------------------------------------------
 Mon Feb 11 17:21:45 CET 2002 - mvidner@suse.cz
 
 - Fixed Next/Finish in case ypserv is not installed. (#13042)
