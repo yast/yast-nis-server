@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon Jul 30 13:36:16 CEST 2001 - mvidner@suse.cz
+
+- Turned off autoheader.
+- Replaced _("&OK") by OKButtonLabel() etc.
+- version 2.4.2
+
+-------------------------------------------------------------------
 Fri Jul 20 15:59:43 CEST 2001 - dan@suse.cz
 
 - help text and locale fixes 
