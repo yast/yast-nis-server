@@ -110,7 +110,7 @@
 		{
 		    UI::SetFocus (`id (`slave));
 		    Popup::Error(IP::Valid4());
-		    ui = nil;
+		    ui = `again;
 		}
 	    }
 	    else if (ui == `browse)

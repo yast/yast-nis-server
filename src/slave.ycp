@@ -80,19 +80,19 @@
 		    // To translators: error message
 		    UI::SetFocus (`id (`master_ip));
 		    Popup::Error (IP::Valid4());
-		    ui = nil;
+		    ui = `again;
 		}
 		else if (!Nis::check_nisdomainname (domainname))
 		{
 		    UI::SetFocus (`id (`domain));
 		    Popup::Error (Nis::valid_nisdomainname ());
-		    ui = nil;
+		    ui = `again;
 		}
 	    }
 
 	    if (ui == `abort && !Popup::ReallyAbort (true)) continue;
 	}
-	until (ui != nil && contains ([`next, `back, `abort], ui));
+	until (contains ([`next, `back, `abort], ui));
 
 	NisServer::ui_master_ip = (string) UI::QueryWidget (`id (`master_ip), `Value);
 	NisServer::start_ypbind = (boolean) UI::QueryWidget (`id (`also_client), `Value);
