@@ -105,7 +105,7 @@ be used to set up these more specific options.</p>
 	contents = `VBox (contents,
 			  `VSpacing (0.5),
 			  // To translators: pushbutton label
-			  `PushButton (`id (`details), _("&Other global settings ...")));
+			  `PushButton (`id (`details), `opt (`key_F7), _("&Other global settings ...")));
 
 	contents = `HBox (`HSpacing (4), contents, `HSpacing (6));
 

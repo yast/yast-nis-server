@@ -147,7 +147,7 @@ configure it.</p>");
 
 	    if (current_button == `none)
 	    {
-		Wizard::ReplaceNextButton(`PushButton (`id (`finish), `opt (`default), FinishButtonLabel()));
+		Wizard::ReplaceNextButton(`PushButton (`id (`finish), `opt (`default, `key_F10), FinishButtonLabel()));
 		UI::SetFocus (`id (`finish));
 	    }
 	    else if (contains ([`master, `slave], current_button))

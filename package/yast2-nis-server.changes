@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Jan 15 13:04:23 CET 2003 - mvidner@suse.de
+
+- Added function key shortcuts in ncurses.
+- 2.7.0
+
+-------------------------------------------------------------------
 Wed Aug 28 14:07:38 CEST 2002 - mvidner@suse.cz
 
 - Fix: The values of YPPWD_CHSH and YPPWD_CHFN were swapped when saving.
