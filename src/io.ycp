@@ -144,6 +144,7 @@
 
 	if (size (to_start) > 0)
 	{
+	    sleep(1000);	// workaround for bug #10428, ypbind restart
 	    maplist (`d, to_start, ``{
 		y2milestone ("Starting daemon %1", d);
 		// start only if not running. essential for portmap! (bug #9999)
