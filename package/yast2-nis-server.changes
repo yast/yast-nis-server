@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Apr  2 15:14:48 CEST 2004 - mvidner@suse.cz
+
+- changed license to GPL
+- 2.9.8
+
+-------------------------------------------------------------------
 Mon Mar 29 10:12:03 CEST 2004 - mvidner@suse.cz
 
 - fixed build by avoiding nil in testsuite (#36922)
