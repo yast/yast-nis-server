@@ -28,5 +28,5 @@
 .sysconfig.ypserv
 
 `ag_ini(
-  SCR::SysConfigFile("/etc/sysconfig/ypserv")
+  SysConfigFile("/etc/sysconfig/ypserv")
 )
