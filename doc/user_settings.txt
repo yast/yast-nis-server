@@ -28,6 +28,3 @@ reduce depth, now uses prefixes instead.
 
 "ui_what"                               <symbol> `master `slave `none
 "ui_master_ip"                          <string>
-
-"errors"                                <string>
-"error_details"				<string> RichText
