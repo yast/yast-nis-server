@@ -192,7 +192,7 @@
 	string error_msg     = lookup (user_settings, "error", "");
 	string error_details = lookup (user_settings, "error_details", "");
 	map output =$[];
-	string dn = lookup (user_settings, ".rc.system.YP_DOMAINNAME");
+	string dn = lookup (user_settings, ".rc.system.YP_DOMAINNAME", "");
 
 	if (! EnsureDirectory (sformat ("/var/yp/%1", dn)))
 	{
@@ -426,11 +426,11 @@
 	}
 	else
 	{
-	    string slaves = lookup (SCR (`Execute (.target.bash_output, "/usr/bin/ypcat ypservers")), "stdout");
+	    string slaves = lookup (SCR (`Execute (.target.bash_output, "/usr/bin/ypcat ypservers")), "stdout", nil);
 
 	    if (slaves != nil)
 	    {
-		string hostname = lookup (SCR (`Execute (.target.bash_output, "/usr/lib/yp/yphelper --hostname")), "stdout");
+		string hostname = lookup (SCR (`Execute (.target.bash_output, "/usr/lib/yp/yphelper --hostname")), "stdout", "");
 		hostname = substring (hostname, 0, size (hostname) - 1);
 		if (!contains (splitstring (slaves, "\n"), hostname))
 		{
@@ -474,7 +474,7 @@
 	// do this remove for all workflows
 	if (size (lookup (user_settings, ".rc.system.YP_DOMAINNAME", "")) > 0)
 	{
-	    string domain         = lookup (user_settings, ".rc.system.YP_DOMAINNAME");
+	    string domain         = lookup (user_settings, ".rc.system.YP_DOMAINNAME", "");
 	    // To translators: progress label
 	    string save_label     = sformat (UI(_("Remove /var/yp/%1")), domain);
 	    // To translators: progress label

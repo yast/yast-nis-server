@@ -117,16 +117,21 @@
      * @return boolean 
      */
     global define hasMasterThisSlave () ``{
+	// list of maps: $["host": "foo.com", "map":"passwd.byuid"]
 	list running_maps = SCR (`Read (.run.ypwhich_m));
 	if (running_maps != nil)
 	{
-	    running_maps = maplist (`m, running_maps, ``(lookup (m, "map")));
+	    running_maps = maplist (`m, running_maps, ``(lookup (m, "map", "")));
 	    if (contains (running_maps, "ypservers"))
 	    {
-		string slaves = lookup (SCR (`Execute (.target.bash_output, "/usr/bin/ypcat ypservers")), "stdout");
+		string slaves = lookup (SCR (`Execute (.target.bash_output, "/usr/bin/ypcat ypservers")), "stdout", nil);
 		if (slaves != nil)
 		{
-		    string hostname = lookup (SCR (`Execute (.target.bash_output, "/usr/lib/yp/yphelper --hostname")), "stdout");
+		    string hostname = lookup (SCR (`Execute (.target.bash_output, "/usr/lib/yp/yphelper --hostname")), "stdout", "");
+		    if (hostname == "")
+		    {
+			return false;
+		    }
 		    hostname = substring (hostname, 0, size (hostname) - 1);
 		    if (contains (splitstring (slaves, "\n"), hostname))
 		    {

@@ -223,7 +223,7 @@ it gives access to all hosts.</p>
         // and finally merge
 
         user_settings = add (user_settings, ".var.yp.securenets", 
-                             MergeNetsEntries (lookup (user_settings, ".var.yp.securenets"), allow_query));
+                             MergeNetsEntries (lookup (user_settings, ".var.yp.securenets", []), allow_query));
 
         return ui;
     }
