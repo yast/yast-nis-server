@@ -27,4 +27,75 @@
     TEST (``(toboolean ($[])), [], nil);
     TEST (``(toboolean (nil)), [], nil);
     TEST (``(toboolean (`symbol)), [], nil);
+
+    DUMP ("getMaster");
+    // no domain
+    map user_settings = $[];
+    TEST (``(getMaster ()), [], nil);
+    // no map dir
+    user_settings = $[ ".rc.system.YP_DOMAINNAME": "testdomain" ];
+    TEST (``(getMaster ()), [], -1); // .target.size
+    // no maps in dir
+    map READ = $[ 
+	"target": $[ 
+	    "size":	42,
+	    "dir":	[]
+	    ]
+	];
+    TEST (``(getMaster ()), [ READ ], nil);
+    // no master entry in map
+    READ = $[ 
+	"target": $[ 
+	    "size":	42,
+	    "dir":	["map1", "map2"]
+	    ]
+	];
+    map EXECFAIL = $[
+	"target": $[
+	    "bash_output": $[
+		"exit": 1,
+		"stdout": "",
+		"stderr": ""
+		],
+	    ],
+	];
+    TEST (``(getMaster ()), [ READ, $[], EXECFAIL ], nil);
+    // all ok
+    map EXEC1 = $[
+	"target": $[
+	    "bash_output": $[
+		"exit": 0,
+		"stdout": "YP_MASTER_NAME nismaster.foo.com\n",
+		"stderr": ""
+		],
+	    ],
+	];
+    TEST (``(getMaster ()), [ READ, $[], EXEC1 ], nil);
+
+    // this test depends on the values of READ, EXEC1 and EXECFAIL set above!
+    DUMP ("isYPMaster");
+    // failure
+    TEST (``(isYPMaster ()), [ READ, $[], [ EXEC1, EXECFAIL] ], nil);
+    // not a master
+    map EXEC2 = $[
+	"target": $[
+	    "bash_output": $[
+		"exit": 0,
+		"stdout": "nisslave.foo.com\n",
+		"stderr": ""
+		],
+	    ],
+	];
+    TEST (``(isYPMaster ()), [ READ, $[], [ EXEC1, EXEC2] ], nil);
+    // master
+    EXEC2 = $[
+	"target": $[
+	    "bash_output": $[
+		"exit": 0,
+		"stdout": "nismaster.foo.com\n",
+		"stderr": ""
+		],
+	    ],
+	];
+    TEST (``(isYPMaster ()), [ READ, $[], [ EXEC1, EXEC2] ], nil);
 }
