@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Fri Aug 24 15:57:49 CEST 2001 - mvidner@suse.cz
+
+- Fixed re-detection of being a server. (2.4.10)
+
+-------------------------------------------------------------------
 Tue Aug 21 13:32:09 CEST 2001 - mvidner@suse.cz
 
 - Replaced obsolete fileexist builtin, fixed testsuite accordingly.
