@@ -4,10 +4,10 @@
 
 menudir = $(YAST2DIR)/menuentries
 modulesdir = $(YAST2DIR)/clients
-includedir = $(YAST2DIR)/include/nis_server
+yincludedir = $(YAST2DIR)/include/nis_server
 bindir = $(YAST2DIR)/bin
 
-include_DATA = \
+yinclude_DATA = \
 	what.ycp 	\
 	slave.ycp 	\
 	master.ycp 	\
@@ -27,4 +27,4 @@ menu_DATA = menuentry_nis_server.y2cc
 EXTRA_DIST = \
 	$(modules_DATA) \
 	$(menu_DATA) 	\
-	$(include_DATA)
+	$(yinclude_DATA)
