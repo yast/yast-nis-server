@@ -22,6 +22,6 @@ client_DATA = 	\
 config_DATA = nis_server.y2cc
 
 EXTRA_DIST = \
-	$(module_DATA) \
+	$(client_DATA) \
 	$(config_DATA) 	\
 	$(myinclude_DATA)
