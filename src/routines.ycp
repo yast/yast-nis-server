@@ -23,6 +23,8 @@
 
     textdomain "nis_server";
 
+    import "Runlevel";
+
     /**
      * Converts from any type to boolean:
      * true, "true" and nonzero integers are true,
@@ -98,7 +100,7 @@
      * @return boolean
      */
     global define isYPServerConfigured () ``{
-	return (SCR::Read (.rc.system.START_YPSERV) == "yes");
+	return Runlevel::ServiceEnabled ("ypserv");
     }
 
     /**

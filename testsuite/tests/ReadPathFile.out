@@ -15,13 +15,8 @@ Read	.rc.ypserver.YPPWD_SRCDIR "/etc"
 Return	$[".rc.ypserver.YPPWD_CHFN":"no", ".rc.ypserver.YPPWD_CHSH":"no", ".rc.ypserver.YPPWD_SRCDIR":"/etc"]
 Dump	YPSystemVars
 Read	.target.size "/etc/rc.config" 42
-Read	.rc.system.START_PORTMAP "yes"
-Read	.rc.system.START_YPBIND "yes"
-Read	.rc.system.START_YPPASSWDD "no"
-Read	.rc.system.START_YPSERV "no"
-Read	.rc.system.START_YPXFRD "no"
 Read	.rc.system.YP_DOMAINNAME "local"
-Return	$[".rc.system.START_PORTMAP":"yes", ".rc.system.START_YPBIND":"yes", ".rc.system.START_YPPASSWDD":"no", ".rc.system.START_YPSERV":"no", ".rc.system.START_YPXFRD":"no", ".rc.system.YP_DOMAINNAME":"local"]
+Return	$[".rc.system.YP_DOMAINNAME":"local"]
 Dump	YPSecurenets
 Read	.target.size "/var/yp/securenets" 42
 Read	.var.yp.securenets [$["netmask":"255.0.0.0", "network":"127.0.0.0"]]

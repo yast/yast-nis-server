@@ -4,10 +4,10 @@ user_settings map
 This should be global configuration map for ypserv. Reorganized to
 reduce depth, now uses prefixes instead.
 
-".rc.system.START_PORTMAP"              <string>
-".rc.system.START_YPPASSWDD"            <string>
-".rc.system.START_YPSERV"               <string>
-".rc.system.START_YPXFRD"               <string>
+"start_ypbind"				<boolean>
+"start_yppasswdd"			<boolean>
+"start_ypxfrd"				<boolean>
+
 ".rc.system.YP_DOMAINNAME"              <string>
 "old_domainname"			<string>
 
@@ -28,7 +28,6 @@ reduce depth, now uses prefixes instead.
 
 "ui_what"                               <symbol> `master `slave `none
 "ui_master_ip"                          <string>
-"ui_also_client"                        <boolean>
 
 "errors"                                <string>
 "error_details"				<string> RichText

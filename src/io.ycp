@@ -23,6 +23,7 @@
 
     textdomain "nis_server";
 
+    import "Runlevel";
     include "nis_server/routines.ycp";
 
     /**
@@ -219,41 +220,19 @@
 	string error_msg     = lookup (user_settings, "error", "");
 	string error_details = lookup (user_settings, "error_details", "");
 
-	// none workflow
-	if (which == `none)
+	if (which != `none)
 	{
-	    maplist (`var, ["YPXFRD", "YPSERV", "YPPASSWDD"], ``{
-		if (!SCR::Write(topath (sformat (".rc.system.START_%1", var)), "no"))
-		{
-		    // To translators: message in the popup dialog
-		    error_msg = error_msg + sformat (_("Error setting up variable %1%2\n"), "START_", var);
-		}
-	    });
-	}
-
-	// slave workflow
-	else if (which == `slave)
-	{
-	    maplist (`var, ["YPXFRD", "YPPASSWDD"], ``{
-		if (!SCR::Write(topath (sformat (".rc.system.START_%1", var)), "no"))
-		{
-		    // To translators: message in the popup dialog
-		    error_msg = error_msg + sformat (_("Error setting up variable %1%2\n"), "START_", var);
-		}
-	    });
-	    if (!SCR::Write(.rc.system.START_YPSERV, "yes"))
+	    if (!SCR::Write(.rc.system.YP_DOMAINNAME, user_settings[".rc.system.YP_DOMAINNAME"]:""))
 	    {
 		// To translators: message in the popup dialog
-		error_msg = error_msg + sformat (_("Error setting up variable %1\n"), "START_YPSERV");
+		error_msg = error_msg + sformat (_("Error setting up variable %1\n"), "YP_DOMAINNAME");
 	    }
-
 	}
 
-	// master workflow
-	else if (which == `master)
+	if (which == `master)
 	{
 	    maplist (`var, `value, user_settings, ``{
-		if (substring (var, 0, 10) == ".rc.system"   ||
+		if (/*substring (var, 0, 10) == ".rc.system"   ||*/
 		    substring (var, 0, 12) == ".rc.ypserver" ||
 		    substring (var, 0, 16) == ".var.yp.makefile")
 		{
@@ -265,43 +244,6 @@
 		    }
 		}
 	    });
-	}
-
-	boolean client = false;
-	if (contains ([`slave, `master], which))
-	{
-	    if (!SCR::Write(.rc.system.START_PORTMAP, "yes"))
-	    {
-		// To translators: message in the popup dialog
-		error_msg = error_msg + sformat (_("Error setting up variable %1\n"), "START_PORTMAP");
-	    }
-
-	    client = lookup (user_settings, "ui_also_client", false);
-	    if (!SCR::Write(.rc.system.START_YPBIND, client ? "yes" : "no"))
-	    {
-		// To translators: message in the popup dialog
-		error_msg = error_msg + sformat (_("Error setting up variable %1\n"), "START_YPBIND");
-	    }
-	    if (client)
-	    {
-		// FIXME: `master also saves it above, fix the whole routine
-		if (!SCR::Write(.rc.system.YP_DOMAINNAME,
-				 lookup (user_settings, ".rc.system.YP_DOMAINNAME", "")))
-		{
-		    // To translators: message in the popup dialog
-		    error_msg = error_msg + sformat (_("Error setting up variable %1\n"), "YP_DOMAINNAME");
-		}
-		if (!SCR::Write(.rc.system.CREATE_YP_CONF, "yes"))
-		{
-		    // To translators: message in the popup dialog
-		    error_msg = error_msg + sformat (_("Error setting up variable %1\n"), "CREATE_YP_CONF");
-		}
-		if (!SCR::Write(.rc.system.YP_SERVER, "127.0.0.1"))
-		{
-		    // To translators: message in the popup dialog
-		    error_msg = error_msg + sformat (_("Error setting up variable %1\n"), "YP_SERVER");
-		}
-	    }
 	}
 
 	if (!SCR::Write (.rc.system, nil))
@@ -323,14 +265,6 @@
 		error_msg = error_msg + sformat (_("Error saving file %1\n"), "/var/yp/Makefile");
 	    }
 	}
-	if (client)
-	{
-	    if (SCR::Execute (.target.bash, "/sbin/SuSEconfig --nonewpackage --module ypclient") != 0)
-	    {
-		// To translators: message in the popup dialog
-		error_msg = error_msg + _("Error running SuSEconfig\n");
-	    }
-	}
 
 	user_settings = add (user_settings, "error", error_msg);
 	user_settings = add (user_settings, "error_details", error_details);
@@ -338,7 +272,7 @@
 
     /**
      * Starts or stop daemons
-     * @param workflow what to start or save: `master, `slave, `none OR `client
+     * @param workflow what to start or save: `master, `slave, `none
      */
     global define YPDaemons (symbol workflow) ``{
 	string error_msg     = lookup (user_settings, "error", "");
@@ -361,66 +295,47 @@
 	    to_stop  = ["ypxfrd", "yppasswdd", "ypserv"];
 	    to_start = ["portmap", "ypserv"];
 
-	    if (lookup (user_settings, ".rc.system.START_YPPASSWDD", "no") == "yes")
+	    if (lookup (user_settings, "start_yppasswdd", false))
 	    {
 		to_start = add (to_start, "yppasswdd");
 	    }
 
-	    if (lookup (user_settings, ".rc.system.START_YPXFRD", "no") == "yes")
+	    if (lookup (user_settings, "start_ypxfrd", false))
 	    {
 		to_start = add (to_start, "ypxfrd");
 	    }
 	}
-	else if (workflow == `client)
-	{
-	    to_stop  = ["ypbind"];
-	    if (lookup (user_settings, "ui_also_client", false))
+
+	map services = listmap (string s, to_stop, ``([s, "disable"]));
+	foreach (string s, to_start, ``{ services[s] = "enable"; });
+	// must quote, parser bug
+	foreach (string s, string `action, services, ``{
+	    Runlevel::ServiceAdjust (s, action);
+	});
+
+	foreach (`d, to_stop, ``{
+	    y2milestone ("Stopping daemon %1", d);
+	    // $#@! broken by bug 9648
+	    integer ret = Runlevel::RunInitScript (d, "stop");
+	    if (ret != 0)
 	    {
-		to_start = ["ypbind"]; // portmap should already run
+		// To translators: message in the popup dialog
+		error_msg = error_msg + sformat (_("Error while stopping %1 daemon\n"), d);
 	    }
-	}
+	});
 
-	if (size (to_stop) > 0)
-	{
-	    maplist (`d, to_stop, ``{
-		y2milestone ("Stopping daemon %1", d);
-
-		// only stop it if it is running. LSB will make this check unnecessary.
-		if (SCR::Execute (.target.bash, sformat ("/etc/init.d/%1 status", d)) == 0)
+	foreach (`d, to_start, ``{
+	    y2milestone ("Starting daemon %1", d);
+	    // start only if not running. essential for portmap! (bug #9999)
+	    if (Runlevel::ServiceStatus (d) != 0) {
+		integer ret = Runlevel::RunInitScript (d, "start");
+		if (ret != 0)
 		{
-		    output = SCR::Execute (.target.bash_output, sformat ("/etc/init.d/%1 stop", d),
-					    $["TERM" : "raw"]);
-		    if (lookup (output, "exit", 1) != 0)
-		    {
-			// To translators: message in the popup dialog
-			error_msg = error_msg + sformat (_("Error while stopping %1 daemon\n"), d);
-			error_details = error_details + sformat ("<pre>%1</pre>", lookup (output, "stderr", ""));
-		    }
+		    // To translators: message in the popup dialog
+		    error_msg = error_msg + sformat (_("Error while starting %1 daemon\n"), d);
 		}
-	    });
-	}
-
-	if (size (to_start) > 0)
-	{
-	    sleep(1000);	// workaround for bug #10428, ypbind restart
-	    maplist (`d, to_start, ``{
-		y2milestone ("Starting daemon %1", d);
-		// start only if not running. essential for portmap! (bug #9999)
-		if (SCR::Execute (.target.bash, sformat ("/etc/init.d/%1 status", d)) != 0) {
-		    output = SCR::Execute (.target.bash_output, sformat ("/etc/init.d/%1 start", d),
-					    $["TERM" : "raw"]);
-		    if (lookup (output, "exit", 1) != 0)
-		    {
-			// To translators: message in the popup dialog
-			error_msg = error_msg + sformat (_("Error while starting %1 daemon\n"), d);
-			// To translators: formated string %1 is a daemon name %2 is an error message
-			error_details = error_details + sformat (_("<p>Starting daemon %1 %2</p>"), d,
-								 lookup (output, "stderr", ""));
-		    }
-		}
-	    });
-	}
-
+	    }
+	});
 
 	user_settings = add (user_settings, "error", error_msg);
 	user_settings = add (user_settings, "error_details", error_details);
@@ -463,6 +378,25 @@
 	user_settings = add (user_settings, "error_details", error_details);
     }
 
+    /**
+     * Calls NIS client configuration writing
+     */
+    global define void Client () ``{
+	string error_msg = lookup (user_settings, "error", "");
+	map c = $[
+	    "start":	user_settings["start_ypbind"]:false,
+	    "domain":	user_settings[".rc.system.YP_DOMAINNAME"]:"",
+	    "servers":	[ "127.0.0.1" ],
+	    ];
+
+	boolean ok = CallFunction (`nis_write (c));
+	if (!ok)
+	{
+	    // To translators: message in the popup dialog
+	    error_msg = error_msg + _("Error while configuring the client.\n");
+	}
+	user_settings = add (user_settings, "error", error_msg);
+    }
 
     /**
      * Returns list of progress labels
@@ -590,14 +524,14 @@
 	// slave or master is also client ?
 	if (contains ([`slave, `master], workflow))
 	{
-	    if (lookup (user_settings, "ui_also_client", false))
+	    if (lookup (user_settings, "start_ypbind", false))
 	    {
 		result = result + [
 				// To translators: progress label
 		    $["save_label"     : _("Start NIS client."),
 				// To translators: progress label
 		      "progress_label" : _("Starting NIS client."),
-		      "function"       : ``(YPDaemons (`client))
+		      "function"       : ``(Client ())
 			]
 		    ];
 	    }
@@ -608,7 +542,7 @@
 		    $["save_label"     : _("Stop NIS client."),
 				// To translators: progress label
 		      "progress_label" : _("Stopping NIS client."),
-		      "function"       : ``(YPDaemons (`client))
+		      "function"       : ``(Client ())
 			]
 		    ];
 	    }
@@ -644,11 +578,6 @@
 
     global define YPSystemVars () ``{
 	return $[
-	    ".rc.system.START_PORTMAP"       : "yes",
-	    ".rc.system.START_YPPASSWDD"     : "no",
-	    ".rc.system.START_YPSERV"        : "no",
-	    ".rc.system.START_YPXFRD"        : "no",
-	    ".rc.system.START_YPBIND"        : "yes",
 	    ".rc.system.YP_DOMAINNAME"       : "local"
 	    ];
     }

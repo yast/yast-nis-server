@@ -53,7 +53,7 @@
 	contents = add (contents, `VSpacing ());
 				// To translators: text entry label
 	contents = add (contents, `CheckBox (`id (`also_client), _("This host is also a NIS &client"),
-					     lookup (user_settings, "ui_also_client", false)));
+					     lookup (user_settings, "start_ypbind", false)));
 
 	contents = `HVSquash (contents);
 
@@ -89,7 +89,7 @@
 	until ((ui == `next && size (error_msg) == 0) || contains ([`back, `abort], ui));
 
 	user_settings = add (user_settings, "ui_master_ip", UI::QueryWidget (`id (`master_ip), `Value));
-	user_settings = add (user_settings, "ui_also_client", UI::QueryWidget (`id (`also_client), `Value));
+	user_settings = add (user_settings, "start_ypbind", UI::QueryWidget (`id (`also_client), `Value));
 	user_settings = add (user_settings, ".rc.system.YP_DOMAINNAME", UI::QueryWidget (`id (`domain), `Value));
 
 	return ui;

@@ -35,6 +35,7 @@
     include "nis_server/routines.ycp";
 
     import "Progress";
+    import "Runlevel";
 
     /**
      * Popup to confirm after finish is pressed
@@ -95,13 +96,25 @@
 	    ``(YPServers ())
 	    ];
 				// To translators: dialog title
-	Progress::New (title, progress_title, size (files),
+	Progress::New (title, progress_title, size (files) + 2,
 		       // To translators: progress label %1 is filename
-		       maplist (`file, files, ``(sformat (_("Load '%1' file"), file))),
+		       maplist (`file, files, ``(sformat (_("Load '%1' file"), file)))
+		       + [
+			   // Trans: progress label
+			   _("Determine running services"),
+			   // Trans: progress label
+			   _("Determine server type"),
+			   ],
 		       // To translators: progress label %1 is filename
 		       maplist (`file, files, ``(sformat (_("Loading '%1'..."), file)))
-		       // To translators: progress message
-		       + [_("Done.")],
+		       + [
+			   // Trans: progress label
+			   _("Determining running services"),
+			   // Trans: progress label
+			   _("Determining server type"),
+			   // Trans: progress label
+			   _("Done."),
+			   ],
 		       help);
 
 	integer i = 0;
@@ -112,13 +125,19 @@
 	    user_settings = user_settings + ReadPathFile (eval (vars[i]:$[]), files[i]:"");
 	    i = i + 1;
 	}
-	Progress::NextStage ();
 
-	user_settings = add (user_settings, "ui_also_client",
-			     lookup (user_settings, ".rc.system.START_YPBIND", "no") == "yes");
+	Progress::NextStage ();
+	// "ypserv" is handled elsewhere
+	list(string) services = ["yppasswdd", "ypxfrd", "ypbind"];
+	foreach (string s, services, ``{
+	    boolean e = Runlevel::ServiceEnabled (s);
+	    user_settings = add (user_settings, sformat ("start_%1", s), e);
+	});
+
 	user_settings = add (user_settings, "old_domainname",
 			     lookup (user_settings, ".rc.system.YP_DOMAINNAME", ""));
 
+	Progress::NextStage ();
 	if (!isYPServerInstalled ())
 	{
 	    user_settings = add (user_settings, "ui_what", `none);
@@ -134,6 +153,7 @@
 	    }
 	}
 
+	Progress::NextStage ();
 	return `next;
     }
 
@@ -192,7 +212,7 @@
 	}
 	else
 	{
-	    if (lookup (user_settings, "ui_also_client", false) &&
+	    if (lookup (user_settings, "start_ypbind", false) &&
 		lookup (user_settings, "old_domainname", nil) != "" &&
 		lookup (user_settings, "old_domainname", nil) !=
 		lookup (user_settings, ".rc.system.YP_DOMAINNAME", nil))
