@@ -1,6 +1,6 @@
 /**
  *
- * File:             
+ * File:
  *   what.ycp
  *
  * Module:
@@ -9,7 +9,7 @@
  * Summary:
  *   YPServer module.
  *
- * Authors:            
+ * Authors:
  *   Dan Vesely <dan@suse.cz>
  *
  * $Id$
@@ -22,7 +22,7 @@
 {
 
     textdomain "nis_server";
-    
+
     include "ui/wizard_dialog.ycp";
     include "ui/common_popups.ycp";
 
@@ -33,130 +33,130 @@
      */
     global define WhatToConfigure () ``{
 
-        // help text 1/2
-        string helptext = UI (_("<p>Select whether to configure the NIS server to be a <b>master</b> or a 
+	// help text 1/2
+	string helptext = UI (_("<p>Select whether to configure the NIS server to be a <b>master</b> or a
 <b>slave</b> or not to configure a NIS server.</p>
 "));
 
-        symbol detected = lookup (user_settings, "ui_what", `master);
-        term labels = `VBox ();
-        labels = add (labels, `VSpacing (1.5));
+	symbol detected = lookup (user_settings, "ui_what", `master);
+	term labels = `VBox ();
+	labels = add (labels, `VSpacing (1.5));
 
-        string master_setup_label = "";
-        string slave_setup_label  = "";
-        string none_setup_label   = "";
+	string master_setup_label = "";
+	string slave_setup_label  = "";
+	string none_setup_label   = "";
 
 	if (detected == `none)
-        {
-            // help text 2/2
-            helptext = helptext + UI (_("<p>The NIS server package will be <b>installed</b> first if you want to
+	{
+	    // help text 2/2
+	    helptext = helptext + UI (_("<p>The NIS server package will be <b>installed</b> first if you want to
 configure it.</p>"));
 
-                                // To translators: label in the dialog
-            labels = add (labels, `Left (`Label (_("No NIS Software is installed."))));
-                                // To translators: label in the dialog
-            labels = add (labels, `Left (`Label (_("No NIS Server is configured."))));
+				// To translators: label in the dialog
+	    labels = add (labels, `Left (`Label (_("No NIS Software is installed."))));
+				// To translators: label in the dialog
+	    labels = add (labels, `Left (`Label (_("No NIS Server is configured."))));
 
-                                // To translators: label in the dialog
-            master_setup_label = UI (_("Set up a NIS &Master Server 
+				// To translators: label in the dialog
+	    master_setup_label = UI (_("Set up a NIS &Master Server
 with previous software install
 "));
-                                // To translators: label in the dialog
-            slave_setup_label  = UI (_("Set up a NIS &Slave Server 
+				// To translators: label in the dialog
+	    slave_setup_label  = UI (_("Set up a NIS &Slave Server
 with previous software install
 "));
-                                // To translators: label in the dialog
-            none_setup_label   = UI (_("&Do nothing and leave set up"));
-        }
-        else if (isYPServerConfigured ())
-        {
+				// To translators: label in the dialog
+	    none_setup_label   = UI (_("&Do nothing and leave set up"));
+	}
+	else if (isYPServerConfigured ())
+	{
 	    boolean isMaster = (detected == `master);
-                    // To translators: part of the label in the dialog
-            string slave_or_master = isMaster ? UI (_("Master")) : UI (_("Slave"));
-                    // To translators: part of the label in the dialog
-            string master_action   = isMaster ? UI (_("Reconfigure")) : UI (_("Change to"));
-                    // To translators: part of the label in the dialog
-            string slave_action    = isMaster ? UI (_("Change to")) : UI (_("Reconfigure"));
+		    // To translators: part of the label in the dialog
+	    string slave_or_master = isMaster ? UI (_("Master")) : UI (_("Slave"));
+		    // To translators: part of the label in the dialog
+	    string master_action   = isMaster ? UI (_("Reconfigure")) : UI (_("Change to"));
+		    // To translators: part of the label in the dialog
+	    string slave_action    = isMaster ? UI (_("Change to")) : UI (_("Reconfigure"));
 
-                                // To translators: label in the dialog
-            labels = add (labels, `Left (`Label (_("NIS Software is installed."))));
-                                // To translators: label in the dialog
-            labels = add (labels, `Left (`Label (sformat (UI (_("A NIS %1 Server is configured.")), 
-                                                          slave_or_master))));
-                                // To translators: label in the dialog %1 if Reconfigure or Change to
-            master_setup_label = sformat (UI (_("%1 NIS &Master Server")), master_action);
-                                // To translators: label in the dialog %1 if Reconfigure or Change to
-            slave_setup_label  = sformat (UI (_("%1 NIS &Slave Server")), slave_action);
-            none_setup_label   = UI (_("Deactivate any NIS server configuration"));
-        }
-        else
-        {
-                                // To translators: label in the dialog
-            labels = add (labels, `Left (`Label (_("NIS Software is installed."))));
-                                // To translators: label in the dialog
-            labels = add (labels, `Left (`Label (_("No NIS Server is configured."))));
+				// To translators: label in the dialog
+	    labels = add (labels, `Left (`Label (_("NIS Software is installed."))));
+				// To translators: label in the dialog
+	    labels = add (labels, `Left (`Label (sformat (UI (_("A NIS %1 Server is configured.")),
+							  slave_or_master))));
+				// To translators: label in the dialog %1 if Reconfigure or Change to
+	    master_setup_label = sformat (UI (_("%1 NIS &Master Server")), master_action);
+				// To translators: label in the dialog %1 if Reconfigure or Change to
+	    slave_setup_label  = sformat (UI (_("%1 NIS &Slave Server")), slave_action);
+	    none_setup_label   = UI (_("Deactivate any NIS server configuration"));
+	}
+	else
+	{
+				// To translators: label in the dialog
+	    labels = add (labels, `Left (`Label (_("NIS Software is installed."))));
+				// To translators: label in the dialog
+	    labels = add (labels, `Left (`Label (_("No NIS Server is configured."))));
 
-                                // To translators: checkbox label
-            master_setup_label = UI (_("Create NIS &Master Server"));
-                                // To translators: checkbox label
-            slave_setup_label  = UI (_("Create NIS &Slave Server"));
-                                // To translators: checkbox label
-            none_setup_label   = UI (_("&Do nothing and leave set up"));
-        }
+				// To translators: checkbox label
+	    master_setup_label = UI (_("Create NIS &Master Server"));
+				// To translators: checkbox label
+	    slave_setup_label  = UI (_("Create NIS &Slave Server"));
+				// To translators: checkbox label
+	    none_setup_label   = UI (_("&Do nothing and leave set up"));
+	}
 
-        term info = `HBox ();
-                                // To translators: label in the dialog
-        info = add (info, `VBox (`Label (_("Current status:"))));
-        info = add (info, `HSpacing (4));
-        info = add (info, labels);
-        term buttons  = `VBox ();
-        buttons = add (buttons, `VSpacing (0.5));
-        buttons = add (buttons, `Left(`RadioButton (`id (`master), `opt(`notify), master_setup_label, detected == `master)));
-        buttons = add (buttons, `VSpacing (0.2));
-        buttons = add (buttons, `Left(`RadioButton (`id (`slave), `opt(`notify), slave_setup_label, detected == `slave)));
-        buttons = add (buttons, `VSpacing (0.2));
-        buttons = add (buttons, `Left(`RadioButton (`id (`none), `opt(`notify), none_setup_label, detected == `none)));
-        buttons = add (buttons, `VSpacing (0.5));
-        
-        buttons = `HBox (`HSpacing (0.5),
-                         buttons,
-                         `HSpacing (0.5));
-        
-        buttons = `HVSquash (`RadioButtonGroup (`id(`rb), buttons));
-        
-        term contents = `VBox ();
-        contents = add (contents, info);
-        contents = add (contents, `VSpacing ());
-        // To translators: frame label
-        contents = add (contents, `VCenter(`Frame (_("Select what you want to do"), buttons)));
-        contents = add (contents, `VStretch ());
-        
-        // To translators: dialog label
-        UI(`SetWizardContents (_("Network Information Service (NIS) Server Setup"), contents, helptext, true, true));
+	term info = `HBox ();
+				// To translators: label in the dialog
+	info = add (info, `VBox (`Label (_("Current status:"))));
+	info = add (info, `HSpacing (4));
+	info = add (info, labels);
+	term buttons  = `VBox ();
+	buttons = add (buttons, `VSpacing (0.5));
+	buttons = add (buttons, `Left(`RadioButton (`id (`master), `opt(`notify), master_setup_label, detected == `master)));
+	buttons = add (buttons, `VSpacing (0.2));
+	buttons = add (buttons, `Left(`RadioButton (`id (`slave), `opt(`notify), slave_setup_label, detected == `slave)));
+	buttons = add (buttons, `VSpacing (0.2));
+	buttons = add (buttons, `Left(`RadioButton (`id (`none), `opt(`notify), none_setup_label, detected == `none)));
+	buttons = add (buttons, `VSpacing (0.5));
 
-        symbol ui = nil;
-        symbol current_button = nil;
+	buttons = `HBox (`HSpacing (0.5),
+			 buttons,
+			 `HSpacing (0.5));
 
-        repeat 
-        {
-            ui = UI (`UserInput ());
-            
-            if (ui == `none) 
-            {
-                // To translators: button label
-                UI (`ReplaceWizardNextButton(`PushButton (`id (`finish), `opt (`default), FinishButtonLabel())));
-                UI (`SetFocus (`id (`finish)));
-            }
-            else if (contains ([`master, `slave], ui)) 
-            {
-                UI (`RestoreWizardNextButton());
-                UI (`SetFocus (`id (`next)));
-            }
+	buttons = `HVSquash (`RadioButtonGroup (`id(`rb), buttons));
 
-            if (ui == `abort && !UI (`ReallyAbortPopup (true))) continue;
+	term contents = `VBox ();
+	contents = add (contents, info);
+	contents = add (contents, `VSpacing ());
+	// To translators: frame label
+	contents = add (contents, `VCenter(`Frame (_("Select what you want to do"), buttons)));
+	contents = add (contents, `VStretch ());
 
-        }
-        until (contains ([`back, `next, `abort, `finish], ui));
+	// To translators: dialog label
+	UI(`SetWizardContents (_("Network Information Service (NIS) Server Setup"), contents, helptext, true, true));
+
+	symbol ui = nil;
+	symbol current_button = nil;
+
+	repeat
+	{
+	    ui = UI (`UserInput ());
+
+	    if (ui == `none)
+	    {
+		// To translators: button label
+		UI (`ReplaceWizardNextButton(`PushButton (`id (`finish), `opt (`default), FinishButtonLabel())));
+		UI (`SetFocus (`id (`finish)));
+	    }
+	    else if (contains ([`master, `slave], ui))
+	    {
+		UI (`RestoreWizardNextButton());
+		UI (`SetFocus (`id (`next)));
+	    }
+
+	    if (ui == `abort && !UI (`ReallyAbortPopup (true))) continue;
+
+	}
+	until (contains ([`back, `next, `abort, `finish], ui));
 
 	if (ui == `abort)
 	{

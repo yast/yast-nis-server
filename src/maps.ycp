@@ -1,6 +1,6 @@
 /**
  *
- * File:             
+ * File:
  *   maps.ycp
  *
  * Module:
@@ -9,7 +9,7 @@
  * Summary:
  *   YPServer module.
  *
- * Authors:            
+ * Authors:
  *   Dan Vesely <dan@suse.cz>
  *
  * $Id$
@@ -22,7 +22,7 @@
 {
 
     textdomain "nis_server";
-    
+
     include "ui/wizard_dialog.ycp";
     include "ui/common_popups.ycp";
 
@@ -35,103 +35,103 @@
     global define MapsDialog () ``{
 
 
-        // help text 1/1
-        string helptext = UI (_("<p>This dialog allows you to adjust which maps will be available. The
+	// help text 1/1
+	string helptext = UI (_("<p>This dialog allows you to adjust which maps will be available. The
 list named <i>Current</i> contains the list of maps that will be
 used. You can simply add some more maps from the list on the right side, named
 <i>Available</i>, or remove maps from the current list using the buttons with arrows.</p>
 "));
-        
-        list all = ["passwd", "group", "hosts", "rpc", "services", "netid", "protocols", "netgrp", "mail",
-                    "shadow", "publickey", "networks", "ethers", "bootparams", "printcap",
-                    "amd", "home", "auto.master", "auto.home", "auto.local", "passwd.adjunct",
-                    "timezone", "locale", "netmasks"];
-        list current    = lookup (user_settings, ".var.yp.makefile.maps", ["passwd", "group", "rpc", "services", "netid"]);
 
-        if (toboolean (lookup (user_settings, ".var.yp.makefile.MERGE_PASSWD", false)))
-        {
-            current = filter (`m, current, ``(m != "shadow"));
-        }
-        list remaining = filter (`map_name, all, ``(!contains (current, map_name)));
+	list all = ["passwd", "group", "hosts", "rpc", "services", "netid", "protocols", "netgrp", "mail",
+		    "shadow", "publickey", "networks", "ethers", "bootparams", "printcap",
+		    "amd", "home", "auto.master", "auto.home", "auto.local", "passwd.adjunct",
+		    "timezone", "locale", "netmasks"];
+	list current    = lookup (user_settings, ".var.yp.makefile.maps", ["passwd", "group", "rpc", "services", "netid"]);
 
-        list to_filter_out = ["publickey", "bootparams", "auto.master", "auto.home", "auto.local"];
+	if (toboolean (lookup (user_settings, ".var.yp.makefile.MERGE_PASSWD", false)))
+	{
+	    current = filter (`m, current, ``(m != "shadow"));
+	}
+	list remaining = filter (`map_name, all, ``(!contains (current, map_name)));
 
-        if (toboolean (lookup (user_settings, ".var.yp.makefile.MERGE_PASSWD", false)) &&
-            SCR::Read (.target.size, sformat ("%1/shadow", lookup (user_settings, ".rc.ypserver.YPPWD_SRCDIR", ""))) != -1)
-        {
-            remaining = filter (`map_name, remaining, ``(map_name != "shadow"));
-        }
+	list to_filter_out = ["publickey", "bootparams", "auto.master", "auto.home", "auto.local"];
 
-        foreach (`file_name, to_filter_out, ``{
-            if (SCR::Read (.target.size, sformat ("/etc/%1", file_name)) == -1)
-            {
-                remaining = filter (`map_name, remaining, ``(map_name != file_name));
-            }
-        });
+	if (toboolean (lookup (user_settings, ".var.yp.makefile.MERGE_PASSWD", false)) &&
+	    SCR::Read (.target.size, sformat ("%1/shadow", lookup (user_settings, ".rc.ypserver.YPPWD_SRCDIR", ""))) != -1)
+	{
+	    remaining = filter (`map_name, remaining, ``(map_name != "shadow"));
+	}
+
+	foreach (`file_name, to_filter_out, ``{
+	    if (SCR::Read (.target.size, sformat ("/etc/%1", file_name)) == -1)
+	    {
+		remaining = filter (`map_name, remaining, ``(map_name != file_name));
+	    }
+	});
 
 	// fool check_ycp not to ask for translation
 	string remove_label = "--&>";
 	string add_label = "&<--";
-        term buttons = `VBox ();
-        buttons = add (buttons, `PushButton (`id (`remove), remove_label));
-        buttons = add (buttons, `PushButton (`id (`add), add_label));
-        
-        term contents = `HBox ();
-        contents = add (contents, `HWeight (1, 
-                                            `ReplacePoint (`id (`replace_current),
-                                // To translators: selectionbox label
-                                                           `SelectionBox (`id (`current), `opt (`notify), _("&Current"), sort (current)))));
-        contents = add (contents, buttons);
-        contents = add (contents, `HWeight (1, 
-                                            `ReplacePoint (`id (`replace_remaining),
-                                // To translators: selectionbox label
-                                                           `SelectionBox (`id (`remaining), `opt (`notify), _("A&vailable"), sort (remaining)))));
-        
-        
-        // To translators: dialog label
-        UI (`SetWizardContents (_("NIS Server Maps Setup"), contents, helptext, true, true));
+	term buttons = `VBox ();
+	buttons = add (buttons, `PushButton (`id (`remove), remove_label));
+	buttons = add (buttons, `PushButton (`id (`add), add_label));
 
-        symbol ui = nil;
+	term contents = `HBox ();
+	contents = add (contents, `HWeight (1,
+					    `ReplacePoint (`id (`replace_current),
+				// To translators: selectionbox label
+							   `SelectionBox (`id (`current), `opt (`notify), _("&Current"), sort (current)))));
+	contents = add (contents, buttons);
+	contents = add (contents, `HWeight (1,
+					    `ReplacePoint (`id (`replace_remaining),
+				// To translators: selectionbox label
+							   `SelectionBox (`id (`remaining), `opt (`notify), _("A&vailable"), sort (remaining)))));
 
-        repeat 
-        {
+
+	// To translators: dialog label
+	UI (`SetWizardContents (_("NIS Server Maps Setup"), contents, helptext, true, true));
+
+	symbol ui = nil;
+
+	repeat
+	{
 	    UI (`ChangeWidget (`id (`add),    `Enabled, UI (`QueryWidget (`id (`remaining), `CurrentItem)) != nil));
 	    UI (`ChangeWidget (`id (`remove), `Enabled, UI (`QueryWidget (`id (`current), `CurrentItem)) != nil));
 
-            ui = UI (`UserInput ());
+	    ui = UI (`UserInput ());
 
-            if (contains ([`add, `remove], ui))
-            {
-                symbol box_id = ui == `add ? `remaining : `current;
-                string key = UI (`QueryWidget (`id (box_id), `CurrentItem));
+	    if (contains ([`add, `remove], ui))
+	    {
+		symbol box_id = ui == `add ? `remaining : `current;
+		string key = UI (`QueryWidget (`id (box_id), `CurrentItem));
 
-                if (ui == `add)
-                {
-                    current    = add (current, key);
-                    remaining = filter (`k, remaining, ``(k != key));
-                }
-                else
-                {
-                    remaining = add (remaining, key);
-                    current    = filter (`k, current, ``(k != key));
-                }
+		if (ui == `add)
+		{
+		    current    = add (current, key);
+		    remaining = filter (`k, remaining, ``(k != key));
+		}
+		else
+		{
+		    remaining = add (remaining, key);
+		    current    = filter (`k, current, ``(k != key));
+		}
 
-                UI (`ReplaceWidget (`id (`replace_current),
-                                // To translators: selectionbox label
-                                    `SelectionBox (`id (`current), `opt (`notify), _("&Current"), sort (current))));
-                UI (`ReplaceWidget (`id (`replace_remaining),
-                                // To translators: selectionbox label
-                                    `SelectionBox (`id (`remaining), `opt (`notify), _("A&vailable"), sort (remaining))));
-            }
+		UI (`ReplaceWidget (`id (`replace_current),
+				// To translators: selectionbox label
+				    `SelectionBox (`id (`current), `opt (`notify), _("&Current"), sort (current))));
+		UI (`ReplaceWidget (`id (`replace_remaining),
+				// To translators: selectionbox label
+				    `SelectionBox (`id (`remaining), `opt (`notify), _("A&vailable"), sort (remaining))));
+	    }
 
-            if (ui == `abort && !UI (`ReallyAbortPopup (true))) continue;
-            
-        }
-        until (contains ([`back, `next, `abort], ui));
+	    if (ui == `abort && !UI (`ReallyAbortPopup (true))) continue;
+
+	}
+	until (contains ([`back, `next, `abort], ui));
 
 
-        user_settings = add (user_settings, ".var.yp.makefile.maps", current);
-        return ui;
+	user_settings = add (user_settings, ".var.yp.makefile.maps", current);
+	return ui;
 
     }
 
