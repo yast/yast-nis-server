@@ -74,6 +74,12 @@ else if (func == "Import") {
 else if (func == "Export") {
     ret = NisServer::Export();
 }
+else if (func == "GetModified") {
+    ret =  NisServer::GetModified();
+}
+else if (func == "SetModified") {
+    NisServer::SetModified();
+}
 /* Write givven settings */
 else if (func == "Write") {
     import "Progress";
