@@ -229,7 +229,7 @@
 	if (which == `master)
 	{
 	    maplist (`var, `value, user_settings, ``{
-		if (substring (var, 0, 12) == ".rc.ypserver" ||
+		if (substring (var, 0, 17) == ".sysconfig.ypserv" ||
 		    substring (var, 0, 16) == ".var.yp.makefile")
 		{
 		    if (!SCR::Write (topath (var), value))
@@ -241,7 +241,7 @@
 		}
 	    });
 
-	    if (!SCR::Write (.rc.ypserver, nil))
+	    if (!SCR::Write (.sysconfig.ypserv, nil))
 	    {
 		// To translators: message in the popup dialog
 		error_msg = error_msg + sformat (_("Error saving file %1\n"), "/etc/sysconfig/ypserv");
@@ -551,9 +551,9 @@
 
     global define YPServerVars () ``{
 	return $[
-	    ".rc.ypserver.YPPWD_CHFN"        : "no",
-	    ".rc.ypserver.YPPWD_CHSH"        : "no",
-	    ".rc.ypserver.YPPWD_SRCDIR"      : "/etc"
+	    ".sysconfig.ypserv.YPPWD_CHFN"        : "no",
+	    ".sysconfig.ypserv.YPPWD_CHSH"        : "no",
+	    ".sysconfig.ypserv.YPPWD_SRCDIR"      : "/etc"
 	    ];
     }
 

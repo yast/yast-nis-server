@@ -57,10 +57,10 @@ be used to set up these more specific options.</p>
 	term pass_yes_buttons = `VBox ();
 				// To translators: checkbox label
 	pass_yes_buttons = add (pass_yes_buttons, `Left (`CheckBox (`id (`allow_shell), _("Allow changing of &GECOS field"),
-				lookup (user_settings, ".rc.ypserver.YPPWD_CHFN", "no") == "yes")));
+				lookup (user_settings, ".sysconfig.ypserv.YPPWD_CHFN", "no") == "yes")));
 				// To translators: checkbox label
 	pass_yes_buttons = add (pass_yes_buttons, `Left (`CheckBox (`id (`allow_gecos), _("Allow changing of login &shell"),
-				lookup (user_settings, ".rc.ypserver.YPPWD_CHSH", "no") == "yes")));
+				lookup (user_settings, ".sysconfig.ypserv.YPPWD_CHSH", "no") == "yes")));
 	pass_yes_buttons = `HBox (`HSpacing (3), pass_yes_buttons);
 
 	term pass_buttons = `VBox ();
@@ -147,9 +147,9 @@ be used to set up these more specific options.</p>
 	user_settings = add (user_settings, "start_ypbind", UI::QueryWidget (`id (`also_client), `Value));
 	user_settings = add (user_settings, ".var.yp.makefile.NOPUSH",
 			     sformat ("%1", ! UI::QueryWidget (`id (`have_slave), `Value)));
-	user_settings = add (user_settings, ".rc.ypserver.YPPWD_CHFN",
+	user_settings = add (user_settings, ".sysconfig.ypserv.YPPWD_CHFN",
 			     UI::QueryWidget (`id (`allow_gecos), `Value) ? "yes" : "no");
-	user_settings = add (user_settings, ".rc.ypserver.YPPWD_CHSH",
+	user_settings = add (user_settings, ".sysconfig.ypserv.YPPWD_CHSH",
 			     UI::QueryWidget (`id (`allow_shell), `Value) ? "yes" : "no");
 	user_settings = add (user_settings, "start_yppasswdd",
 			     UI::QueryWidget (`id (`change_passwords), `Value));

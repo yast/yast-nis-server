@@ -19,7 +19,7 @@
     map user_settings = $[
 	"ui_also_client": true,
 	".etc.defaultdomain": "thedomain",
-	".rc.ypserver.YPPWD_SRCDIR": "/etc",
+	".sysconfig.ypserv.YPPWD_SRCDIR": "/etc",
 	".var.yp.makefile.MERGE_PASSWD": "true"
 	];
 

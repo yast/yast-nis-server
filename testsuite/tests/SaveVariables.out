@@ -3,8 +3,8 @@ Write	.etc.defaultdomain "thedomain" true
 Return	nil
 Dump	master
 Write	.etc.defaultdomain "thedomain" true
-Write	.rc.ypserver.YPPWD_SRCDIR "/etc" true
+Write	.sysconfig.ypserv.YPPWD_SRCDIR "/etc" true
 Write	.var.yp.makefile.MERGE_PASSWD "true" true
-Write	.rc.ypserver nil true
+Write	.sysconfig.ypserv nil true
 Write	.var.yp.makefile nil true
 Return	nil

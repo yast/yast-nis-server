@@ -9,10 +9,10 @@ Read	.var.yp.makefile.maps ["passwd", "group", "rpc", "services", "netid"]
 Return	$[".var.yp.makefile.MERGE_GROUP":"true", ".var.yp.makefile.MERGE_PASSWD":"true", ".var.yp.makefile.MINGID":"100", ".var.yp.makefile.MINUID":"100", ".var.yp.makefile.NOPUSH":"true", ".var.yp.makefile.maps":["passwd", "group", "rpc", "services", "netid"]]
 Dump	YPServerVars
 Read	.target.size "/etc/sysconfig/ypserv" 42
-Read	.rc.ypserver.YPPWD_CHFN "no"
-Read	.rc.ypserver.YPPWD_CHSH "no"
-Read	.rc.ypserver.YPPWD_SRCDIR "/etc"
-Return	$[".rc.ypserver.YPPWD_CHFN":"no", ".rc.ypserver.YPPWD_CHSH":"no", ".rc.ypserver.YPPWD_SRCDIR":"/etc"]
+Read	.sysconfig.ypserv.YPPWD_CHFN "no"
+Read	.sysconfig.ypserv.YPPWD_CHSH "no"
+Read	.sysconfig.ypserv.YPPWD_SRCDIR "/etc"
+Return	$[".sysconfig.ypserv.YPPWD_CHFN":"no", ".sysconfig.ypserv.YPPWD_CHSH":"no", ".sysconfig.ypserv.YPPWD_SRCDIR":"/etc"]
 Dump	YPSystemVars
 Read	.target.size "/etc/defaultdomain" 42
 Read	.etc.defaultdomain "local"

@@ -91,7 +91,7 @@ file.</p>");
 	term contents = `VBox ();
 				// To translators: textentry label
 	contents = add (contents, `TextEntry (`id (`srcdir), `opt(`notify), _("&YP Source directory"),
-					      lookup (user_settings, ".rc.ypserver.YPPWD_SRCDIR", "")));
+					      lookup (user_settings, ".sysconfig.ypserv.YPPWD_SRCDIR", "")));
 	contents = add (contents, `VSpacing (0.5));
 	contents = add (contents, merge_all);
 	contents = add (contents, `VSpacing (0.5));
@@ -136,7 +136,7 @@ file.</p>");
 			     sformat ("%1", UI::QueryWidget (`id (`pass_rb), `CurrentButton) == `yes));
 	user_settings = add (user_settings, ".var.yp.makefile.MERGE_GROUP",
 			     sformat ("%1", UI::QueryWidget (`id (`group_rb), `CurrentButton) == `yes));
-	user_settings = add (user_settings, ".rc.ypserver.YPPWD_SRCDIR",
+	user_settings = add (user_settings, ".sysconfig.ypserv.YPPWD_SRCDIR",
 			     UI::QueryWidget (`id (`srcdir), `Value));
 
 	// To translators: button label
