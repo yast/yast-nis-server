@@ -1,9 +1,9 @@
 @HEADER-COMMENT@
 
-# neededforbuild  yast2-devel-packages yast2-nis-client yast2-pam yast2-network yast2-country yast2-installation yast2-firewall
+# neededforbuild  yast2-devel-packages yast2-nis-client yast2-pam yast2-network yast2-country
 
 @HEADER@
-Requires:	yast2 yast2-network yast2-nis-client yast2-firewall
+Requires:	yast2 yast2-network yast2-nis-client
 
 Provides:	yast2-config-nis-server
 Obsoletes:	yast2-config-nis-server

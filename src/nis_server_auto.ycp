@@ -54,9 +54,9 @@ else if (func == "Reset") {
 /* Reset configuration */
 else if (func == "Read") {
     import "Progress";
-    Progress::off();
+    boolean progress_orig = Progress::set (false);
     ret = NisServer::Read();
-    Progress::on();
+    Progress::set (progress_orig);
 }
 /* return required packages */
 else if (func == "Packages") {
@@ -83,10 +83,10 @@ else if (func == "SetModified") {
 /* Write givven settings */
 else if (func == "Write") {
     import "Progress";
-    Progress::off();
+    boolean progress_orig = Progress::set (false);
     NisServer::write_only = true;
     ret = NisServer::Write();
-    Progress::on();
+    Progress::set (progress_orig);
 }
 /* Unknown function */
 else {

@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Wed Dec 15 13:09:46 CET 2004 - jsuchome@suse.cz
+
+- fixed NFB (yast2-firewall not required)
+- adapted to new Progress usage 
+- fixed SCR calls when there are not config files
+- 2.11.2 
+
+-------------------------------------------------------------------
 Fri Nov  5 10:06:01 CET 2004 - jsuchome@suse.cz
 
 - lookup's and select's replaced by brackets
