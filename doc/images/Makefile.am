@@ -5,17 +5,17 @@
 htmldir = $(docdir)/images
 
 screenshots = \
-	0-load.jpg \
-	1-which.jpg \
-	2-master.jpg \
-	2-slave.jpg \
-	21-details.jpg \
-	3-slaves.jpg \
+	0-load.png \
+	1-which.png \
+	2-master.png \
+	2-slave.png \
+	21-details.png \
+	3-slaves.png \
 	31-edit.png \
-	4-maps.jpg \
-	5-nets.jpg \
+	4-maps.png \
+	5-nets.png \
 	51-edit.png \
-	6-saving.jpg \
+	6-saving.png \
 	abort.png \
 	error-details.png \
 	error.png \
