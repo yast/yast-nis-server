@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Jan 18 10:47:20 CET 2005 - jsuchome@suse.cz
+
+- command line support: configure master and slave server
+- 2.11.3
+
+-------------------------------------------------------------------
 Wed Dec 15 13:09:46 CET 2004 - jsuchome@suse.cz
 
 - fixed NFB (yast2-firewall not required)

@@ -45,12 +45,7 @@
 	// Let's call a yp map a table, not to get too confused.
 
 	// All tables that ypserv Makefile knows about
-	list<string> all = ["passwd", "group", "hosts", "rpc", "services",
-		    "netid", "protocols", "netgrp", "mail", "shadow",
-		    "publickey", "networks", "ethers", "bootparams",
-		    "printcap", "amd.home", "auto.master",
-		    "auto.home", "auto.local", "passwd.adjunct",
-		    "timezone", "locale", "netmasks"];
+	list<string> all = NisServer::GetAllMaps ();
 
 	// Assign a source file to all tables.
 	// Some tables are built of more files while we only check for one.
