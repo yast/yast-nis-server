@@ -27,11 +27,4 @@
     TEST (``(toboolean ($[])), [], nil);
     TEST (``(toboolean (nil)), [], nil);
     TEST (``(toboolean (`symbol)), [], nil);
-
-    // checks hostnames
-    TEST (``(checkhostname ("bia.suse.cz")), [], nil);
-    TEST (``(checkhostname ("this.hostname.is.correct")), [], nil);
-    TEST (``(checkhostname ("this.hostname.is.not correct!")), [], nil);
-
-    
 }

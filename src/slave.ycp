@@ -11,6 +11,7 @@
  *
  * Authors:            
  *   Dan Vesely <dan@suse.cz>
+ *   Martin Vidner <mvidner@suse.cz>
  *
  * $Id$
  *
@@ -25,6 +26,8 @@
     
     include "ui/wizard_dialog.ycp";
     include "ui/common_popups.ycp";
+    include "network/ip.ycp";
+    include "network/dns.ycp";
 
     include "nis_server/routines.ycp";
 
@@ -102,9 +105,9 @@
                 string master_ip  = UI (`QueryWidget (`id (`master_ip), `Value));
                 string domainname = UI (`QueryWidget (`id (`domain), `Value));
                                 // To translators: error message
-                error_msg = error_msg + ((size (master_ip) != 0 && checkIP (master_ip)) ? "" : UI(_("Wrong master IP address!\n")));
+                error_msg = error_msg + ((check_ip4 (master_ip)) ? "" : UI(_("Wrong master IP address!\n")));
                                 // To translators: error message
-                error_msg = error_msg + ((size (domainname) != 0 && checkhostname (domainname)) ? "" : UI(_("Wrong domain!\n")));
+                error_msg = error_msg + ((check_domainname (domainname)) ? "" : UI(_("Wrong domain!\n")));
 
                 if (size (error_msg) > 0)
                 {

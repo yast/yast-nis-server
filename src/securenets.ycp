@@ -26,7 +26,8 @@
     
     include "ui/wizard_dialog.ycp";
     include "ui/common_popups.ycp";
-
+    include "network/ip.ycp";
+    
     /**
      * Creates items for table from var_yp_securenets.scr any agent
      * @param nets list output from securenets agent
@@ -113,9 +114,9 @@
                 netmask = UI (`QueryWidget (`id (`netmask), `Value));
                 network = UI (`QueryWidget (`id (`network), `Value));
                                 // To translators: error message
-                error_msg = error_msg + (checkIP (netmask) ? "" : UI(_("Wrong netmask!\n")));
+                error_msg = error_msg + (check_ip4 (netmask) ? "" : UI(_("Wrong netmask!\n")));
                                 // To translators: error message
-                error_msg = error_msg + (checkIP (network) ? "" : UI(_("Wrong network!\n")));
+                error_msg = error_msg + (check_ip4 (network) ? "" : UI(_("Wrong network!\n")));
 
                 if (size (error_msg) > 0)
                 {

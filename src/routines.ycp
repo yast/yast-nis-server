@@ -39,20 +39,6 @@
     }
 
     /**
-     * Check hostname
-     * @param name string to check
-     * @return boolean correctness
-     */
-    global define checkhostname (string name) ``{
-        list subnames = splitstring (name, ".");
-        boolean result = true;
-        foreach (`n, subnames, ``{
-            result = result && (size (n) > 0) && (filterchars (n, "abcdefghijklmnopqrstuvwxyz0123456789_") == n);            
-        });
-        return result;
-    }
-
-    /**
      * Determines if the current host is YP master or not
      * @return boolean
      */
