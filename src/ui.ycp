@@ -1,28 +1,17 @@
 /**
- *
- * File:
- *   ui.ycp
- *
- * Module:
- *   Network/YPServer
- *
- * Summary:
- *   YPServer module.
- *
- * Authors:
- *   Dan Vesely <dan@suse.cz>
+ * File:	include/nis_server/dialogs.ycp
+ * Package:	Configuration of nisServer
+ * Summary:	Dialogs definitions
+ * Authors:	Martin Vidner <mvidner@suse.cz>
+ *              Dan Vesely <dan@suse.cz>
  *
  * $Id$
- *
- * YPServer module part.
- *
  */
 
-
 {
-
     textdomain "nis_server";
 
+    import "NisServer";
     include "nis_server/what.ycp";
     include "nis_server/slave.ycp";
     include "nis_server/master.ycp";
@@ -31,13 +20,32 @@
     include "nis_server/maps.ycp";
     include "nis_server/securenets.ycp";
 
-    include "nis_server/io.ycp";
-    include "nis_server/routines.ycp";
+//   include "nis_server/io.ycp";
+//   include "nis_server/routines.ycp";
 
     include "require.ycp";
 
-    import "Progress";
-    import "Runlevel";
+//    import "Progress";
+//    import "Runlevel";
+
+
+    /**
+     * Read settings dialog
+     * @return `abort if aborted and `next otherwise
+     */
+    global define symbol ReadDialog() ``{
+	boolean ret = NisServer::Read();
+	return ret ? `next : `abort;
+    }
+
+    /**
+     * Write settings dialog
+     * @return `abort if aborted and `next otherwise
+     */
+    global define symbol WriteDialog() ``{
+	boolean ret = NisServer::Write();
+	return ret ? `next : `abort;
+    }
 
     /**
      * Popup to confirm after finish is pressed
@@ -78,144 +86,8 @@
     global define symbol DetailsPopup () ``{
 
 				// To translators: popup label
-	UI::LongTextPopup (_("Error details"), `RichText (error_details), 50, 20 );
+	UI::LongTextPopup (_("Error details"), `RichText (NisServer::error_details), 50, 20 );
 	return `ok;
-    }
-
-    /**
-     * Dialog displayed during reading configuration.
-     * Sets user_settings.
-     * @return `next
-     */
-    global define symbol ReadConfigDialog () ``{
-
-	// help text 1/1
-	string help = _("<p>Please wait while reading the configuration.</p>");
-	// dialog heading
-	string title = _("Initializing NIS server setup");
-	string progress_title = " ";
-
-	list files = [
-	    "/var/yp/Makefile",
-	    "/etc/sysconfig/ypserv",
-	    "/etc/defaultdomain",
-	    "/var/yp/securenets",
-	    "/var/yp/ypservers"
-	    ];
-	list vars = [
-	    ``(YPMakefileVars ()),
-	    ``(YPServerVars ()),
-	    ``(YPSystemVars ()),
-	    ``(YPSecurenets ()),
-	    ``(YPServers ())
-	    ];
-				// To translators: dialog title
-	Progress::New (title, progress_title, size (files) + 2,
-		       // To translators: progress label %1 is filename
-		       maplist (`file, files, ``(sformat (_("Load '%1' file"), file)))
-		       + [
-			   // Trans: progress label
-			   _("Determine running services"),
-			   // Trans: progress label
-			   _("Determine server type"),
-			   ],
-		       // To translators: progress label %1 is filename
-		       maplist (`file, files, ``(sformat (_("Loading '%1'..."), file)))
-		       + [
-			   // Trans: progress label
-			   _("Determining running services"),
-			   // Trans: progress label
-			   _("Determining server type"),
-			   // Trans: progress label
-			   _("Done."),
-			   ],
-		       help);
-
-	integer i = 0;
-	while (i < size (files))
-	{
-	    Progress::NextStage ();
-	    // yuck - list of terms with a map as a default value - eval rules
-	    user_settings = user_settings + ReadPathFile (eval (vars[i]:$[]), files[i]:"");
-	    i = i + 1;
-	}
-
-	Progress::NextStage ();
-	// "ypserv" is handled elsewhere
-	list(string) services = ["yppasswdd", "ypxfrd", "ypbind"];
-	foreach (string s, services, ``{
-	    boolean e = Runlevel::ServiceEnabled (s);
-	    user_settings = add (user_settings, sformat ("start_%1", s), e);
-	});
-
-	string dn = user_settings[".etc.defaultdomain"]:"";
-	if (dn == "")
-	{
-	    // a DHCP client may set the domainname too:
-	    // /etc/sysconfig/network/dhcp:DHCLIENT_SET_DOMAINNAME
-	    map out = SCR::Execute (.target.bash_output, "/bin/ypdomainname");
-	    dn = deletechars (out["stdout"]:"", "\n");
-	    user_settings = add (user_settings, ".etc.defaultdomain", dn);
-	}
-	user_settings = add (user_settings, "old_domainname", dn);
-
-	Progress::NextStage ();
-	if (!isYPServerInstalled ())
-	{
-	    user_settings = add (user_settings, "ui_what", `none);
-	}
-	else
-	{
-	    user_settings = add (user_settings, "ui_what", isYPMaster ()? `master: `slave);
-	    //FIXME: this will give a hostname. the label says IP.
-	    string master = getMaster();
-	    if (master != nil)
-	    {
-		user_settings = add (user_settings, "ui_master_ip", master);
-	    }
-	}
-
-	Progress::NextStage ();
-	return `next;
-    }
-
-    /**
-     * Dialog displayed during saving
-     * @return `done
-     */
-    global define symbol SavingDialog () ``{
-
-	// help text 1/1
-	string help = _("<p>Please wait until the configuration is saved.</p>");
-	// dialog heading
-	string title = _("Saving NIS server setup");
-	string progress_title = " ";
-	Wizard::RestoreNextButton();
-	UI::ChangeWidget (`id (`next), `Enabled, false);
-	UI::ChangeWidget (`id (`abort), `Enabled, false);
-
-	symbol workflow = lookup (user_settings, "ui_what", `error);
-	list save_list = GetSaveList (workflow);
-	integer step = 0;
-
-	// To translators: dialog title
-	Progress::New (title, progress_title, size (save_list),
-		       maplist (`e, save_list, ``(e["save_label"]:"")),
-		       maplist (`e, save_list, ``(e["progress_label"]:""))
-		       // To translators: progress message
-		       + [_("Done.")],
-		       help);
-
-	foreach (map save_item, save_list, ``{
-	    Progress::NextStage ();
-	    y2milestone ("Calling: %1", save_item["function"]:"");
-	    //sleep (1000);
-	    eval (save_item["function"]:"");
-	});
-
-	Progress::NextStage ();
-
-	return `done;
     }
 
     /**
@@ -225,11 +97,11 @@
     global define symbol ResultPopup () ``{
 
 	string message = "";
-	if (size (error_msg) > 0)
+	if (size (NisServer::error_msg) > 0)
 	{
 				// To translators: popup label
 	    message = sformat (_("Error during configuration:\n%1"),
-			       error_msg);
+			       NisServer::error_msg);
 
 				// To translators: Error popup
 	    return UI::AnyQuestionPopup (ErrorMsg(), message, OKButtonLabel(), _("&Details"), `focus_yes) ? `ok : `details;
@@ -237,10 +109,9 @@
 	}
 	else
 	{
-	    if (lookup (user_settings, "start_ypbind", false) &&
-		lookup (user_settings, "old_domainname", nil) != "" &&
-		lookup (user_settings, "old_domainname", nil) !=
-		lookup (user_settings, ".etc.defaultdomain", nil))
+	    if (NisServer::start_ypbind &&
+		NisServer::old_domainname != "" &&
+		NisServer::old_domainname != NisServer::domain)
 	    {
 		// To translators: final popup
 		UI::WarningPopup (_("The domain has changed.
@@ -269,6 +140,6 @@ You must reboot for the changes to take effect."));
 	    DoInstallAndRemove (["ypserv"], []);
 	}
 
-	return user_settings["ui_what"]:`master;
+	return NisServer::ui_what;
     }
 }

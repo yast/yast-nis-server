@@ -29,6 +29,7 @@
     include "ui/common_popups.ycp";
     include "network/dns.ycp";
 
+    import "NisServer";
     include "nis_server/routines.ycp";
 
     /**
@@ -58,10 +59,10 @@ be used to set up these more specific options.</p>
 	term pass_yes_buttons = `VBox ();
 				// To translators: checkbox label
 	pass_yes_buttons = add (pass_yes_buttons, `Left (`CheckBox (`id (`allow_gecos), _("Allow changes to &GECOS field"),
-				lookup (user_settings, ".sysconfig.ypserv.YPPWD_CHFN", "no") == "yes")));
+				NisServer::pwd_chfn)));
 				// To translators: checkbox label
 	pass_yes_buttons = add (pass_yes_buttons, `Left (`CheckBox (`id (`allow_shell), _("Allow changes to login &shell"),
-				lookup (user_settings, ".sysconfig.ypserv.YPPWD_CHSH", "no") == "yes")));
+				NisServer::pwd_chsh)));
 	pass_yes_buttons = `HBox (`HSpacing (3), pass_yes_buttons);
 
 	term pass_buttons = `VBox ();
@@ -69,7 +70,7 @@ be used to set up these more specific options.</p>
 	pass_buttons = add (pass_buttons, `Left (`CheckBox (`id (`change_passwords), `opt (`notify),
 							    // To translators: checkbox label
 			    _("Allow changes to &passwords"),
-			    lookup (user_settings, "start_yppasswdd", false))));
+			    NisServer::start_yppasswdd)));
 	pass_buttons = add (pass_buttons, `VSpacing (0.3));
 	pass_buttons = add (pass_buttons, pass_yes_buttons);
 	pass_buttons = add (pass_buttons, `VSpacing (0.3));
@@ -78,11 +79,11 @@ be used to set up these more specific options.</p>
 	term domain_frame = `VBox ();
 	domain_frame = add (domain_frame, `VSpacing (0.3));
 	domain_frame = add (domain_frame, `TextEntry (`id (`domain), "",
-						      lookup (user_settings, ".etc.defaultdomain", "")));
+						      NisServer::domain));
 	domain_frame = add (domain_frame, `VSpacing (0.3));
 				// To translators: checkbox label
 	domain_frame = add (domain_frame, `Left (`CheckBox (`id (`also_client), _("This host is also a NIS &client"),
-							    lookup (user_settings, "start_ypbind", false))));
+							    NisServer::start_ypbind)));
 	domain_frame = add (domain_frame, `VSpacing (0.3));
 	domain_frame = `HBox (`HSpacing (), domain_frame, `HSpacing (4));
 
@@ -93,11 +94,11 @@ be used to set up these more specific options.</p>
 	contents = add (contents, `VSpacing (0.5));
 				// To translators: checkbox label
 	contents = add (contents, `HBox (`HSpacing (), `Left (`CheckBox (`id (`have_slave), _("Active Slave NIS server &exists"),
-			! toboolean (lookup (user_settings, ".var.yp.makefile.NOPUSH", false))))));
+			!NisServer::nopush))));
 	contents = add (contents, `VSpacing (0.5));
 				// To translators: checkbox label
 	contents = add (contents, `HBox (`HSpacing (),`Left (`CheckBox (`id (`fast_map), _("&Fast Map distribution (rpc.ypxfrd)"),
-			lookup (user_settings, "start_ypxfrd", false)))));
+			NisServer::start_ypxfrd))));
 	contents = add (contents, `VSpacing (0.5));
 				// To translators: frame label
 	contents = add (contents, `Frame (_("Changing of passwords"), pass_buttons));
@@ -111,7 +112,7 @@ be used to set up these more specific options.</p>
 
 				// To translators: dialog label
 	Wizard::SetContents (_("Network Information Service -- Master Server Setup"), contents, helptext, true, true);
-	boolean a = lookup (user_settings, "start_yppasswdd", false);
+	boolean a = NisServer::start_yppasswdd;
 	UI::ChangeWidget (`id (`allow_shell), `Enabled, a);
 	UI::ChangeWidget (`id (`allow_gecos), `Enabled, a);
 
@@ -147,20 +148,14 @@ be used to set up these more specific options.</p>
 	}
 	until (contains ([`next, `back, `abort, `details], ui));
 
-	user_settings = add (user_settings, "start_ypbind", UI::QueryWidget (`id (`also_client), `Value));
-	user_settings = add (user_settings, ".var.yp.makefile.NOPUSH",
-			     sformat ("%1", ! UI::QueryWidget (`id (`have_slave), `Value)));
-	user_settings = add (user_settings, ".sysconfig.ypserv.YPPWD_CHFN",
-			     UI::QueryWidget (`id (`allow_gecos), `Value) ? "yes" : "no");
-	user_settings = add (user_settings, ".sysconfig.ypserv.YPPWD_CHSH",
-			     UI::QueryWidget (`id (`allow_shell), `Value) ? "yes" : "no");
-	user_settings = add (user_settings, "start_yppasswdd",
-			     UI::QueryWidget (`id (`change_passwords), `Value));
-	user_settings = add (user_settings, "start_ypxfrd",
-			     UI::QueryWidget (`id (`fast_map), `Value));
-	user_settings = add (user_settings, ".etc.defaultdomain", UI::QueryWidget (`id (`domain), `Value));
+	NisServer::start_ypbind = UI::QueryWidget (`id (`also_client), `Value);
+	NisServer::nopush = ! UI::QueryWidget (`id (`have_slave), `Value);
+	NisServer::pwd_chfn = UI::QueryWidget (`id (`allow_gecos), `Value);
+	NisServer::pwd_chsh = UI::QueryWidget (`id (`allow_shell), `Value);
+	NisServer::start_yppasswdd = UI::QueryWidget (`id (`change_passwords), `Value);
+	NisServer::start_ypxfrd = UI::QueryWidget (`id (`fast_map), `Value);
+	NisServer::domain = UI::QueryWidget (`id (`domain), `Value);
 
 	return ui;
     }
-
 }

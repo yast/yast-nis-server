@@ -1,0 +1,173 @@
+/**
+ * File:	include/nis_server/wizards.ycp
+ * Package:	Configuration of NIS server
+ * Summary:	Wizards definitions
+ * Authors:	Martin Vidner <mvidner@suse.cz>
+ *              Dan Vesely <dan@suse.cz>
+ *
+ * $Id$
+ */
+
+{
+    textdomain "nis_server";
+
+    import "Wizard";
+    include "wizard/sequencer.ycp";
+
+    include "nis_server/ui.ycp";
+
+
+/**
+ * Whole configuration of NIS server
+ * @return sequence result
+ */
+global define symbol NisServerSequence() ``{
+
+    map aliases = $[
+	"read"		: [ ``( ReadDialog() ), true ],
+	"main"		: ``( MainSequence() ),
+	"finish_popup"  : ``( FinishPopup () ),
+	"write"		: [ ``( WriteDialog() ), true ],
+	"result"        : ``( ResultPopup () ),
+	"error_details" : ``( DetailsPopup () ),
+    ];
+
+    map sequence = $[
+	"ws_start" : "read",
+	"read" : $[
+	    `abort	: `abort,
+	    `next	: "main"
+	    ],
+	"main" : $[
+	    `abort	: `abort,
+	    `nothing	: `nothing,
+	    `next	: "finish_popup",
+	    ],
+	"finish_popup" : $[
+	    `yes       : "write",
+	    ],
+	"write"       : $[
+	    `next    : "result"
+	    ],
+	"result"     : $[
+	    `ok      : `next,
+	    `details : "error_details"
+	    ],
+	"error_details" : $[
+	    `ok         : "result"
+	    ],
+	];
+
+    // Translators: dialog caption
+    string caption = _("NIS server configuration");
+    // label
+    term contents = `Label(_("Initializing..."));
+
+    Wizard::CreateDialog();
+    Wizard::SetContentsButtons(caption, contents, "",
+	    BackButtonLabel(), NextButtonLabel());
+
+    any ret = WizardSequencer(aliases, sequence);
+
+    UI::CloseDialog();
+    return ret;
+}
+
+/**
+ * Whole configuration of NIS server but without reading and writing.
+ * For use with autoinstallation.
+ * @return sequence result
+ */
+global define symbol NisServerAutoSequence() ``{
+    // Translators: dialog caption
+    string caption = _("NIS server configuration");
+    // label
+    term contents = `Label(_("Initializing..."));
+
+    Wizard::CreateDialog();
+    Wizard::SetContentsButtons(caption, contents, "",
+	    BackButtonLabel(), NextButtonLabel());
+
+    any ret = MainSequence();
+
+    UI::CloseDialog();
+    return ret;
+}
+
+/**
+ * Main workflow of the NIS server configuration
+ * @return sequence result
+ */
+global define symbol MainSequence() ``{
+
+    map aliases = $[
+	"begin"         : ``(WhatToConfigure ()),
+	"exit_popup"    : ``(ExitPopup ()),
+	"install"       : [``(InstallServer ()), true],
+	"slave"         : ``(SlaveDialog ()),
+	"query_hosts"   : ``(QueryHosts ()),
+	"master"        : ``(MasterDialog ()),
+	"details"       : ``(DetailsDialog ()),
+	"maps"          : ``(MapsDialog ()),
+	"decide"        : [``(SlaveExists ()), true],
+	"master_slave"  : ``(MastersSlavesDialog ()),
+	];
+
+    map sequence = $[
+	"ws_start"   : "begin",
+	"begin"      : $[
+	    `slave   : "install",
+	    `master  : "install",
+	    `finish  : `next,
+	    `abort   : `abort,
+	    `exit    : "exit_popup",
+	    `nothing : `nothing,
+	    ],
+	"exit_popup" : $[
+	    `exit    : `exit,
+	    `back    : "begin"
+	    ],
+	"install"    : $[
+	    `master  : "master",
+	    `slave   : "slave",
+	    `abort   : `abort
+	    ],
+	"slave"      : $[
+	    `next    : "query_hosts",
+	    `abort   : `abort
+	    ],
+	"master"     : $[
+	    `next    : "decide",
+	    `details : "details",
+	    `abort   : `abort
+	    ],
+	"details"    : $[
+	    `next    : "master",
+	    `abort   : `abort
+	    ],
+	"decide"        : $[
+	    `have_slave : "master_slave",
+	    `none_slave : "maps",
+	    `abort      : `abort
+	    ],
+	"master_slave" : $[
+	    `next      : "maps",
+	    `abort     : `abort
+	    ],
+	"maps"       : $[
+	    `next    : "query_hosts",
+	    `abort   : `abort
+	    ],
+	"query_hosts" : $[
+	    `next     : `next,
+	    `abort    : `abort
+	    ],
+	];
+
+    any ret = WizardSequencer(aliases, sequence);
+
+    return ret;
+}
+
+/* EOF */
+}

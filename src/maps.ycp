@@ -27,6 +27,7 @@
     import "Wizard";
     include "ui/common_popups.ycp";
 
+    import "NisServer";
     include "nis_server/routines.ycp";
 
     /**
@@ -55,7 +56,7 @@
 	// Some tables are built of more files while we only check for one.
 	// Still it's better than no checking at all.
 	list passwd_tables = ["passwd", "group", "passwd.adjunct", "shadow"];
-	string passwd_dir = user_settings[".sysconfig.ypserv.YPPWD_SRCDIR"]:"";
+	string passwd_dir = NisServer::pwd_srcdir;
 	map files = listmap (string table, all,
 			     ``( [table, sformat ("/etc/%1",table)] ));
 	foreach (string table, passwd_tables, ``{
@@ -69,15 +70,14 @@
 	// `item (`id (table), table, true|false)
 	map enabled = listmap (string table, all, ``( [table, false] ));
 	// filter out tables that are merged or their sources don't exist
-	boolean merge_passwd = toboolean (lookup (user_settings, ".var.yp.makefile.MERGE_PASSWD", false));
-	if (merge_passwd)
+	if (NisServer::merge_passwd)
 	{
 	    enabled = remove (enabled, "shadow");
 	}
 	enabled = filter (string table, boolean dummy, enabled, ``(
 			      SCR::Read (.target.size, files[table]:"/") >= 0
 			      ));
-	list current = lookup (user_settings, ".var.yp.makefile.maps", ["passwd", "group", "rpc", "services", "netid"]);
+	list current = NisServer::maps;
 	foreach (string table, current, ``{
 	    enabled[table] = true;
 	});
@@ -107,8 +107,7 @@
 	until (contains ([`back, `next, `abort], ui));
 
 	current = UI::QueryWidget (`id (`current), `SelectedItems);
-	user_settings = add (user_settings, ".var.yp.makefile.maps", current);
+	NisServer::maps = current;
 	return ui;
-
     }
 }

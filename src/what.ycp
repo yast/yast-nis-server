@@ -25,7 +25,7 @@
 
     import "Wizard";
     include "ui/common_popups.ycp";
-
+    import "NisServer";
     include "nis_server/routines.ycp";
 
     /**
@@ -39,7 +39,7 @@
 <b>slave</b> or not to configure a NIS server.</p>
 ");
 
-	symbol detected = lookup (user_settings, "ui_what", `master);
+	symbol detected = NisServer::ui_what;
 	term labels = `VBox ();
 	labels = add (labels, `VSpacing (1.5));
 
@@ -181,7 +181,7 @@ configure it.</p>");
 	}
 
 	current_button = UI::QueryWidget (`id (`rb), `CurrentButton);
-	user_settings = add (user_settings, "ui_what", current_button);
+	NisServer::ui_what = current_button;
 	return ui == `next ? current_button : ui;
     }
 }

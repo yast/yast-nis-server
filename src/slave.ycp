@@ -29,6 +29,7 @@
     include "network/ip.ycp";
     include "network/dns.ycp";
 
+    import "NisServer";
     include "nis_server/routines.ycp";
 
     /**
@@ -45,15 +46,15 @@
 	term contents = `VBox ();
 				// To translators: textentry label
 	contents = add (contents, `TextEntry (`id (`domain), _("NIS &domain name:"),
-					      lookup (user_settings, ".etc.defaultdomain", "")));
+					      NisServer::domain));
 	contents = add (contents, `VSpacing (0.5));
 				// To translators: text entry label
 	contents = add (contents, `TextEntry (`id (`master_ip), _("NIS &master server:"),
-					      lookup (user_settings, "ui_master_ip", "")));
+					      NisServer::ui_master_ip));
 	contents = add (contents, `VSpacing ());
 				// To translators: text entry label
 	contents = add (contents, `CheckBox (`id (`also_client), _("This host is also a NIS &client"),
-					     lookup (user_settings, "start_ypbind", false)));
+					     NisServer::start_ypbind));
 
 	contents = `HVSquash (contents);
 
@@ -93,11 +94,10 @@
 	}
 	until (contains ([`next, `back, `abort], ui));
 
-	user_settings = add (user_settings, "ui_master_ip", UI::QueryWidget (`id (`master_ip), `Value));
-	user_settings = add (user_settings, "start_ypbind", UI::QueryWidget (`id (`also_client), `Value));
-	user_settings = add (user_settings, ".etc.defaultdomain", UI::QueryWidget (`id (`domain), `Value));
+	NisServer::ui_master_ip = UI::QueryWidget (`id (`master_ip), `Value);
+	NisServer::start_ypbind = UI::QueryWidget (`id (`also_client), `Value);
+	NisServer::domain = UI::QueryWidget (`id (`domain), `Value);
 
 	return ui;
     }
-
 }

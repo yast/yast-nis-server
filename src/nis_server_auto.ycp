@@ -1,0 +1,87 @@
+/**
+ * File:	clients/nisServer_auto.ycp
+ * Package:	Configuration of nisServer
+ * Summary:	Client for autoinstallation
+ * Authors:	Martin Vidner <mvidner@suse.cz>
+ *
+ * $Id$
+ *
+ * This is a client for autoinstallation. It takes its arguments,
+ * goes through the configuration and return the setting.
+ * Does not do any changes to the configuration.
+ */
+
+/**
+ * @param function to execute
+ * @param map/list of nisServer settings
+ * @return map edited settings, Summary or boolean on success depending on called function
+ * @example map mm = $[ "FAIL_DELAY" : "77" ];
+ * @example map ret = WFM::CallFunction ("nisServer_auto", [ "Summary", mm ]);
+ */
+
+{
+
+textdomain "nis_server";
+
+y2milestone("----------------------------------------");
+y2milestone("NisServer auto started");
+
+import "NisServer";
+include "nis_server/wizards.ycp";
+
+any ret = nil;
+string func = "";
+map param = $[];
+
+/* Check arguments */
+if(size(Args()) > 0 && is(Args(0), string)) {
+    func = WFM::Args(0);
+    if(size(Args()) > 1 && is(Args(1), map))
+	param = WFM::Args(1);
+}
+y2debug("func=%1", func);
+y2debug("param=%1", param);
+
+/* Create a summary*/
+if(func == "Summary") {
+    ret = NisServer::Summary();
+}
+/* Reset configuration */
+else if (func == "Reset") {
+    NisServer::Import($[]);
+    ret = $[];
+}
+/* Change configuration (run AutoSequence) */
+else if (func == "Change") {
+    ret = NisServerAutoSequence();
+}
+/* Import configuration */
+else if (func == "Import") {
+    ret = NisServer::Import(param);
+}
+/* Return actual state */
+else if (func == "Result") {
+    ret = NisServer::Export();
+}
+/* Write givven settings */
+else if (func == "Write") {
+    import "Progress";
+    Progress::off();
+    NisServer::write_only = true;
+    ret = NisServer::Write();
+    Progress::on();
+}
+/* Unknown function */
+else {
+    y2error("Unknown function: %1", func);
+    ret = false;
+}
+
+y2debug("ret=%1", ret);
+y2milestone("NisServer auto finished");
+y2milestone("----------------------------------------");
+
+return ret;
+
+/* EOF */
+}

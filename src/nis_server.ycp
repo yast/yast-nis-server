@@ -1,134 +1,37 @@
 /**
- *
- * File:
- *   nis_server.ycp
- *
- * Module:
- *   Network/YPServer
- *
- * Summary:
- *   YPServer module.
- *
- * Authors:
- *   Dan Vesely <dan@suse.cz>
+ * File:	clients/nis_server.ycp
+ * Package:	Configuration of NIS server
+ * Summary:	Main file
+ * Authors:	Martin Vidner <mvidner@suse.cz>
  *
  * $Id$
  *
- * YPServer module part.
- *
- */
-
-/***
- * <h3>nis_server</h3> The module is separated into particular
- * "screen" include files.  All these files are included into
- * <tt>ui.ycp</tt> that defines some additional
- * dialogs. <tt>io.ycp</tt> contains input/output functions. <p> The
- * module uses one global variable <tt>user_settings</tt> (more
- * described in a separate file) and wizard sequencer (with <tt>Aliases</tt>
- * and <tt>Sequence</tt> variables) to control the flow.
+ * Main file for NIS server configuration. Uses all other files.
  */
 
 {
 
-    textdomain "nis_server";
+/***
+ * <h3>Configuration of the NIS server</h3>
+ */
 
-    import "Wizard";
-    include "wizard/sequencer.ycp";
+textdomain "nis_server";
 
-    include "nis_server/ui.ycp";
+/* The main () */
+y2milestone ("----------------------------------------");
+y2milestone ("NisServer module started");
 
-    map Aliases = $[
-	"read"          : ``(ReadConfigDialog ()),
-	"begin"         : ``(WhatToConfigure ()),
-	"install"       : [``(InstallServer ()), true],
-	"slave"         : ``(SlaveDialog ()),
-	"query_hosts"   : ``(QueryHosts ()),
-	"master"        : ``(MasterDialog ()),
-	"details"       : ``(DetailsDialog ()),
-	"maps"          : ``(MapsDialog ()),
-	"decide"        : [``(SlaveExists ()), true],
-	"master_slave"  : ``(MastersSlavesDialog ()),
-	"finish_popup"  : ``(FinishPopup ()),
-	"exit_popup"    : ``(ExitPopup ()),
-	"save"          : ``(SavingDialog ()),
-	"result"        : ``(ResultPopup ()),
-	"error_details" : ``(DetailsPopup ())
-	];
+include "nis_server/wizards.ycp";
 
+/* main ui function */
+any ret = NisServerSequence();
+y2debug("ret=%1", ret);
 
-    map Sequence = $[
-	"ws_start"   : "read",
-	"read"       : $[
-	    `next    : "begin",
-	    ],
-	"begin"      : $[
-	    `slave   : "install",
-	    `master  : "install",
-	    `finish  : "finish_popup",
-	    `abort   : `abort,
-	    `exit    : "exit_popup",
-	    `nothing : `ws_finish
-	    ],
-	"install"    : $[
-	    `master  : "master",
-	    `slave   : "slave",
-	    `abort   : `abort
-	    ],
-	"slave"      : $[
-	    `next    : "query_hosts",
-	    `abort   : `abort
-	    ],
-	"query_hosts" : $[
-	    `next     : "finish_popup",
-	    `abort    : `abort
-	    ],
-	"master"     : $[
-	    `next    : "decide",
-	    `details : "details",
-	    `abort   : `abort
-	    ],
-	"details"    : $[
-	    `next    : "master",
-	    `abort   : `abort
-	    ],
-	"decide"        : $[
-	    `have_slave : "master_slave",
-	    `none_slave : "maps",
-	    `abort      : `abort
-	    ],
-	"master_slave" : $[
-	    `next      : "maps",
-	    `abort     : `abort
-	    ],
-	"maps"       : $[
-	    `next    : "query_hosts",
-	    `abort   : `abort
-	    ],
-	"finish_popup" : $[
-	    `yes       : "save",
-	    ],
-	"save"       : $[
-	    `done    : "result"
-	    ],
-	"result"     : $[
-	    `ok      : `ws_finish,
-	    `details : "error_details"
-	    ],
-	"error_details" : $[
-	    `ok         : "result"
-	    ],
-	"exit_popup" : $[
-	    `exit    : `exit,
-	    `back    : "begin"
-	    ]
-	];
+/* Finish */
+y2milestone("NisServer module finished");
+y2milestone("----------------------------------------");
 
-    // global variable
-    map user_settings = $[];
+return ret;
 
-    Wizard::CreateDialog ();
-
-    any result = WizardSequencer (Aliases, Sequence);
-
-    return UI::CloseDialog ();
+/* EOF */
 }
