@@ -104,8 +104,9 @@
 		Popup::Warning (
 // warning popup
 _("Your machine is set up to change the NIS domain name via DHCP.
-This may replace the domain name you just entered. Check your
-settings and consider not running DHCP client at NIS server."));
+This may replace the domain name just entered. Check your
+settings and consider not running a DHCP client on a NIS server.
+"));
 	    }
 	}
 	// TODO: check
@@ -123,10 +124,11 @@ settings and consider not running DHCP client at NIS server."));
 	    "display_details" : true,
 	    // firewall openning help
 	    "help" : _("<p><b>Firewall Settings</b><br>
-To open the firewall to allow access the NIS server
-from remote computers, set <b>Open Port in Firewall</b>.<br>
-To select interfaces to open the port on, click <b>Firewall Details</b>.<br>
-This option is available only if the firewall is enabled.</p>"),
+To open the firewall to allow accessing the NIS server
+from remote computers, set <b>Open Port in Firewall</b>.
+To select interfaces on which to open the port, click <b>Firewall Details</b>.
+This option is only available if the firewall is enabled.</p>
+"),
 	];
 	return CWMFirewallInterfaces::CreateOpenFirewallWidget (settings);
     }

@@ -45,7 +45,7 @@
 	// help text 1/2
 	string helptext = _("<p>Enter the NIS <b>domain</b> and the IP <b>address</b> of the master NIS server.</p>");
 	// help text 2/2
-	helptext = helptext + _("<p>If this host is also an NIS client using this machine as a server, check the appropriate button.</p>")
+	helptext = helptext + _("<p>If this host is also a NIS client using this machine as a server, check the corresponding option.</p>")
 
 	+ firewall_widget["help"]:"";
 
