@@ -107,7 +107,16 @@
         
         user_settings = add (user_settings, "ui_also_client",
                              lookup (user_settings, ".rc.system.YPBIND_START", "yes") == "yes");
-        user_settings = add (user_settings, "ui_what", isYPMaster () ? `master : `slave);
+
+        if (isYPServerInstalled ()) 
+        {
+            user_settings = add (user_settings, "ui_what", `none);
+        }
+        else 
+        {
+            user_settings = add (user_settings, "ui_what", isYPMaster () ? `master : `slave);
+        }
+
         return `next;
     }
 
