@@ -111,8 +111,12 @@
 	    {
 		netmask = UI::QueryWidget (`id (`netmask), `Value);
 		network = UI::QueryWidget (`id (`network), `Value);
-				// To translators: error message
-		error_msg = error_msg + (check_netmask (netmask) ? "" : _("Wrong netmask!\n"));
+		// explicitly allow 0.0.0.0
+		if (netmask != "0.0.0.0" && !check_netmask (netmask))
+		{
+		    // To translators: error message
+		    error_msg = error_msg + _("Wrong netmask!\n");
+		}
 				// To translators: error message
 		error_msg = error_msg + (check_ip4 (network) ? "" : _("Wrong network!\n"));
 
