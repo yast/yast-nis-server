@@ -12,6 +12,7 @@
 
 {
     include "testsuite.ycp";
+    import "NisServer";
     include "nis_server/routines.ycp";
 
     // converts values to boolean
@@ -30,10 +31,10 @@
 
     DUMP ("getMaster");
     // no domain
-    map user_settings = $[];
+    NisServer::domain = "";
     TEST (``(getMaster ()), [], nil);
     // no map dir
-    user_settings = $[ ".etc.defaultdomain": "testdomain" ];
+    NisServer::domain = "testdomain";
     TEST (``(getMaster ()), [], -1); // .target.size
     // no maps in dir
     map READ = $[

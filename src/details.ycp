@@ -26,6 +26,7 @@
     import "Wizard";
     include "ui/common_popups.ycp";
 
+    import "NisServer";
     include "nis_server/routines.ycp";
 
     /**
@@ -33,7 +34,7 @@
      * @return `back, `abort or `next
      */
     global define symbol DetailsDialog () ``{
-	string srcdir = user_settings[".sysconfig.ypserv.YPPWD_SRCDIR"]:"";
+	string srcdir = NisServer::pwd_srcdir;
 
 	// help text 1/3
 	string helptext = _("<p>You can change NIS server source directory (usually
@@ -49,8 +50,8 @@ file
 	// help text 3/3
 	helptext = helptext + _("<p>You can also adjust the minimum user and group id.</p>");
 
-	boolean merge_passwd = toboolean (lookup (user_settings, ".var.yp.makefile.MERGE_PASSWD", true));
-	boolean merge_groups = toboolean (lookup (user_settings, ".var.yp.makefile.MERGE_GROUP", true));
+	boolean merge_passwd = NisServer::merge_passwd;
+	boolean merge_group = NisServer::merge_group;
 
 	term merge_pass_buttons = `VBox ();
 	merge_pass_buttons = add (merge_pass_buttons, `VSpacing (0.1));
@@ -65,10 +66,10 @@ file
 	term merge_group_buttons = `VBox ();
 	merge_group_buttons = add (merge_group_buttons, `VSpacing (0.1));
 				// To translators: button label
-	merge_group_buttons = add (merge_group_buttons, `Left (`RadioButton (`id(`no), _("No"), !merge_groups)));
+	merge_group_buttons = add (merge_group_buttons, `Left (`RadioButton (`id(`no), _("No"), !merge_group)));
 	merge_group_buttons = add (merge_group_buttons, `VSpacing (0.3));
 				// To translators: button label
-	merge_group_buttons = add (merge_group_buttons, `Left (`RadioButton (`id(`yes), _("Yes"), merge_groups)));
+	merge_group_buttons = add (merge_group_buttons, `Left (`RadioButton (`id(`yes), _("Yes"), merge_group)));
 	merge_group_buttons = add (merge_group_buttons, `VSpacing (0.1));
 	merge_group_buttons = `RadioButtonGroup (`id (`group_rb), merge_group_buttons);
 
@@ -84,11 +85,11 @@ file
 
 				// To translators: intfield label
 	minimals = add (minimals, `IntField (`id (`minuid), _("Minimum &UID"), 0, 50000,
-					     tointeger(lookup (user_settings, ".var.yp.makefile.MINUID", 100))));
+					     NisServer::minuid));
 	minimals = add (minimals, `HSpacing ());
 				// To translators: intfield label
 	minimals = add (minimals, `IntField (`id (`mingid), _("Minimum &GUID"), 0, 50000,
-					     tointeger(lookup (user_settings, ".var.yp.makefile.MINGID", 100))));
+					     NisServer::mingid));
 
 
 	term contents = `VBox ();
@@ -105,7 +106,6 @@ file
 
 				// To translators: dialog label
 	Wizard::SetContents (_("NIS Master Server Details Setup"), contents, helptext, true, true);
-				// To translators: button label
 	UI::ChangeWidget (`id (`next), `Label, OKButtonLabel());
 
 	// If the source directory does not exist, it will be created
@@ -155,22 +155,13 @@ Create it?
 	}
 	until (contains ([`back, `next, `abort], ui));
 
-	user_settings = add (user_settings, ".var.yp.makefile.MINUID",
-			     sformat ("%1", UI::QueryWidget (`id (`minuid), `Value)));
-	user_settings = add (user_settings, ".var.yp.makefile.MINGID",
-			     sformat ("%1", UI::QueryWidget (`id (`mingid), `Value)));
-	user_settings = add (user_settings, ".var.yp.makefile.MERGE_PASSWD",
-			     sformat ("%1", UI::QueryWidget (`id (`pass_rb), `CurrentButton) == `yes));
-	user_settings = add (user_settings, ".var.yp.makefile.MERGE_GROUP",
-			     sformat ("%1", UI::QueryWidget (`id (`group_rb), `CurrentButton) == `yes));
-	user_settings = add (user_settings, ".sysconfig.ypserv.YPPWD_SRCDIR",
-			     srcdir);
+	NisServer::minuid = UI::QueryWidget (`id (`minuid), `Value);
+	NisServer::mingid = UI::QueryWidget (`id (`mingid), `Value);
+	NisServer::merge_passwd = UI::QueryWidget (`id (`pass_rb), `CurrentButton) == `yes;
+	NisServer::merge_group = UI::QueryWidget (`id (`group_rb), `CurrentButton) == `yes;
+	NisServer::pwd_srcdir = srcdir;
 
-	// To translators: button label
 	UI::ChangeWidget (`id (`next), `Label, NextButtonLabel());
-
 	return ui;
-
     }
-
 }

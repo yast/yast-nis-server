@@ -22,7 +22,8 @@
 {
 
     textdomain "nis_server";
-
+    // don't, is included in itself... TODOm resolve
+    // import "NisServer";
     import "Runlevel";
 
     /**
@@ -45,7 +46,7 @@
      * @return	nil if no map is found or it has no YP_MASTER_NAME
      */
     global define string getMaster () ``{
-	string dn = lookup (user_settings, ".etc.defaultdomain", "");
+	string dn = NisServer::domain;
 	if (dn == "")
 	{
 	    return nil;
@@ -54,8 +55,8 @@
 	string any_map = nil;
 	if (SCR::Read (.target.size, ddir) >=0 )
 	{
-	    list maps = SCR::Read (.target.dir, ddir);
-	    any_map = select (maps, 0, nil);
+	    list dmaps = SCR::Read (.target.dir, ddir);
+	    any_map = dmaps[0]:nil;
 	}
 	if (any_map == nil)
 	{
@@ -78,7 +79,7 @@
 	}
 
 	map output = SCR::Execute (.target.bash_output, "/usr/lib/yp/yphelper --hostname");
-	string yphelper_hostname = lookup (output, "stdout", "");
+	string yphelper_hostname = output["stdout"]:"";
 
 	return master == deletechars (yphelper_hostname, "\n");
     }
@@ -93,7 +94,7 @@
 
     /**
      * @return Checks if the YP server was already configured
-     * by reading the SCR, not user_settings
+     * by reading the SCR, not the module data
      * (not to confuse the user if he backs up to the first dialog)
      */
     global define boolean isYPServerConfigured () ``{
@@ -106,10 +107,7 @@
      * @return `have_slave or `none_slave
      */
     global define symbol SlaveExists () ``{
-	if (! toboolean (lookup (user_settings, ".var.yp.makefile.NOPUSH", false)))
-	    return `have_slave;
-
-	return `none_slave;
+	return NisServer::nopush? `none_slave: `have_slave;
     }
 
     /**
@@ -120,7 +118,7 @@
 	list running_maps = SCR::Read (.run.ypwhich_m);
 	if (running_maps != nil)
 	{
-	    running_maps = maplist (`m, running_maps, ``(lookup (m, "map", "")));
+	    running_maps = maplist (map m, running_maps, ``(m["map"]:""));
 	    if (contains (running_maps, "ypservers"))
 	    {
 		string slaves = lookup (SCR::Execute (.target.bash_output, "/usr/bin/ypcat ypservers"), "stdout", nil);
@@ -141,5 +139,4 @@
 	}
 	return false;
     }
-
 }

@@ -1,0 +1,856 @@
+/**
+ * File:	modules/NisServer.ycp
+ * Package:	Configuration of NIS server
+ * Summary:	NIS Server, input and output functions.
+ * Authors:	Martin Vidner <mvidner@suse.cz>
+ *              Dan Vesely <dan@suse.cz>
+ *
+ * $Id$
+ *
+ * Representation of the configuration of nisServer.
+ * Input and output routines.
+ */
+
+{
+
+module "NisServer";
+textdomain "nis_server";
+
+import "Progress";
+import "Report";
+import "Summary";
+
+include "nis_server/routines.ycp";
+
+//TODO: make it work like Mail::Touch
+/**
+ * Data was modified?
+ */
+global boolean modified = false;
+
+//TODO: make this work
+/**
+ * Write only, used during autoinstallation.
+ * Don't run services and SuSEconfig, it's all done at one place.
+ */
+global boolean write_only = false;
+
+// ------------------------------------------------------------
+
+/**
+ * The domain we are serving.
+ * (for simplicity, we assume a single domain)
+ * US ".etc.defaultdomain"
+ */
+global string domain = "";
+
+/**
+ * For warning if the domain was changed.
+ * TODO delegate to the client module?
+ */
+global string old_domainname = "";
+
+/**
+ * What kind of server to run: `master, `slave, `none
+ */
+global symbol ui_what = `none;
+
+/**
+ * If we are a slave, where is the master?
+ *(it may actually be a hostname, TODO solve like in the client using nsswitch)
+ */
+global string ui_master_ip = "";
+
+/**
+ * Maps to be served
+ */
+global list(string) maps = [];
+
+/**
+ * Minimal UID to include in the user maps
+ */
+global integer minuid = 0;
+
+/**
+ * Minimal GID to include in the user maps
+ */
+global integer mingid = 0;
+
+/**
+ * Merge passwd and shadow to one map?
+ * Makefile: string true|false
+ */
+global boolean merge_passwd = false;
+
+/**
+ * Merge group and gshadow to one map?
+ * Makefile: string true|false
+ */
+global boolean merge_group = false;
+
+/**
+ * Don't push the changes to slave servers. (useful if there aren't any)
+ * Makefile: string true|false
+ */
+global boolean nopush = false;
+
+/**
+ * Slave servers
+ */
+global list(string) ypservers = [];
+
+/**
+ * @struct securenet
+ *  network: string
+ *  netmask: string
+ ** or
+ *  hash: "#"
+ *  (optional) comment: string
+ */
+global list(map) securenets = [];
+
+/**
+ * Start also the client?
+ */
+global boolean start_ypbind = false;
+
+/**
+ * Start also the map transfer daemon?
+ */
+global boolean start_ypxfrd = false;
+
+/**
+ * Start also the password daemon?
+ */
+global boolean start_yppasswdd = false;
+
+/**
+ * YPPWD_SRCDIR - source directory for passwd data
+ */
+global string pwd_srcdir = "";
+
+/**
+ * YPPWD_CHFN - allow changing the full name?
+ */
+global boolean pwd_chfn = false;
+
+/**
+ * YPPWD_CHSH - allow changing the login shell?
+ */
+global boolean pwd_chsh = false;
+
+
+// ------------------------------------------------------------
+
+/**
+ * Read all NIS server settings.
+ * @return true on success
+ */
+global define boolean Read() ``{
+
+    // help text 1/1
+    string help = _("<p>Please wait while reading the configuration.</p>");
+    // dialog heading
+    string title = _("Initializing NIS server setup");
+    string progress_title = " ";
+
+    list files = [
+	"/var/yp/Makefile",
+	"/etc/sysconfig/ypserv",
+	"/etc/defaultdomain",
+	"/var/yp/securenets",
+	"/var/yp/ypservers"
+	];
+    list vars = [
+	``(YPMakefileVars ()),
+	``(YPServerVars ()),
+	``(YPSystemVars ()),
+	``(YPSecurenets ()),
+	``(YPServers ())
+	];
+
+    Progress::New (title, progress_title, size (files) + 2,
+		   // To translators: progress label %1 is filename
+		   maplist (`file, files, ``(sformat (_("Load '%1' file"), file)))
+		   + [
+		       // Trans: progress label
+		       _("Determine running services"),
+		       // Trans: progress label
+		       _("Determine server type"),
+		       ],
+		   // To translators: progress label %1 is filename
+		   maplist (`file, files, ``(sformat (_("Loading '%1'..."), file)))
+		   + [
+		       // Trans: progress label
+		       _("Determining running services"),
+		       // Trans: progress label
+		       _("Determining server type"),
+		       // Trans: progress label
+		       _("Done."),
+		       ],
+		   help);
+
+    integer i = 0;
+    while (i < size (files))
+    {
+	Progress::NextStage ();
+	eval (vars[i]:nil);
+	i = i + 1;
+    }
+
+    Progress::NextStage ();
+    // "ypserv" is handled elsewhere
+    start_ypbind = Runlevel::ServiceEnabled ("ypbind");
+    start_ypxfrd = Runlevel::ServiceEnabled ("ypxfrd");
+    start_yppasswdd = Runlevel::ServiceEnabled ("yppasswdd");
+
+    // TODOm: fix like the client (?)
+    if (domain == "")
+    {
+	// a DHCP client may set the domainname too:
+	// /etc/sysconfig/network/dhcp:DHCLIENT_SET_DOMAINNAME
+	map out = SCR::Execute (.target.bash_output, "/bin/ypdomainname");
+	domain = deletechars (out["stdout"]:"", "\n");
+
+    }
+    old_domainname = domain;
+
+    Progress::NextStage ();
+    if (!isYPServerInstalled ())
+    {
+	ui_what = `none;
+    }
+    else
+    {
+	ui_what = isYPMaster ()? `master: `slave;
+	//FIXME: this will give a hostname. the label says IP.
+	string master = getMaster();
+	if (master != nil)
+	{
+	    ui_master_ip = master;
+	}
+    }
+
+    Progress::NextStage ();
+    modified = false;
+    return true;
+}
+
+define any SCRGet (path p, any default) ``{
+    any v = SCR::Read (p);
+    return v != nil ? v : default;
+}
+
+define void YPMakefileVars () ``{
+    maps = SCRGet (.var.yp.makefile.maps, ["passwd", "group", "rpc", "services", "netid"]);
+    minuid = tointeger (SCRGet (.var.yp.makefile.MINUID, "100"));
+    mingid = tointeger (SCRGet (.var.yp.makefile.MINGID, "100"));
+    merge_passwd = SCRGet (.var.yp.makefile.MERGE_PASSWD, "true") == "true";
+    merge_group = SCRGet (.var.yp.makefile.MERGE_GROUP, "true") == "true";
+    nopush = SCRGet (.var.yp.makefile.NOPUSH, "true") == "true";
+}
+
+define void YPServerVars () ``{
+    pwd_srcdir = SCRGet (.sysconfig.ypserv.YPPWD_SRCDIR, "/etc");
+    pwd_chfn = SCRGet (.sysconfig.ypserv.YPPWD_CHFN, "no") == "yes";
+    pwd_chsh = SCRGet (.sysconfig.ypserv.YPPWD_CHSH, "no") == "yes";
+}
+
+define void YPSystemVars () ``{
+    domain = SCRGet (.etc.defaultdomain, "local");
+}
+
+define void YPSecurenets () ``{
+    securenets = SCRGet (.var.yp.securenets, [$[
+				 "network" : "127.0.0.0",
+				 "netmask" : "255.0.0.0",
+				 ]]);
+}
+
+define void YPServers () ``{
+    ypservers = SCRGet (.var.yp.ypservers, []);
+}
+
+// ----------------------------------------
+
+// plain text
+global string error_msg = "";
+// rich text
+global string error_details = "";
+
+/**
+ * Adds an error to error_msg
+ * @param s message, ending with a newline
+ */
+global define void addError (string s) ``{
+    error_msg = error_msg + s;
+}
+
+/**
+ * Adds an error to error_details
+ * @param s message, ending with a newline
+ */
+global define void addErrorDetail (string s) ``{
+    error_details = error_details + sformat ("<pre>%1</pre>", s);
+}
+
+/**
+ * Write all NIS server settings
+ * @return true on success
+ */
+global define boolean Write() ``{
+    // help text 1/1
+    string help = _("<p>Please wait until the configuration is saved.</p>");
+    // dialog heading
+    string title = _("Saving NIS server setup");
+    string progress_title = " ";
+    Wizard::RestoreNextButton();
+    UI::ChangeWidget (`id (`next), `Enabled, false);
+    UI::ChangeWidget (`id (`abort), `Enabled, false);
+
+    list save_list = GetSaveList (ui_what);
+    integer step = 0;
+
+    // To translators: dialog title
+    Progress::New (title, progress_title, size (save_list),
+		   maplist (map e, save_list, ``(e["save_label"]:"")),
+		   maplist (map e, save_list, ``(e["progress_label"]:""))
+		   // To translators: progress message
+		   + [_("Done.")],
+		   help);
+
+    foreach (map save_item, save_list, ``{
+	Progress::NextStage ();
+	y2milestone ("Calling: %1", save_item["function"]:"");
+	eval (save_item["function"]:"");
+    });
+
+    Progress::NextStage ();
+    return true;
+}
+
+/**
+ * Removes file or directory and log errors
+ * @param file what to remove
+ */
+global define void Remove (string file) ``{
+    if (SCR::Read (.target.size, file) != -1)
+    {
+	map output = SCR::Execute (.target.bash_output,
+				   sformat ("/bin/rm -rf %1", file));
+	if (size (output["stderr"]:"") > 0)
+	{
+	    // To translators: message in the popup dialog
+	    addError (sformat (_("Error while removing %1\n"), file));
+	    addErrorDetail (output["stderr"]:"");
+	}
+    }
+}
+
+/**
+ * Ensures that the domain directory exists.
+ * @param	directory	the path
+ * @return			false if not and cannot be created
+ */
+global define boolean EnsureDirectory (string directory) ``{
+    map output = $[];
+
+    if (SCR::Read (.target.size, directory) == -1)
+    {
+	output = SCR::Execute (.target.bash_output,
+			       sformat ("/bin/mkdir %1", directory));
+	if (size (output["stderr"]:"") > 0)
+	{
+	    // To translators: message in the popup dialog
+	    addError (sformat (_("Directory %1 cannot be created.\n"), directory));
+	    addErrorDetail (output["stderr"]:"");
+	    return false;
+	}
+    }
+    return true;
+}
+
+/**
+ * Gets the YP maps from master for slave
+ */
+global define void YPGetMaps () ``{
+
+    map output = $[];
+    string dn = domain;
+    string dndir = sformat ("/var/yp/%1", dn);
+    // first make sure that the directory exists
+    if (! EnsureDirectory (dndir))
+    {
+	return;
+    }
+
+    // and get the maps
+    string master = ui_master_ip;
+    output = SCR::Execute (.target.bash_output, sformat ("/usr/lib/yp/yphelper --maps %1 --domainname %2", master, dn));
+    if (output["exit"]:1 != 0)
+    {
+	// To translators: message in the popup dialog
+	addError (sformat (_("Cannot get list of maps.\n")));
+	addErrorDetail (output["stderr"]:"");
+    }
+    list running_maps = splitstring (output["stdout"]:"", "\n");
+    // the element after the last newline is empty, remove it
+    if (size (running_maps) > 0)
+    {
+	running_maps = remove (running_maps, size (running_maps) - 1);
+    }
+
+    maplist (`map_name, running_maps, ``{
+	output = SCR::Execute (.target.bash_output,
+			       sformat ("/usr/lib/yp/ypxfr -f -h %1 -d %2 %3",
+					master,
+					dn,
+					map_name));
+	if (output["exit"]:1 != 0)
+	{
+	    // To translators: message in the popup dialog
+	    addError (sformat (_("Error while retrieving %1 map from master.\n"), map_name));
+	    addErrorDetail (output["stderr"]:"");
+	}
+    });
+
+
+    if (!contains (running_maps, "ypservers"))
+    {
+	// To translators: message in the popup dialog
+	addError (_("Could not get list with slaves.\n"));
+    }
+    else
+    {
+	output = SCR::Execute (.target.bash_output, sformat (
+				   "/usr/lib/yp/makedbm -u %1/ypservers",
+				   dndir));
+	string slaves = output["stdout"]:nil;
+
+	if (slaves != nil)
+	{
+	    output = SCR::Execute (.target.bash_output,
+				   "/usr/lib/yp/yphelper --hostname");
+	    string hostname = output["stdout"]:"";
+	    hostname = substring (hostname, 0, size (hostname) - 1);
+	    string h2 = hostname + " " + hostname; // makedbm format
+	    if (!contains (splitstring (slaves, "\n"), h2))
+	    {
+		// To translators: message in the popup dialog
+		addError (_("Hostname of this host is not listed\nin the master's list.\n"));
+	    }
+	}
+    }
+}
+
+
+
+/**
+ * Save securenets list
+ */
+
+global define void SaveSecurenets () ``{
+    SCR::Execute (.target.bash, sformat ("/bin/cp %1 %1.YaST2.save",
+					 "/var/yp/securenets"));
+    if (! SCR::Write (.var.yp.securenets, securenets))
+    {
+	// To translators: message in the popup dialog
+	addError (sformat (_("Error saving file %1\n"), "/var/yp/securenets"));
+    }
+}
+
+
+/**
+ * Save list of slaves by calling appropriate any agent
+ */
+global define void SaveSlaves () ``{
+    SCR::Execute (.target.bash, sformat ("/bin/cp %1 %1.YaST2.save",
+					 "/var/yp/ypservers"));
+    if (! SCR::Write (.var.yp.ypservers, ypservers))
+    {
+	// To translators: message in the popup dialog
+	addError (sformat (_("Error saving file %1\n"), "/var/yp/ypservers"));
+    }
+}
+
+/**
+ * Saves config variables according to workflow
+ * @param which workflow one of `slave, `master
+ */
+global define void SaveVariables (symbol which) ``{
+    if (!SCR::Write (.etc.defaultdomain, domain))
+    {
+	// To translators: message in the popup dialog
+	addError (_("Error setting up domain name\n"));
+    }
+
+    if (which == `master)
+    {
+	map settings = $[
+	    ".sysconfig.ypserv.YPPWD_SRCDIR": pwd_srcdir,
+	    ".sysconfig.ypserv.YPPWD_CHFN": (pwd_chfn? "yes": "no"),
+	    ".sysconfig.ypserv.YPPWD_CHSH": (pwd_chsh? "yes": "no"),
+	    ".var.yp.makefile.maps": maps,
+	    ".var.yp.makefile.MINUID": sformat ("%1", minuid),
+	    ".var.yp.makefile.MINGID": sformat ("%1", mingid),
+	    ".var.yp.makefile.MERGE_PASSWD": (merge_passwd? "true": "false"),
+	    ".var.yp.makefile.MERGE_GROUP": (merge_group? "true": "false"),
+	    ".var.yp.makefile.NOPUSH": (nopush? "true": "false"),
+	    ];
+
+	maplist (string var, any value, settings, ``{
+	    if (!SCR::Write (topath (var), value))
+	    {
+		list var_parts = splitstring (var, ".");
+		string var_name = var_parts[size (var_parts) - 1]:"";
+		// To translators: message in the popup dialog
+		addError (sformat (_("Error setting up variable %1\n"),
+				   var_name));
+	    }
+	});
+
+	if (!SCR::Write (.sysconfig.ypserv, nil))
+	{
+	    // To translators: message in the popup dialog
+	    addError (sformat (_("Error saving file %1\n"),
+			       "/etc/sysconfig/ypserv"));
+	}
+	if (!SCR::Write (.var.yp.makefile, nil))
+	{
+	    // To translators: message in the popup dialog
+	    addError (sformat (_("Error saving file %1\n"),
+			       "/var/yp/Makefile"));
+	}
+    }
+}
+
+/**
+ * Starts or stop daemons
+ * @param workflow what to start or save: `master, `slave, `none
+ */
+global define void YPDaemons (symbol workflow) ``{
+    map output    = $[];
+    list to_stop  = [];
+    list to_start = [];
+
+    if (workflow == `none)
+    {
+	to_stop = ["ypxfrd", "yppasswdd", "ypserv"];
+    }
+    else if (workflow == `slave)
+    {
+	to_stop  = ["ypxfrd", "yppasswdd", "ypserv"];
+	to_start = ["portmap", "ypserv"];
+    }
+    else if (workflow == `master)
+    {
+	to_stop  = ["ypxfrd", "yppasswdd", "ypserv"];
+	to_start = ["portmap", "ypserv"];
+
+	if (start_yppasswdd)
+	{
+	    to_start = add (to_start, "yppasswdd");
+	}
+
+	if (start_ypxfrd)
+	{
+	    to_start = add (to_start, "ypxfrd");
+	}
+    }
+
+    map services = listmap (string s, to_stop, ``([s, "disable"]));
+    foreach (string s, to_start, ``{ services[s] = "enable"; });
+    foreach (string s, string action, services, ``{
+	Runlevel::ServiceAdjust (s, action);
+    });
+
+    foreach (string d, to_stop, ``{
+	y2milestone ("Stopping daemon %1", d);
+	// $#@! broken by bug 9648
+	integer ret = Runlevel::RunInitScript (d, "stop");
+	if (ret != 0)
+	{
+	    // To translators: message in the popup dialog
+	    addError (sformat (_("Error while stopping %1 daemon\n"), d));
+	}
+    });
+
+    foreach (string d, to_start, ``{
+	y2milestone ("Starting daemon %1", d);
+	// start only if not running. essential for portmap! (bug #9999)
+	if (Runlevel::ServiceStatus (d) != 0) {
+	    integer ret = Runlevel::RunInitScript (d, "start");
+	    if (ret != 0)
+	    {
+		// To translators: message in the popup dialog
+		addError (sformat (_("Error while starting %1 daemon\n"), d));
+	    }
+	}
+    });
+}
+
+/**
+ * Creates initial database
+ */
+global define void YPMake () ``{
+    map output = $[];
+
+    // create the source directory, if it does not exist
+    // (and passwd, shadow, group, gshadow)
+
+    if (! EnsureDirectory (pwd_srcdir))
+    {
+	return;
+    }
+    boolean create_ok = true;
+    foreach (string s, ["passwd", "group"], ``{
+	string p = pwd_srcdir + "/" + s;
+	if (SCR::Read (.target.size, p) < 0)
+	{
+	    create_ok = create_ok && 0 == SCR::Execute (.target.bash, sformat ("/usr/bin/touch %1; /bin/chmod 0644 %1; /bin/chown root.root %1", p));
+	}
+    });
+    foreach (string s, ["shadow", "gshadow"], ``{
+	string p = pwd_srcdir + "/" + s;
+	if (SCR::Read (.target.size, p) < 0)
+	{
+	    create_ok = create_ok && 0 == SCR::Execute (.target.bash, sformat ("/usr/bin/touch %1; /bin/chmod 0640 %1; /bin/chown root.shadow %1", p));
+	}
+    });
+    if (!create_ok)
+    {
+	// error popup
+	addError (sformat (_("Error while creating an empty user database.\n")));
+    }
+
+    string dn = domain;
+    if (! EnsureDirectory (sformat ("/var/yp/%1", dn)))	{
+	return;
+    }
+
+    output = SCR::Execute (.target.bash_output, sformat ("/usr/bin/make -C /var/yp/%1 -f ../Makefile NOPUSH=true ypservers", dn));
+
+    if (size (output["stderr"]:"") > 0)
+    {
+	// To translators: message in the popup dialog
+	addError (_("Error while creating the ypservers map.\n"));
+	addErrorDetail (output["stderr"]:"");
+    }
+
+    output = SCR::Execute (.target.bash_output, sformat ("/usr/bin/make -C /var/yp NOPUSH=true LOCALDOMAIN=%1", dn));
+
+    if (size (output["stderr"]:"") > 0)
+    {
+	// To translators: message in the popup dialog
+	addError (_("Error while creating database.\n"));
+	addErrorDetail (output["stderr"]:"");
+    }
+}
+
+/**
+ * Calls NIS client configuration writing
+ */
+global define void Client () ``{
+    import "Nis";
+
+    map c = $[
+	"start_nis":	start_ypbind,
+	"nis_domain":	domain,
+	"nis_servers":	[ "127.0.0.1" ],
+	];
+
+    boolean ok =  Nis::Import (c) && Nis::Write ();
+    if (!ok)
+    {
+	// To translators: message in the popup dialog
+	addError (_("Error while configuring the client.\n"));
+	addErrorDetail (Nis::YpbindErrors);
+    }
+}
+
+/**
+ * Returns a list of what to save
+ * @param workflow what workflow was chosen (`none, `slave, `master)
+ * @return a list of maps: <pre>$[
+ *   "save_label": ...,
+ *   "progress_label": ...,
+ *   "function": a term (will be eval'd)
+ * ]</pre>
+ */
+global define list(map) GetSaveList (symbol workflow) ``{
+
+    list result = [];
+
+    // do this remove for all workflows
+    if (domain != "")
+    {
+	result = [
+	    $[
+		// To translators: progress label
+		"save_label"     : sformat (_("Remove /var/yp/%1"), domain),
+		// To translators: progress label
+		"progress_label" : sformat (_("Removing /var/yp/%1"), domain),
+		"function"       : add (``(Remove ()),
+					sformat ("/var/yp/%1", domain)),
+		]
+	    ];
+    }
+
+    // *** none YP server flow
+    if (workflow == `none)
+    {
+	result = result + [
+	    // To translators: progress label
+	    $["save_label"     : _("Stop running daemons."),
+	      // To translators: progress label
+	      "progress_label" : _("Stopping running daemons."),
+	      "function"       : ``(YPDaemons (`none))
+		]
+	    ];
+    }
+
+    // *** slave YP server flow
+    else if (workflow == `slave)
+    {
+	result = result + [
+	    // To translators: progress label
+	    $["save_label"     : _("Get maps from master."),
+	      // To translators: progress label
+	      "progress_label" : _("Getting maps from master."),
+	      "function"       : ``(YPGetMaps ())
+		],
+	    // To translators: progress label
+	    $["save_label"     : _("Save hosts allowed to query server."),
+	      // To translators: progress label
+	      "progress_label" : _("Saving hosts allowed to query server."),
+	      "function"       : ``(SaveSecurenets ())
+		],
+	    // To translators: progress label
+	    $["save_label"     : _("Set config variables."),
+	      // To translators: progress label
+	      "progress_label" : _("Setting config variables."),
+	      "function"       : ``(SaveVariables (`slave))
+		],
+	    // To translators: progress label
+	    $["save_label"     : _("Start daemon."),
+	      // To translators: progress label
+	      "progress_label" : _("Starting daemon."),
+	      "function"       : ``(YPDaemons (`slave))
+		]
+	    ];
+    }
+
+    // *** master YP server flow
+    else if (workflow == `master)
+    {
+	result = result + [
+	    // To translators: progress label
+	    $["save_label"     : _("Save hosts allowed to query server."),
+	      // To translators: progress label
+	      "progress_label" : _("Saving hosts allowed to query server."),
+	      "function"       : ``(SaveSecurenets ())
+		]
+	    ];
+
+	if (!nopush && size (ypservers) > 0)
+	{
+	    result = result + [
+		// To translators: progress label
+		$["save_label"     : _("Save slaves."),
+		  // To translators: progress label
+		  "progress_label" : _("Saving slaves."),
+		  "function"       : ``(SaveSlaves ())
+		    ]
+		];
+	}
+	result = result + [
+	    // To translators: progress label
+	    $["save_label"     : _("Set config variables."),
+	      // To translators: progress label
+	      "progress_label" : _("Setting config variables."),
+	      "function"       : ``(SaveVariables (`master))
+		],
+	    // To translators: progress label
+	    $["save_label"     : _("Start daemons."),
+	      // To translators: progress label
+	      "progress_label" : _("Starting daemons."),
+	      "function"       : ``(YPDaemons (`master))
+		],
+	    // To translators: progress label
+	    $["save_label"     : _("Create initial database."),
+	      // To translators: progress label
+	      "progress_label" : _("Creating database."),
+	      "function"       : ``(YPMake ())
+		],
+	    ];
+    }
+
+    // slave or master is also client ?
+    if (contains ([`slave, `master], workflow))
+    {
+	if (start_ypbind)
+	{
+	    result = result + [
+		// To translators: progress label
+		$["save_label"     : _("Start NIS client."),
+		  // To translators: progress label
+		  "progress_label" : _("Starting NIS client."),
+		  "function"       : ``(Client ())
+		    ]
+		];
+	}
+	else
+	{
+	    result = result + [
+		// To translators: progress label
+		$["save_label"     : _("Stop NIS client."),
+		  // To translators: progress label
+		  "progress_label" : _("Stopping NIS client."),
+		  "function"       : ``(Client ())
+		    ]
+		];
+	}
+
+    }
+
+    return result;
+}
+
+// ----------------------------------------
+// autoyast
+
+/**
+ * Get all nisServer settings from the first parameter
+ * (For use by autoinstallation.)
+ * @param settings The YCP structure to be imported.
+ * @return boolean True on success
+ */
+global define boolean Import (map settings) ``{
+    // TODO FIXME: your code here (fill the above mentioned variables)...
+    sleep(3000);
+    return true;
+}
+
+/**
+ * Dump the nisServer settings to a single map
+ * (For use by autoinstallation.)
+ * @return map Dumped settings (later acceptable by Import ())
+ */
+global define map Export () ``{
+    // TODO FIXME: your code here (return the above mentioned variables)...
+    sleep(3000);
+    return $[];
+}
+
+/**
+ * Create a textual summary and a list of unconfigured cards
+ * @param split split configured and unconfigured?
+ * @return summary of the current configuration
+ */
+global define list Summary() ``{
+    // TODO FIXME: your code here...
+    return [ _("Configuration summary ..."), [] ];
+}
+
+/* EOF */
+}

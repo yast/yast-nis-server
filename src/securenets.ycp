@@ -24,6 +24,7 @@
 
     textdomain "nis_server";
 
+    import "NisServer";
     import "Wizard";
     include "ui/common_popups.ycp";
     include "network/ip.ycp";
@@ -35,7 +36,8 @@
      * @return a list of items formated for a UI table
      */
     global define list(term) ItemizeSecurenets (list nets) ``{
-	list not_comment = filter (`e, nets, ``(haskey (e, "netmask") || haskey (e, "network")));
+	list not_comment = filter (`e, nets, ``(haskey (e, "netmask") ||
+						haskey (e, "network")));
 	list result = [];
 	integer i = 0;
 	foreach (map element, not_comment, ``{
@@ -61,7 +63,9 @@
 	));
 
 
-	list result = filter (`e, orig, ``(haskey (e, "hash") || haskey (e, "comment") || contains (edit_maps, e)));
+	list result = filter (`e, orig, ``(haskey (e, "hash") ||
+					   haskey (e, "comment") ||
+					   contains (edit_maps, e)));
 	edit_maps = filter (`e, edit_maps, ``(!contains (result, e)));
 	result = result + edit_maps;
 
@@ -151,7 +155,7 @@ to the  bitwise <i>AND</i> of the host's address and the <b>netmask</b>.</p>");
 	helptext = helptext + _("<p>Entering <b>netmask</b> <tt>0.0.0.0</tt> and
 <b>network</b> <tt>0.0.0.0</tt> gives access to all hosts.</p>");
 
-	list allow_query = ItemizeSecurenets (lookup (user_settings, ".var.yp.securenets", []));
+	list allow_query = ItemizeSecurenets (NisServer::securenets);
 	integer n_items = size (allow_query);
 
 	term buttons = `HBox ();
@@ -205,7 +209,7 @@ to the  bitwise <i>AND</i> of the host's address and the <b>netmask</b>.</p>");
 	    {
 		integer id = UI::QueryWidget (`id (`table), `CurrentItem);
 		term item  = find (`e, allow_query, ``(id == select (select (e, 0, []), 0, -1)));
-		item = NetsEditPopup (id, select (item, 1, ""), select (item, 2, ""));
+		item = NetsEditPopup (id, select (item, 1, ""), select (item, 2,""));
 		if (item != nil)
 		{
 		    allow_query = maplist (`e, allow_query, ``{
@@ -233,9 +237,7 @@ to the  bitwise <i>AND</i> of the host's address and the <b>netmask</b>.</p>");
 	if (ui == `back) UI::ChangeWidget (`id (`next), `Label, NextButtonLabel());
 
 	// and finally merge
-
-	user_settings = add (user_settings, ".var.yp.securenets",
-			     MergeNetsEntries (lookup (user_settings, ".var.yp.securenets", []), allow_query));
+	NisServer::securenets = MergeNetsEntries (NisServer::securenets, allow_query);
 
 	return ui;
     }
