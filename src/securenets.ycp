@@ -11,6 +11,7 @@
  *
  * Authors:            
  *   Dan Vesely <dan@suse.cz>
+ *   Martin Vidner <mvidner@suse.cz>
  *
  * $Id$
  *
@@ -151,12 +152,11 @@ it gives access to all hosts.</p>"));
 
         term buttons = `HBox ();
                                 // To translators: pushbutton label
+        buttons = add (buttons, `PushButton (`id (`add), _("A&dd")));
+                                // To translators: pushbutton label
         buttons = add (buttons, `PushButton (`id (`edit), _("&Edit")));
                                 // To translators: pushbutton label
-        buttons = add (buttons, `PushButton (`id (`delete), _("&Delete")));
-        buttons = add (buttons, `HStretch ());
-                                // To translators: pushbutton label
-        buttons = add (buttons, `PushButton (`id (`add), _("&Add")));
+        buttons = add (buttons, `PushButton (`id (`delete), _("De&lete")));
         
         term contents = `VBox ();
         contents = add (contents, `Table (`id (`table), `opt (`notify, `immediate), 
@@ -167,34 +167,23 @@ it gives access to all hosts.</p>"));
         
                                 // To translators: dialog label
         UI(`SetWizardContents (_("NIS Server Query Hosts Setup"), contents, helptext, true, true));
-                                // To translators: pushbutton label
         UI (`ChangeWidget (`id (`next), `Label, FinishButtonLabel()));
-        UI (`ChangeWidget (`id (`edit), `Enabled, false));
-        UI (`ChangeWidget (`id (`delete), `Enabled, false));
 
         symbol ui = nil;
 
         repeat 
         {
+	    boolean anyitems = UI (`QueryWidget (`id (`table), `CurrentItem)) != nil;
+	    UI (`ChangeWidget (`id (`edit), `Enabled, anyitems));
+	    UI (`ChangeWidget (`id (`delete), `Enabled, anyitems));
+
             ui = UI (`UserInput ());
 
-            if (ui == `table)
-            {
-                UI (`ChangeWidget (`id (`edit), `Enabled, true));
-                UI (`ChangeWidget (`id (`delete), `Enabled, true));                
-            }
-            
-            else if (ui == `delete)
+	    if (ui == `delete)
             {
                 integer id = UI (`QueryWidget (`id (`table), `CurrentItem));
                 allow_query = filter (`e, allow_query, ``(id != select (select (e, 0), 0)));
                 UI (`ChangeWidget(`id(`table), `Items, allow_query));
-                
-                if (size (allow_query) == 0)
-                {
-                    UI (`ChangeWidget (`id (`edit), `Enabled, false));
-                    UI (`ChangeWidget (`id (`delete), `Enabled, false));                                    
-                }
             }
 
             else if (ui == `edit)
@@ -226,7 +215,6 @@ it gives access to all hosts.</p>"));
         }
         until (contains ([`back, `next, `abort], ui));
 
-        // To translators: pushbutton label
         if (ui == `back) UI (`ChangeWidget (`id (`next), `Label, NextButtonLabel()));
 
         // and finally merge

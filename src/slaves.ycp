@@ -11,6 +11,7 @@
  *
  * Authors:            
  *   Dan Vesely <dan@suse.cz>
+ *   Martin Vidner <mvidner@suse.cz>
  *
  * $Id$
  *
@@ -144,35 +145,30 @@
 
         term buttons = `HBox ();
                                 // To translators: pushbutton label
+        buttons = add (buttons, `PushButton (`id (`add), _("A&dd")));
+                                // To translators: pushbutton label
         buttons = add (buttons, `PushButton (`id (`edit), _("&Edit")));
                                 // To translators: pushbutton label
         buttons = add (buttons, `PushButton (`id (`delete), _("De&lete")));
-        buttons = add (buttons, `HStretch ());
-                                // To translators: pushbutton label
-        buttons = add (buttons, `PushButton (`id (`add), _("&Add")));
         
         term contents = `VBox ();
         contents = add (contents, `ReplacePoint (`id (`replace), 
                                 // To translators: selection box label
                                                  `SelectionBox (`id (`slaves), `opt (`notify), _("&Slaves"), sort(slaves))));
-        contents = add (contents, `Left (buttons));
+        contents = add (contents, buttons);
         
                                 // To translators: dialog label
         UI (`SetWizardContents (_("NIS Master Server Slaves Setup"), contents, helptext, true, true));
-        UI (`ChangeWidget (`id (`edit), `Enabled, false));
-        UI (`ChangeWidget (`id (`delete), `Enabled, false));
 
         symbol ui = nil;
 
         repeat 
         {
-            ui = UI (`UserInput ());
+	    boolean anyslaves = UI (`QueryWidget (`id (`slaves), `CurrentItem)) != nil;
+	    UI (`ChangeWidget (`id (`edit),   `Enabled, anyslaves));
+	    UI (`ChangeWidget (`id (`delete), `Enabled, anyslaves));
 
-            if (ui == `slaves)
-            {
-                UI (`ChangeWidget (`id (`edit), `Enabled, true));
-                UI (`ChangeWidget (`id (`delete), `Enabled, true));                
-            }
+            ui = UI (`UserInput ());
 
             if (ui == `edit)
             {
@@ -195,12 +191,6 @@
                 slaves = filter (`e, slaves, ``(e != selected));
                                 // To translators: selectionbox label
                 UI (`ReplaceWidget (`id (`replace), `SelectionBox (`id (`slaves), `opt (`notify), _("&Slaves"), sort (slaves))));
-
-                if (size (slaves) == 0)
-                {
-                    UI (`ChangeWidget (`id (`edit), `Enabled, false));
-                    UI (`ChangeWidget (`id (`delete), `Enabled, false));                
-                }
             }
 
             else if (ui == `add)
