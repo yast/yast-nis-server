@@ -184,6 +184,23 @@ global define boolean isYPServerInstalled ();
 global define string getMaster ();
 global define list<map> GetSaveList (symbol workflow);
 
+
+// ------------------------------------------------------------
+
+/**
+ * All tables that ypserv Makefile knows about
+ */
+global define list<string> GetAllMaps () {
+
+    return ["passwd", "group", "hosts", "rpc", "services",
+	"netid", "protocols", "netgrp", "mail", "shadow",
+	"publickey", "networks", "ethers", "bootparams",
+	"printcap", "amd.home", "auto.master",
+	"auto.home", "auto.local", "passwd.adjunct",
+	"timezone", "locale", "netmasks"];
+}
+
+
 /**
  * Read all NIS server settings.
  * @return true on success
