@@ -11,6 +11,7 @@
  *
  * Authors:
  *   Dan Vesely <dan@suse.cz>
+ *   Martin Vidner <mvidner@suse.cz>
  *
  * $Id$
  *
@@ -22,8 +23,7 @@
 {
 
     textdomain "nis_server";
-    // don't, is included in itself... TODOm resolve
-    // import "NisServer";
+    import "NisServer";
     import "Runlevel";
 
     /**
@@ -39,57 +39,6 @@
 	else if (is (arg, string))  return arg == "true";
 	else if (is (arg, integer)) return arg != 0;
 	else return false;
-    }
-
-    /**
-     * Gets the master server (name or IP?) from any of this server's maps
-     * @return	nil if no map is found or it has no YP_MASTER_NAME
-     */
-    global define string getMaster () ``{
-	string dn = NisServer::domain;
-	if (dn == "")
-	{
-	    return nil;
-	}
-	string ddir = sformat ("/var/yp/%1", dn);
-	string any_map = nil;
-	if (SCR::Read (.target.size, ddir) >=0 )
-	{
-	    list dmaps = SCR::Read (.target.dir, ddir);
-	    any_map = dmaps[0]:nil;
-	}
-	if (any_map == nil)
-	{
-	    return nil;
-	}
-	string command = sformat ("/usr/lib/yp/makedbm -u /var/yp/%1/%2 | grep ^YP_MASTER_NAME", dn, any_map);
-
-	string output = lookup (SCR::Execute (.target.bash_output, command), "stdout", "");
-	return select (splitstring (output, " \n"), 1, nil);
-    }
-
-    /**
-     * @return Determines if the current host is YP master or not
-     */
-    global define boolean isYPMaster () ``{
-	string master = getMaster();
-	if (master == nil)
-	{
-	    return false;	// can't decide
-	}
-
-	map output = SCR::Execute (.target.bash_output, "/usr/lib/yp/yphelper --hostname");
-	string yphelper_hostname = output["stdout"]:"";
-
-	return master == deletechars (yphelper_hostname, "\n");
-    }
-
-    /**
-     * @return Checks if the YP server software is installed
-     * by querying RPM for ypserv
-     */
-    global define boolean isYPServerInstalled () ``{
-	return (SCR::Execute(.target.bash, "/bin/rpm -q ypserv") == 0);
     }
 
     /**
@@ -110,6 +59,7 @@
 	return NisServer::nopush? `none_slave: `have_slave;
     }
 
+    // unused
     /**
      * @return Checks if this host is in the slaves list on master
      */

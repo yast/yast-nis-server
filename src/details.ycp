@@ -24,6 +24,7 @@
     textdomain "nis_server";
 
     import "Wizard";
+    import "Mode";
     include "ui/common_popups.ycp";
 
     import "NisServer";

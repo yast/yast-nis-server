@@ -30,6 +30,7 @@
     include "network/dns.ycp";
 
     import "NisServer";
+    import "Nis";
     include "nis_server/routines.ycp";
 
     /**
