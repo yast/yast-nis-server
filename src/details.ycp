@@ -104,24 +104,25 @@ file.</p>"));
                                 // To translators: button label
         UI (`ChangeWidget (`id (`next), `Label, OKButtonLabel()));
 
-        boolean shadow_exist  = fileexist (sformat ("%1/shadow", lookup (user_settings, ".rc.ypserver.YPPWD_SRCDIR", "")));
-        boolean gshadow_exist = fileexist (sformat ("%1/gshadow", lookup (user_settings, ".rc.ypserver.YPPWD_SRCDIR", "")));
-        UI (`ChangeWidget (`id (`pass_frame), `Enabled, shadow_exist));
-        UI (`ChangeWidget (`id (`group_frame), `Enabled, gshadow_exist));
+        boolean shadow_exist = nil;
+        boolean gshadow_exist = nil;
+	boolean change_enabled = true;
 
         symbol ui = nil;
 
         repeat 
         {
-            ui = UI (`UserInput ());
-
-            if (ui == `srcdir)
-            {
-                shadow_exist  = fileexist (sformat ("%1/shadow", UI (`QueryWidget (`id (`srcdir), `Value))));
-                gshadow_exist = fileexist (sformat ("%1/gshadow", UI (`QueryWidget (`id (`srcdir), `Value))));
+	    if (change_enabled)
+	    {
+		shadow_exist  = SCR::Read (.target.size, sformat ("%1/shadow", UI (`QueryWidget (`id (`srcdir), `Value)))) != -1;
+		gshadow_exist = SCR::Read (.target.size, sformat ("%1/gshadow", UI (`QueryWidget (`id (`srcdir), `Value)))) != -1;
                 UI (`ChangeWidget (`id (`pass_frame), `Enabled, shadow_exist));
                 UI (`ChangeWidget (`id (`group_frame), `Enabled, gshadow_exist));
-            }
+	    }
+
+            ui = UI (`UserInput ());
+
+            change_enabled = (ui == `srcdir);
             if (ui == `abort && !UI (`ReallyAbortPopup (true))) continue;
         }
         until (contains ([`back, `next, `abort], ui));

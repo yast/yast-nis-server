@@ -33,7 +33,7 @@
      */
     global define ReadPathFile (map variables, string file) ``{
 
-	if (fileexist (file))
+	if (SCR::Read (.target.size, file) != -1)
 	{
 	    variables = mapmap (`name, `value, variables, ``{
 		any read_value = SCR (`Read (topath (name)));
@@ -62,7 +62,7 @@
      * @param file what to remove
      */
     global define Remove (string file) ``{
-	if (fileexist (file))
+	if (SCR::Read (.target.size, file) != -1)
 	{
 	    map output = SCR (`Execute (.target.bash_output, sformat ("/bin/rm -rf %1", file)));
 	    if (size (lookup (output, "stderr", "")) > 0)
@@ -310,7 +310,7 @@
 
 	// firts make sure that the directory exists
 	string directory = sformat ("/var/yp/%1", lookup (user_settings, ".rc.system.YP_DOMAINNAME", ""));
-	if (!fileexist (directory))
+	if (SCR::Read (.target.size, directory) == -1)
 	{
 	    output = SCR (`Execute (.target.bash_output, sformat ("/bin/mkdir %1", directory)));
 	    if (size (lookup (output, "stderr", "")) > 0)
