@@ -78,7 +78,7 @@
 	// help text 1/1
 	string help = UI (_("<p>Please wait while reading the configuration.</p>"));
 	string title = UI (_("Initializing NIS server setup"));
-	string progress_title = "";
+	string progress_title = " ";
 
 	list files = [
 	    "/var/yp/Makefile",
@@ -141,7 +141,7 @@
 	// help text 1/1
 	string help = UI (_("<p>Please wait until the configuration is saved.</p>"));
 	string title = UI (_("Saving NIS server setup"));
-	string progress_title = "";
+	string progress_title = " ";
         string progress_label = "";
 	UI (`RestoreWizardNextButton());
 	UI (`ChangeWidget (`id (`next), `Enabled, false));
