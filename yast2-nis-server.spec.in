@@ -2,11 +2,14 @@
 ## invoked automatically from Makefile.am
 @HEADER-COMMENT@
 
-# neededforbuild yast2-devtools autoconf automake yast2-testsuite dejagnu expect tcl yast2-core yast2-core-devel 
+# neededforbuild yast2-devel-packages yast2-runlevel
 @HEADER@
 
 Summary:	YaST2 nis server configuration module
 Requires:	yast2
+Requires:	yast2-runlevel
+Requires:	yast2-packager
+Requires:	yast2-network
 Provides:	yast2-nis-server
 Obsoletes:	yast2-nis-server
 BuildArchitectures:	noarch
@@ -27,7 +30,7 @@ BuildArchitectures:	noarch
 %dir @yncludedir@/nis_server
 @clientdir@/nis_server.ycp
 @yncludedir@/nis_server/*.ycp
-@configdir@/menuentry_nis_server.y2cc
+@configdir@/nis_server.y2cc
 @scrconfdir@/cfg_ypserv.scr
 @scrconfdir@/run_ypwhich_m.scr
 @scrconfdir@/var_yp_securenets.scr
