@@ -34,6 +34,8 @@
     include "nis_server/io.ycp";
     include "nis_server/routines.ycp";
 
+    include "require.ycp";
+
     import "Progress";
     import "Runlevel";
 
@@ -146,8 +148,15 @@
 	    user_settings = add (user_settings, sformat ("start_%1", s), e);
 	});
 
-	user_settings = add (user_settings, "old_domainname",
-			     lookup (user_settings, ".etc.defaultdomain", ""));
+	string dn = user_settings[".etc.defaultdomain"]:"";
+	if (dn == "")
+	{
+	    // a DHCP client may set the domainname too:
+	    // /etc/sysconfig/network/dhcp:DHCLIENT_SET_DOMAINNAME
+	    map out = SCR::Execute (.target.bash_output, "/bin/ypdomainname");
+	    dn = deletechars (out["stdout"]:"", "\n");
+	}
+	user_settings = add (user_settings, "old_domainname", dn);
 
 	Progress::NextStage ();
 	if (!isYPServerInstalled ())
@@ -254,24 +263,11 @@ You must reboot for the changes to take effect."));
      * @return `master or `slave
      */
     global define symbol InstallServer () ``{
-
-	if (isYPServerInstalled ())
+	if (!isYPServerInstalled ())
 	{
-	    return lookup (user_settings, "ui_what", `master);
+	    DoInstallAndRemove (["ypserv"], []);
 	}
 
-	map script = $[
-	    "userInput" : false,
-	    "install"   : ["ypserv"],
-	    "delete"    : []
-	    ];
-
-	string file = SCR::Read (.target.tmpdir);
-	file = file + "/ypserv.sw_single";
-	SCR::Write (.target.ycp, file, script);
-	CallFunction (`sw_single (file));
-
-
-	return lookup (user_settings, "ui_what", `master);
+	return user_settings["ui_what"]:`master;
     }
 }
