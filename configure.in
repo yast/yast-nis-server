@@ -31,7 +31,7 @@ AM_CONDITIONAL(ISSPARC, test `uname -m` = sparc)
 AM_CONDITIONAL(ISPPC, test `uname -m` = ppc)
 
 AC_OUTPUT(Makefile
-	package/$RPMNAME.spec:$RPMNAME.spec.in
+	package/yast2-config-nis-server.spec:yast2-config-nis-server.spec.in
 	src/Makefile
 	conf/Makefile
         doc/Makefile
