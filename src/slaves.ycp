@@ -68,7 +68,7 @@
 
         term hbox = `HBox ();
                                 // To translators: textentry label
-        hbox = add (hbox, `TextEntry (`id(`slave), _("&Slave's hostname"), slave));
+        hbox = add (hbox, `TextEntry (`id(`slave), _("&Slave's host name"), slave));
                                 // To translators: pushbutton label
         hbox = add (hbox, `VBox (`VSpacing (), `PushButton (`id (`browse), _("&Browse"))));
 
@@ -103,7 +103,7 @@
             {
                 slave = tolower (UI (`QueryWidget (`id (`slave), `Value)));
                                 // To translators: error message
-                error_msg = error_msg + (check_domainname (slave) ? "" : UI(_("Wrong hostname!\n")));
+                error_msg = error_msg + (check_domainname (slave) ? "" : UI(_("Wrong host name!\n")));
 
                 if (size (error_msg) > 0)
                 {
@@ -141,7 +141,7 @@
     global define MastersSlavesDialog () ``{
 
         // help text 1/1
-        string helptext = UI (_("<p>Here you can set up names of hosts that will be configured as NIS server slaves. Use <i>Add</i> button to add a new one, <i>Edit</i> button to change existing entry and <i>Delete</i> to remove it.</p>"));
+        string helptext = UI (_("<p>Here, enter the names of hosts to configure as NIS server slaves. Use <i>Add</i> to add a new one, <i>Edit</i>  to change an existing entry, and <i>Delete</i> to remove an entry.</p>"));
 
         list slaves = lookup (user_settings, ".var.yp.ypservers", []);
         list hosts = nil;

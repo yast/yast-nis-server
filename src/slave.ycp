@@ -38,17 +38,17 @@
     global define SlaveDialog () ``{
 
         // help text 1/2
-        string helptext = UI (_("<p>Please enter NIS <b>domain</b> and IP <b>address</b> of the master NIS server.</p>"));
+        string helptext = UI (_("<p>Enter the NIS <b>domain</b> and the IP <b>address</b> of the master NIS server.</p>"));
         // help text 2/2
-        helptext = helptext + UI (_("<p>If this host should be also a NIS client, check the appropriate button.</p>"));
+        helptext = helptext + UI (_("<p>If this host is also a NIS client, check the appropriate button.</p>"));
 
         term contents = `VBox ();
                                 // To translators: textentry label
-        contents = add (contents, `TextEntry (`id (`domain), _("NIS &Domainname:"),
+        contents = add (contents, `TextEntry (`id (`domain), _("NIS &Domain name:"),
                                               lookup (user_settings, ".rc.system.YP_DOMAINNAME", "")));
         contents = add (contents, `VSpacing (0.5));
                                 // To translators: text entry label
-        contents = add (contents, `TextEntry (`id (`master_ip), _("NIS &Master Server (IP Address):"),
+        contents = add (contents, `TextEntry (`id (`master_ip), _("NIS &Master Server:"),
                                               lookup (user_settings, "ui_master_ip", "")));
         contents = add (contents, `VSpacing ());
                                 // To translators: text entry label
@@ -58,7 +58,7 @@
         contents = `HVSquash (contents);
         
                                 // To translators: dialog label
-        UI(`SetWizardContents (_("Network Information Service - Slave Server Setup"), contents, helptext, true, true));
+        UI(`SetWizardContents (_("Network Information Service -- Slave Server Setup"), contents, helptext, true, true));
 
         symbol ui = nil;
         string error_msg = "";
