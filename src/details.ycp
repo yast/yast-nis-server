@@ -90,7 +90,7 @@ file
 					     NisServer::minuid));
 	minimals = add (minimals, `HSpacing ());
 				// To translators: intfield label
-	minimals = add (minimals, `IntField (`id (`mingid), _("Minimum &GUID"), 0, 50000,
+	minimals = add (minimals, `IntField (`id (`mingid), _("Minimum &GID"), 0, 50000,
 					     NisServer::mingid));
 
 

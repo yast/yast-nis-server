@@ -775,7 +775,7 @@ global define void YPMake () ``{
     map output = $[];
 
     // create the source directory, if it does not exist
-    // (and passwd, shadow, group, gshadow)
+    // (and passwd, shadow, group)
 
     if (! EnsureDirectory (pwd_srcdir))
     {
@@ -789,13 +789,12 @@ global define void YPMake () ``{
 	    create_ok = create_ok && 0 == SCR::Execute (.target.bash, sformat ("/usr/bin/touch %1; /bin/chmod 0644 %1; /bin/chown root.root %1", p));
 	}
     });
-    foreach (string s, ["shadow", "gshadow"], ``{
-	string p = pwd_srcdir + "/" + s;
-	if (SCR::Read (.target.size, p) < 0)
-	{
-	    create_ok = create_ok && 0 == SCR::Execute (.target.bash, sformat ("/usr/bin/touch %1; /bin/chmod 0640 %1; /bin/chown root.shadow %1", p));
-	}
-    });
+    string p = pwd_srcdir + "/shadow";
+    if (SCR::Read (.target.size, p) < 0)
+    {
+	create_ok = create_ok && 0 == SCR::Execute (.target.bash, sformat ("/usr/bin/touch %1; /bin/chmod 0640 %1; /bin/chown root.shadow %1", p));
+    }
+
     if (!create_ok)
     {
 	// error popup
