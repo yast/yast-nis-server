@@ -38,8 +38,8 @@
 the appropriate button.</p>"));
 
         // help text 2/3
-        helptext = helptext + UI (_("<p>If you want to allow some slave coexist with this master, check the
-button <i>Active Slave NIS server exist</i>. If you check the button
+        helptext = helptext + UI (_("<p>If you want to allow some slave to coexist with this master, check the
+button <i>Active Slave NIS server exists</i>. If you check the button
 <i>Fast Map distribution</i> it will speed up the transfer of maps to the
 slaves.</p>"));
 

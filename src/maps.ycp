@@ -36,8 +36,8 @@
 
         // help text 1/1
         string helptext = UI (_("<p>This dialog allows you to adjust which maps will be available. The
-list labeled <i>Actual</i> contains the list of maps that will be
-used. You can simply add some more maps from the list on the right side, labeled
+list named <i>Actual</i> contains the list of maps that will be
+used. You can simply add some more maps from the list on the right side, named
 <i>Possible</i> or remove maps from actual list using the buttons with arrows.</p>"));
         
         list all = ["passwd", "group", "hosts", "rpc", "services", "netid", "protocols", "netgrp", "mail",
