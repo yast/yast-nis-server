@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon Feb 17 16:39:04 CET 2003 - mvidner@suse.de
+
+- Fixed file names of png's that were named as jpg's. (#21925)
+- Changed _auto::Result to Export (nashif).
+- 2.7.2
+
+-------------------------------------------------------------------
 Mon Feb 10 13:19:45 CET 2003 - jsuchome@suse.de
 
 - Merged proofread texts. 
