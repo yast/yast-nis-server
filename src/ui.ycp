@@ -108,7 +108,8 @@
 	while (i < size (files))
 	{
 	    Progress::NextStage ();
-	    user_settings = user_settings + ReadPathFile (eval (select (vars, i)), select (files, i));
+	    // yuck - list of terms with a map as a default value - eval rules
+	    user_settings = user_settings + ReadPathFile (eval (vars[i]:$[]), files[i]:"");
 	    i = i + 1;
 	}
 	Progress::NextStage ();

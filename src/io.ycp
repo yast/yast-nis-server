@@ -451,6 +451,7 @@
 
     global define SaveSecurenets () ``{
 
+	string error_msg     = lookup (user_settings, "error", "");
 	list securenets = lookup (user_settings, ".var.yp.securenets", []);
 
 	SCR::Execute (.target.bash, sformat ("/bin/cp %1 %1.YaST2.save", "/var/yp/securenets"));
@@ -459,6 +460,7 @@
 	    // To translators: message in the popup dialog
 	    error_msg = error_msg + sformat (_("Error saving file %1\n"), "/var/yp/securenets");
 	}
+	user_settings = add (user_settings, "error", error_msg);
     }
 
 
