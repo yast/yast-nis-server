@@ -68,9 +68,12 @@ used. You can simply add some more maps from the list on the right side, named
             }
         });
 
+	// fool check_ycp not to ask for translation
+	string remove_label = "--&>";
+	string add_label = "&<--";
         term buttons = `VBox ();
-        buttons = add (buttons, `PushButton (`id (`remove), "--&>"));
-        buttons = add (buttons, `PushButton (`id (`add), "&<--"));
+        buttons = add (buttons, `PushButton (`id (`remove), remove_label));
+        buttons = add (buttons, `PushButton (`id (`add), add_label));
         
         term contents = `HBox ();
         contents = add (contents, `HWeight (1, 
