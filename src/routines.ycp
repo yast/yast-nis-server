@@ -47,7 +47,12 @@
         string masterentry_hostname  = "";
         string yphelper_hostname = "";
 	string dn = lookup (user_settings, ".rc.system.YP_DOMAINNAME", "");
-	string command = sformat ("/usr/lib/yp/makedbm -u /var/yp/%1/passwd.byname | grep ^YP_MASTER_NAME", dn);
+	string any_map = select (lookup (user_settings, ".var.yp.makefile.maps"), 0);
+	if (any_map == nil)
+	{
+	    return false;	// no maps, can't decide
+	}
+	string command = sformat ("/usr/lib/yp/makedbm -u /var/yp/%1/%2 | grep ^YP_MASTER_NAME", dn, any_map);
 
         output = SCR (`Execute (.target.bash_output, command));
         masterentry_hostname  = select (splitstring (lookup (output, "stdout", ""), " "), 1, "");
