@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Tue Sep  4 17:45:32 CEST 2001 - mvidner@suse.cz
+
+- Fixed using more than one slave server. (2.4.13)
+
+-------------------------------------------------------------------
 Mon Sep  3 17:56:02 CEST 2001 - mvidner@suse.cz
 
 - Start services only if not running already, portmap needs this (Bug #9999).
