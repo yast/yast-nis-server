@@ -143,8 +143,8 @@ to the  bitwise <i>AND</i> of the host's address and the <b>netmask</b>.</p>");
 <tt>127.0.0.0</tt> must exist to allow connections from the local host.</p>
 ");
 	// help text 4/4
-	helptext = helptext + _("<p>Entering <b>netmask</b> <tt>0.0.0.0</tt> and 
-<b>network</b> <tt>0.0.0.0</tt> gives access to all hosts.</p>\n");
+	helptext = helptext + _("<p>Entering <b>netmask</b> <tt>0.0.0.0</tt> and
+<b>network</b> <tt>0.0.0.0</tt> gives access to all hosts.</p>");
 
 	list allow_query = ItemizeSecurenets (lookup (user_settings, ".var.yp.securenets", []));
 	integer n_items = size (allow_query);
