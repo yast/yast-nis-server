@@ -101,7 +101,7 @@ file.</p>"));
                                 // To translators: dialog label
         UI (`SetWizardContents (_("NIS Master Server Details Setup"), contents, helptext, true, true));
                                 // To translators: button label
-        UI (`ChangeWidget (`id (`next), `Label, _("&OK")));
+        UI (`ChangeWidget (`id (`next), `Label, OKButtonLabel()));
 
         boolean shadow_exist  = fileexist (sformat ("%1/shadow", lookup (user_settings, ".rc.ypserver.YPPWD_SRCDIR", "")));
         boolean gshadow_exist = fileexist (sformat ("%1/gshadow", lookup (user_settings, ".rc.ypserver.YPPWD_SRCDIR", "")));
@@ -137,7 +137,7 @@ file.</p>"));
                              UI (`QueryWidget (`id (`srcdir), `Value)));                             
 
         // To translators: button label
-        UI (`ChangeWidget (`id (`next), `Label, _("&Next")));
+        UI (`ChangeWidget (`id (`next), `Label, NextButtonLabel()));
 
         return ui;
 

@@ -40,9 +40,9 @@
 	    // To translators: selection box label
             `VBox(`SelectionBox(`id(`hosts), _("&Remote hosts"), hosts),
                   // To translators: button label
-                  `HBox(`PushButton(`id(`ok), _("&OK")),
+                  `HBox(`PushButton(`id(`ok), OKButtonLabel()),
                         // To translators: button label
-                        `PushButton(`id(`cancel), _("&Cancel"))))));
+                        `PushButton(`id(`cancel), CancelButtonLabel())))));
         any ret = nil;
         do {
             ret = UI(`UserInput());
@@ -78,9 +78,9 @@
 
         hbox = `HBox ();
                                 // To translators: pushbutton label
-        hbox = add (hbox, `PushButton (`id (`ok), `opt (`default), _("&OK")));
+        hbox = add (hbox, `PushButton (`id (`ok), `opt (`default), OKButtonLabel()));
                                 // To translators: pushbutton label
-        hbox = add (hbox, `PushButton (`id (`cancel), _("&Cancel")));
+        hbox = add (hbox, `PushButton (`id (`cancel), CancelButtonLabel()));
         
         contents = add (contents, hbox);
         contents = add (contents, `VSpacing (0.3));
