@@ -38,13 +38,13 @@
     global define ChooseHostName(list hosts) ``{
         string hname = nil;
         
-        UI(`OpenDialog(
-	    // To translators: selection box label
-            `VBox(`SelectionBox(`id(`hosts), _("&Remote hosts"), hosts),
-                  // To translators: button label
-                  `HBox(`PushButton(`id(`ok), OKButtonLabel()),
-                        // To translators: button label
-                        `PushButton(`id(`cancel), CancelButtonLabel())))));
+	UI(`OpenDialog(
+	       `VBox(`HSpacing(40),
+		     `HBox(`VSpacing(10),
+			   // To translators: selection box label
+			   `SelectionBox(`id(`hosts), _("&Remote hosts"), hosts)),
+		     `HBox(`PushButton(`id(`ok), OKButtonLabel()),
+			   `PushButton(`id(`cancel), CancelButtonLabel())))));
         any ret = nil;
         do {
             ret = UI(`UserInput());
