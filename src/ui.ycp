@@ -164,12 +164,6 @@
         progress_label = _("Done.");
 	ProgressMilestone (step + 1, progress_label, step);
 
-	if (!hasMasterThisSlave ()) 
-	{
-	    // To translators: warning popup
-	    UI (`WarningPopup (_("This host is not in the ypservers list.")));
-	}
-	
 	return `done;
     }
 
