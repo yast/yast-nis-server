@@ -49,10 +49,10 @@ define boolean NisServerSummaryHandler (map options ) {
 
     if (NisServer::ui_what == `master)
 	// summary label
-	CommandLine::Print (_("A NIS Master Server is configured."));
+	CommandLine::Print (_("A NIS master server is configured."));
     else
 	// summary label
-	CommandLine::Print (_("A NIS Slave Server is configured."));
+	CommandLine::Print (_("A NIS slave server is configured."));
 
     // summary label
     CommandLine::Print (sformat ("%1: %2", _("NIS Domain"),
@@ -81,7 +81,7 @@ define boolean NisServerSummaryHandler (map options ) {
 	    (list<string>) maplist (term t, allow_query,
 		``(mergestring ([t[1]:"", t[2]:""], ":"))), "\n");
 	// summary label (netmask:network shows output format)
-	CommandLine::Print (sformat (_("Hosts allowed to query server (netmask:network):
+	CommandLine::Print (sformat (_("Hosts Allowed to Query Server (netmask:network):
 %1"), net));
     }
     return false; // do not call Write...
@@ -125,12 +125,12 @@ define list<map> update_securenets (string securenets) {
 	if (netmask != "0.0.0.0" && !IP::Check4 (netmask))
 	{
 	    // error message
-	    error	= error + sformat (_("Wrong netmask: %1\n"), netmask);
+	    error	= error + sformat (_("Invalid netmask: %1.\n"), netmask);
 	}
 	if (!IP::Check4 (network))
 	{
 	    // error message
-            error   = error + sformat (_("Wrong network: %1\n"), network);
+            error   = error + sformat (_("Invalid network: %1.\n"), network);
 	}
 	i = i + 1;
 	return `item (`id (i), netmask, network);
@@ -253,7 +253,7 @@ define boolean NisServerSlaveHandler (map options) {
     if (master_ip == "")
     {
 	// error message
-	Report::Error (_("NIS Master Server IP was not specified."));
+	Report::Error (_("NIS master server IP was not specified."));
 	return false;
     }
     if (!IP::Check4(master_ip))
@@ -286,17 +286,17 @@ map cmdline = $[
 	"stop"		: $[
 	    "handler"	: NisServerStopHandler,
 	    // command line action help
-	    "help"	: _("Stop NIS Server"),
+	    "help"	: _("Stop NIS server"),
 	],
 	"master"	: $[
 	    "handler"	: NisServerMasterHandler,
 	    // command line action help
-	    "help"	: _("Configure NIS Master Server"),
+	    "help"	: _("Configure NIS master server"),
 	],
 	"slave"		: $[
 	    "handler"	: NisServerSlaveHandler,
 	    // command line action help
-	    "help"	: _("Configure NIS Slave Server"),
+	    "help"	: _("Configure NIS slave server"),
 	],
 	// configure
     ],
@@ -319,7 +319,7 @@ map cmdline = $[
 	],
 	"ypdir"		: $[
 	    // command line help text for the 'ypdir' option
-	    "help"	: _("YP Source Directory"),
+	    "help"	: _("YP source directory"),
 	    "type"	: "string"
 	],
 	"maps"		: $[

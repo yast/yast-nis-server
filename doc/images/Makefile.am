@@ -25,7 +25,7 @@ screenshots = \
 	success.png
 
 workflow.jpg: workflow.dia $(screenshots)
-	dia --export=workflow.png $<
+	dia -n --export=workflow.png $<
 	convert -quality 50 workflow.png $@
 	-$(RM) workflow.png
 MAINTAINERCLEANFILES = workflow.jpg
