@@ -44,14 +44,17 @@
      */
     global define isYPMaster () ``{
         map output = $[];
-        string ypwhich_hostname  = "";
+        string masterentry_hostname  = "";
         string yphelper_hostname = "";
-        output = SCR (`Execute (.target.bash_output, "/usr/bin/ypwhich -m passwd.byname"));
-        ypwhich_hostname  = lookup (output, "stdout", "");
+	string dn = lookup (user_settings, ".rc.system.YP_DOMAINNAME", "");
+	string command = sformat ("/usr/lib/yp/makedbm -u /var/yp/%1/passwd.byname | grep ^YP_MASTER_NAME", dn);
+
+        output = SCR (`Execute (.target.bash_output, command));
+        masterentry_hostname  = select (splitstring (lookup (output, "stdout", ""), " "), 1, "");
         output = SCR (`Execute (.target.bash_output, "/usr/lib/yp/yphelper --hostname"));
         yphelper_hostname = lookup (output, "stdout", "");
 
-        return ypwhich_hostname == yphelper_hostname;
+        return masterentry_hostname == yphelper_hostname;
     }
 
     /**
