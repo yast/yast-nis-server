@@ -55,3 +55,4 @@ Name[sl]=NIS Strežnik
 GenericName[sl]=Nastavite NIS strežnik
 Name[tr]=NIS sunucusu
 GenericName[tr]=NFS sunucusunu yapılandır
+X-KDE-SubstituteUID=true
