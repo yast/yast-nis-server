@@ -20,6 +20,7 @@ import "NetworkDevices";
 import "Progress";
 import "Service";
 import "Summary";
+import "SuSEFirewall";
 
 //TODO: make it work like Mail::Touch
 /**
@@ -193,7 +194,7 @@ global define boolean Read() ``{
 	YPServers
     ];
 
-    Progress::New (title, progress_title, size (files) + 2,
+    Progress::New (title, progress_title, size (files) + 3,
 		   // To translators: progress label %1 is filename
 		   maplist (string file, files, ``(sformat (_("Load '%1' file"), file)))
 		   + [
@@ -201,14 +202,18 @@ global define boolean Read() ``{
 		       _("Determine running services"),
 		       // Trans: progress label
 		       _("Determine server type"),
+		       // progress stage label
+		       _("Read firewall settings")
 		       ],
 		   // To translators: progress label %1 is filename
 		   maplist (string file, files, ``(sformat (_("Loading '%1'..."), file)))
 		   + [
 		       // Trans: progress label
-		       _("Determining running services"),
+		       _("Determining running services..."),
 		       // Trans: progress label
-		       _("Determining server type"),
+		       _("Determining server type..."),
+		       // progress step label
+		       _("Reading firewall settings..."),
 		       // Trans: progress label
 		       _("Done."),
 		       ],
@@ -289,6 +294,13 @@ global define boolean Read() ``{
     }
 
     Progress::NextStage ();
+
+    Progress::off ();
+    SuSEFirewall::Read ();
+    Progress::on ();
+
+    Progress::NextStage ();
+
     modified = false;
     return true;
 }
@@ -447,12 +459,20 @@ global define boolean Write() ``{
     integer step = 0;
 
     // To translators: dialog title
-    Progress::New (title, progress_title, size (save_list),
-		   maplist (map e, save_list, ``(e["save_label"]:"")),
-		   maplist (map e, save_list, ``(e["progress_label"]:""))
-		   // To translators: progress message
-		   + [_("Done.")],
-		   help);
+    Progress::New (title, progress_title, size (save_list) + 1,
+		    maplist (map e, save_list, ``(e["save_label"]:""))
+		    + [
+			// progress bar stage
+		        _("Save firewall settings"),
+		    ],
+		    maplist (map e, save_list, ``(e["progress_label"]:""))
+		    + [
+			// progress step
+			_("Saving firewall settings..."),
+			// progress step
+			_("Done.")
+		    ],
+		    help);
 
     foreach (map save_item, save_list, ``{
 	Progress::NextStage ();
@@ -473,6 +493,12 @@ global define boolean Write() ``{
 	    y2internal ("Bad save list item %1", fl);
 	}
     });
+
+    Progress::NextStage ();
+
+    Progress::off ();
+    SuSEFirewall::Write ();
+    Progress::on ();
 
     Progress::NextStage ();
     return true;

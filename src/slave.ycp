@@ -27,6 +27,7 @@
     import "Wizard";
     import "Popup";
 
+    import "CWMFirewallInterfaces";
     import "NisServer";
     import "Nis";
     import "IP";
@@ -38,34 +39,50 @@
      */
     define symbol SlaveDialog () ``{
 
+	map<string,any> firewall_widget = GetFirewallWidget ();
+	term firewall_layout = firewall_widget["custom_widget"]:`VBox ();
+
 	// help text 1/2
 	string helptext = _("<p>Enter the NIS <b>domain</b> and the IP <b>address</b> of the master NIS server.</p>");
 	// help text 2/2
-	helptext = helptext + _("<p>If this host is also an NIS client using this machine as a server, check the appropriate button.</p>");
+	helptext = helptext + _("<p>If this host is also an NIS client using this machine as a server, check the appropriate button.</p>")
+
+	+ firewall_widget["help"]:"";
 
 	term contents = `VBox ();
-				// To translators: textentry label
-	contents = add (contents, `TextEntry (`id (`domain), _("NIS &domain name:"),
-					      NisServer::domain));
+	contents = add (contents,
+	    // textentry label
+	    `TextEntry (`id(`domain),_("NIS &domain name:"),NisServer::domain));
 	contents = add (contents, `VSpacing (0.5));
-				// To translators: text entry label
-	contents = add (contents, `TextEntry (`id (`master_ip), _("NIS &master server:"),
-					      NisServer::ui_master_ip));
-	contents = add (contents, `VSpacing ());
-				// To translators: text entry label
-	contents = add (contents, `CheckBox (`id (`also_client), _("This host is also a NIS &client"),
-					     NisServer::start_ypbind));
+	contents = add (contents,
+	    // text entry label
+	    `TextEntry (`id (`master_ip), _("NIS &master server:"),
+		NisServer::ui_master_ip));
 
+	contents = add (contents, `VSpacing ());
+	contents = add (contents,
+	    // checkbox label
+	    `CheckBox (`id (`also_client), _("This host is also a NIS &client"),
+		NisServer::start_ypbind));
+
+	contents = add (contents, `VSpacing (2));
+	contents = add (contents, firewall_layout);
 	contents = `HVSquash (contents);
 
-				// To translators: dialog label
-	Wizard::SetContents (_("Network Information Service -- Slave Server Setup"), contents, helptext, true, true);
+	// To translators: dialog label
+	Wizard::SetContents (_("Slave Server Setup"),
+	    contents, helptext, true, true);
 
-	symbol ui = nil;
+	CWMFirewallInterfaces::OpenFirewallInit (firewall_widget, "");
+
+	map event = $[];
+	any ui	= nil;
 
 	repeat
 	{
-	    ui = (symbol) UI::UserInput ();
+	    event	= UI::WaitForEvent ();
+	    ui		= event["ID"]:nil;
+	    CWMFirewallInterfaces::OpenFirewallHandle(firewall_widget,"",event);
 	    if (ui == `cancel)
 	    {
 		ui = `abort;
@@ -73,8 +90,10 @@
 
 	    if (ui == `next)
 	    {
-		string master_ip  = (string) UI::QueryWidget (`id (`master_ip), `Value);
-		string domainname = (string) UI::QueryWidget (`id (`domain), `Value);
+		string master_ip  =
+		    (string) UI::QueryWidget (`id (`master_ip), `Value);
+		string domainname =
+		    (string) UI::QueryWidget (`id (`domain), `Value);
 		if (!IP::Check4(master_ip))
 		{
 		    // To translators: error message
@@ -93,17 +112,20 @@
 		    NisServer::start_ypbind = (boolean)
 			UI::QueryWidget (`id (`also_client), `Value);
 		    CheckForDHCPClient (domainname);
+		    CWMFirewallInterfaces::OpenFirewallStore (
+			firewall_widget,"",event);
 		}
 	    }
 
 	    if (ui == `abort && !Popup::ReallyAbort (true)) ui = `again;
 	}
-	until (contains ([`next, `back, `abort], ui));
+	until (ui == `next || ui == `back || ui == `abort);
 
-	NisServer::ui_master_ip = (string) UI::QueryWidget (`id (`master_ip), `Value);
-	NisServer::start_ypbind = (boolean) UI::QueryWidget (`id (`also_client), `Value);
-	NisServer::domain = (string) UI::QueryWidget (`id (`domain), `Value);
+	NisServer::ui_master_ip =
+	    (string) UI::QueryWidget (`id (`master_ip), `Value);
+	NisServer::domain =
+	    (string) UI::QueryWidget (`id (`domain), `Value);
 
-	return ui;
+	return (symbol) ui;
     }
 }

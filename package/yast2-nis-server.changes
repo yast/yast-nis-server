@@ -1,4 +1,20 @@
 -------------------------------------------------------------------
+Thu Aug  5 14:46:04 CEST 2004 - jsuchome@suse.cz
+
+- added widgets for adjusting firewall configuration
+- 2.10.1
+
+-------------------------------------------------------------------
+Wed Aug  4 12:18:10 CEST 2004 - jsuchome@suse.cz
+
+- warn when DHCP could change domain name (#28727)
+
+-------------------------------------------------------------------
+Tue Jul 27 16:12:46 CEST 2004 - jsuchome@suse.cz
+
+- use Package module instead of Require
+
+-------------------------------------------------------------------
 Mon Jul 12 13:37:57 CEST 2004 - mvidner@suse.cz
 
 - Fixed cancelling Abort (#42730).

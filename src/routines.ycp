@@ -22,6 +22,7 @@
 {
     textdomain "nis_server";
 
+    import "CWMFirewallInterfaces";
     import "NisServer";
     import "Popup";
     import "Service";
@@ -109,5 +110,24 @@ settings and consider not running DHCP client at NIS server."));
 	}
 	// TODO: check
 	// if domain from dhcp client is different then the one currently set
+    }
+
+
+    /**
+     * Create the widget for opening firewall ports
+     */
+    define map<string,any> GetFirewallWidget () {
+
+	map<string,any> settings = $[
+	    "services" : [ "portmap" ],
+	    "display_details" : true,
+	    // firewall openning help
+	    "help" : _("<p><b>Firewall Settings</b><br>
+To open the firewall to allow access the NIS server
+from remote computers, set <b>Open Port in Firewall</b>.<br>
+To select interfaces to open the port on, click <b>Firewall Details</b>.<br>
+This option is available only if the firewall is enabled.</p>"),
+	];
+	return CWMFirewallInterfaces::CreateOpenFirewallWidget (settings);
     }
 }
