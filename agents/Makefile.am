@@ -1,8 +1,6 @@
 #
-# Makefile.am for y2c_nis_server/agents
+# Makefile.am for nis-server/agents
 #
-
-scrconfdir = $(YAST2DIR)/scrconf
 
 scrconf_DATA = $(wildcard $(srcdir)/*.scr)
 

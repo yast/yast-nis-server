@@ -1,10 +1,9 @@
 #
-# Makefile.am for y2c_nis_server/doc
+# Makefile.am for nis-server/doc
 #
 
 SUBDIRS = autodocs images
 
-docdir = @DOCDIR@
 htmldir = $(docdir)
 
 html_DATA = 			\
