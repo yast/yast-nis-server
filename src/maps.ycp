@@ -54,7 +54,7 @@ used. You can simply add some more maps from the list on the right side, named
 
         list to_filter_out = ["publickey", "botparams", "auto.master", "auto.home", "auto.local"];
 
-        if (!toboolean (lookup (user_settings, ".var.yp.makefile.MERGE_PASSWD", false)) &&
+        if (toboolean (lookup (user_settings, ".var.yp.makefile.MERGE_PASSWD", false)) &&
             fileexist (sformat ("%1/shadow", lookup (user_settings, ".rc.ypserver.YPPWD_SRCDIR", ""))))
         {
             remaining = filter (`map_name, remaining, ``(map_name != "shadow"));
