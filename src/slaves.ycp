@@ -94,21 +94,19 @@
 	UI::SetFocus (`id (`slave));
 
 	symbol ui = nil;
-	string error_msg = "";
 
 	repeat {
-	    error_msg = "";
 	    ui = UI::UserInput ();
 
 	    if (ui == `ok)
 	    {
 		slave = tolower (UI::QueryWidget (`id (`slave), `Value));
-				// To translators: error message
-		error_msg = error_msg + (check_domainname (slave) ? "" : _("Wrong host name.\n"));
 
-		if (size (error_msg) > 0)
+		if (!check_address (slave))
 		{
-		    UI::ErrorPopup (error_msg);
+		    UI::SetFocus (`id (`slave));
+		    UI::ErrorPopup (valid_address ());
+		    ui = nil;
 		}
 	    }
 	    else if (ui == `browse)
@@ -128,7 +126,7 @@
 		}
 	    }
 
-	} until ((error_msg == "" && ui == `ok) || ui == `cancel);
+	} until (ui == `ok || ui == `cancel);
 
 	UI::CloseDialog ();
 
@@ -174,6 +172,10 @@
 	    UI::ChangeWidget (`id (`delete), `Enabled, anyslaves);
 
 	    ui = UI::UserInput ();
+	    if (ui == `cancel)
+	    {
+		ui = `abort;
+	    }
 
 	    if (ui == `edit)
 	    {

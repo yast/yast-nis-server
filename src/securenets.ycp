@@ -184,6 +184,10 @@ to the  bitwise <i>AND</i> of the host's address and the <b>netmask</b>.</p>");
 	    UI::ChangeWidget (`id (`delete), `Enabled, anyitems);
 
 	    ui = UI::UserInput ();
+	    if (ui == `cancel)
+	    {
+		ui = `abort;
+	    }
 
 	    if (ui == `delete)
 	    {
