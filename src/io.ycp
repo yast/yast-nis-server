@@ -124,7 +124,7 @@
             maplist (`d, to_stop, ``{
                 output = SCR (`Execute (.target.bash_output, sformat ("/etc/init.d/%1 status", d), 
                                         $["TERM" : "raw"]));
-                if (issubstring (lookup (output, "stdout"), "No process"))
+                if (issubstring (lookup (output, "stdout"), "unused"))
                 {
                     y2milestone ("Stopping daemon %1", d);
                     output = SCR (`Execute (.target.bash_output, sformat ("/etc/init.d/%1 stop", d),
@@ -144,7 +144,7 @@
             maplist (`d, to_start, ``{
                 output = SCR (`Execute (.target.bash_output, sformat ("/etc/init.d/%1 status", d),
                                         $["TERM" : "raw"]));
-                if (issubstring (lookup (output, "stdout"), "No process"))
+                if (issubstring (lookup (output, "stdout"), "unused"))
                 {
                     y2milestone ("Starting daemon %1", d);                    
                     output = SCR (`Execute (.target.bash_output, sformat ("/etc/init.d/%1 start", d),
