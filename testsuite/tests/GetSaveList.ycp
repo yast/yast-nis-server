@@ -12,12 +12,10 @@
 
 {
     include "testsuite.ycp";
-    include "nis_server/io.ycp";
+    import "NisServer";
 
-    map user_settings = $[];
-
-    TEST (``(GetSaveList (`none)), [], true);
-    TEST (``(GetSaveList (`slave)), [], true);
-    TEST (``(GetSaveList (`master)), [], true);
+    TEST (``(NisServer::GetSaveList (`none)), [], true);
+    TEST (``(NisServer::GetSaveList (`slave)), [], true);
+    TEST (``(NisServer::GetSaveList (`master)), [], true);
 
 }
