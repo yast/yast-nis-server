@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Feb 14 10:26:30 CET 2005 - jsuchome@suse.cz
+
+- fix: allow host names for slaves (#50735)
+- 2.11.5
+
+-------------------------------------------------------------------
 Mon Feb  7 16:38:21 CET 2005 - jsuchome@suse.cz
 
 - merged texts from proofreading
