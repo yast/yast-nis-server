@@ -2,7 +2,7 @@
 # Makefile.am for module ypserver
 #
 
-SUBDIRS = src doc testsuite
+SUBDIRS = src conf doc testsuite
 
 VERSION = $(shell cat $(srcdir)/VERSION)
 

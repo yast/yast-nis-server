@@ -1,0 +1,33 @@
+/**
+ * File:
+ *   run_ypwhich_m.scr
+ * Summary:
+ *   SCR Agent for reading the result from /usr/bin/ypwhich -m
+ * Access:
+ *   read-only
+ * Authors:
+ *   Daniel Vesely <dan@suse.cz>
+ * Example:
+ *   Read(.run.ypwhich_m)
+ *   ([$["map" : "services.byname", "host" : "chimera.suse.cz"]])
+ * 
+ * $Id$
+ *
+ * Returns a <b>list</b> of maps and hosts
+ */
+.run.ypwhich_m
+
+`ag_anyagent(
+  Description (
+      ``(Run("/usr/bin/ypwhich -m")),	// real file name
+      "\n",			// Comment
+      true,			// read-only
+      ``(List (
+             Tuple (
+                 `map (String ("^ \t")),
+                 Whitespace (),
+                 `host (String ("^\n\t "))
+                 ),
+             "\n"))
+      )
+    )
