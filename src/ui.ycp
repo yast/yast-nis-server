@@ -129,9 +129,9 @@ You must reboot for the changes to take effect."));
      * @return `master or `slave
      */
     global define symbol InstallServer () ``{
-	if (!Require::AreAllPackagesInstalled (["ypserv"]))
+	if (!Require::AreAllPackagesInstalled (NisServer::required_packages))
 	{
-	    Require::DoInstallAndRemove (["ypserv"], []);
+	    Require::DoInstallAndRemove (NisServer::required_packages, []);
 	}
 
 	return NisServer::ui_what;

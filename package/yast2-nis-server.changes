@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Aug 22 20:02:36 CEST 2003 - nashif@suse.de
+
+- Return required package during autoinstall
+- 2.8.5
+
+-------------------------------------------------------------------
 Wed Aug 20 15:05:18 CEST 2003 - jsuchome@suse.de
 
 - removed redundant "initialization dialog" (#28779)
