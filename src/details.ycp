@@ -108,7 +108,7 @@ file
 
 				// To translators: dialog label
 	Wizard::SetContents (_("NIS Master Server Details Setup"), contents, helptext, true, true);
-	UI::ChangeWidget (`id (`next), `Label, Label::OKButton());
+	Wizard::SetNextButton(`next, Label::OKButton() );
 
 	// If the source directory does not exist, it will be created
 	// with empty passwd, group, shadow, gshadow.
