@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Wed Aug 28 14:07:38 CEST 2002 - mvidner@suse.cz
+
+- Fix: The values of YPPWD_CHSH and YPPWD_CHFN were swapped when saving.
+- Fixed detecting whether we are in the master's slave list
+  when ypbind isn't running.
+- 2.6.11
+
+-------------------------------------------------------------------
 Mon Aug 26 17:18:59 CEST 2002 - mvidner@suse.cz
 
 - Use not only /etc/defaultdomain but also ypdomainname,
