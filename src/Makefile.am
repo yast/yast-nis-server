@@ -22,7 +22,7 @@ include_DATA = \
 modules_DATA = 	\
 	nis_server.ycp
 
-menu_DATA = menuentry_nis_server.ycp
+menu_DATA = menuentry_nis_server.y2cc
 
 EXTRA_DIST = \
 	$(modules_DATA) \
