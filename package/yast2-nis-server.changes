@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Tue Feb 10 10:28:06 CET 2004 - lslezak@suse.cz
+
+- removed *.y2cc file
+- NI fixes (removed globals, data types, dynamic scope)
+- use IP:: module
+- version 2.9.2
+
+-------------------------------------------------------------------
 Wed Feb  4 17:16:57 CET 2004 - lslezak@suse.cz
 
 - yast2-nis-client and yast2-pam needed for build

@@ -17,77 +17,11 @@
 
     include "nis_server/ui.ycp";
 
-
-/**
- * Whole configuration of NIS server
- * @return sequence result
- */
-global define symbol NisServerSequence() ``{
-
-    map aliases = $[
-	"read"		: [ ``( ReadDialog() ), true ],
-	"main"		: ``( MainSequence() ),
-	"write"		: [ ``( WriteDialog() ), true ],
-	"result"        : ``( ResultPopup () ),
-	"error_details" : ``( DetailsPopup () ),
-    ];
-
-    map sequence = $[
-	"ws_start" : "read",
-	"read" : $[
-	    `abort	: `abort,
-	    `next	: "main"
-	    ],
-	"main" : $[
-	    `abort	: `abort,
-	    `nothing	: `nothing,
-	    `next	: "write",
-	    ],
-	"write"       : $[
-	    `next    : "result"
-	    ],
-	"result"     : $[
-	    `ok      : `next,
-	    `details : "error_details"
-	    ],
-	"error_details" : $[
-	    `ok         : "result"
-	    ],
-	];
-
-    Wizard::CreateDialog();
-    any ret = WizardSequencer(aliases, sequence);
-
-    UI::CloseDialog();
-    return ret;
-}
-
-/**
- * Whole configuration of NIS server but without reading and writing.
- * For use with autoinstallation.
- * @return sequence result
- */
-global define symbol NisServerAutoSequence() ``{
-    // Translators: dialog caption
-    string caption = _("NIS Server Configuration");
-    // label
-    term contents = `Label(_("Initializing..."));
-
-    Wizard::CreateDialog();
-    Wizard::SetContentsButtons(caption, contents, "",
-	    Label::BackButton(), Label::NextButton());
-
-    any ret = MainSequence();
-
-    UI::CloseDialog();
-    return ret;
-}
-
 /**
  * Main workflow of the NIS server configuration
  * @return sequence result
  */
-global define symbol MainSequence() ``{
+define symbol MainSequence() ``{
 
     map aliases = $[
 	"begin"         : ``(WhatToConfigure ()),
@@ -153,8 +87,74 @@ global define symbol MainSequence() ``{
 	    ],
 	];
 
-    any ret = WizardSequencer(aliases, sequence);
+    symbol ret = WizardSequencer(aliases, sequence);
 
+    return ret;
+}
+
+
+/**
+ * Whole configuration of NIS server
+ * @return sequence result
+ */
+define symbol NisServerSequence() ``{
+
+    map aliases = $[
+	"read"		: [ ``( ReadDialog() ), true ],
+	"main"		: ``( MainSequence() ),
+	"write"		: [ ``( WriteDialog() ), true ],
+	"result"        : ``( ResultPopup () ),
+	"error_details" : ``( DetailsPopup () ),
+    ];
+
+    map sequence = $[
+	"ws_start" : "read",
+	"read" : $[
+	    `abort	: `abort,
+	    `next	: "main"
+	    ],
+	"main" : $[
+	    `abort	: `abort,
+	    `nothing	: `nothing,
+	    `next	: "write",
+	    ],
+	"write"       : $[
+	    `next    : "result"
+	    ],
+	"result"     : $[
+	    `ok      : `next,
+	    `details : "error_details"
+	    ],
+	"error_details" : $[
+	    `ok         : "result"
+	    ],
+	];
+
+    Wizard::CreateDialog();
+    symbol ret = WizardSequencer(aliases, sequence);
+
+    UI::CloseDialog();
+    return ret;
+}
+
+/**
+ * Whole configuration of NIS server but without reading and writing.
+ * For use with autoinstallation.
+ * @return sequence result
+ */
+define symbol NisServerAutoSequence() ``{
+    // Translators: dialog caption
+    string caption = _("NIS Server Configuration");
+    // label
+    term contents = `Label(_("Initializing..."));
+
+    Wizard::CreateDialog();
+    Wizard::SetContentsButtons(caption, contents, "",
+	    Label::BackButton(), Label::NextButton());
+
+    symbol ret = MainSequence();
+
+    UI::CloseDialog();
     return ret;
 }
 

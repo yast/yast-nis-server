@@ -33,7 +33,7 @@
      * Dialog for choosing the way of the flow
      * @return `abort, `exit, `nothing, `master, `slave or `finish
      */
-    global define symbol WhatToConfigure () ``{
+    define symbol WhatToConfigure () ``{
 
 	// help text 1/2
 	string helptext = _("<p>Select whether to configure the NIS server as a <b>master</b> or a
@@ -144,7 +144,7 @@ configure it.</p>");
 
 	repeat
 	{
-	    current_button = UI::QueryWidget (`id (`rb), `CurrentButton);
+	    current_button = (symbol) UI::QueryWidget (`id (`rb), `CurrentButton);
 
 	    if (current_button == `none)
 	    {
@@ -157,7 +157,7 @@ configure it.</p>");
 		UI::SetFocus (`id (`next));
 	    }
 
-	    ui = UI::UserInput ();
+	    ui = (symbol) UI::UserInput ();
 	    if (ui == `cancel)
 	    {
 		ui = `abort;
@@ -181,7 +181,7 @@ configure it.</p>");
 	    return `nothing;
 	}
 
-	current_button = UI::QueryWidget (`id (`rb), `CurrentButton);
+	current_button = (symbol) UI::QueryWidget (`id (`rb), `CurrentButton);
 	NisServer::ui_what = current_button;
 	return ui == `next ? current_button : ui;
     }

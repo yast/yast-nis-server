@@ -141,7 +141,7 @@ global boolean pwd_chsh = false;
 /**
  * Packages to be installed for this module to operate
  */
-global list required_packages = ["ypserv"];
+global list<string> required_packages = ["ypserv"];
 
 
 // ------------------------------------------------------------

@@ -37,8 +37,6 @@ Summary:	Configuration of NIS server
 @clientdir@/nis_server.ycp
 @clientdir@/nis_server_auto.ycp
 @clientdir@/nis-server.ycp
-%dir @configdir@
-@configdir@/nis_server.y2cc
 %dir @desktopdir@
 @desktopdir@/nis_server.desktop
 %dir @scrconfdir@

@@ -34,7 +34,7 @@
      * Maps dialog
      * @return `back, `abort or `next
      */
-    global define symbol MapsDialog () ``{
+    define symbol MapsDialog () ``{
 
 	// help text 1/1
 	// Translators: the text was truncated because now there's
@@ -58,7 +58,7 @@
 	list passwd_tables = ["passwd", "group", "passwd.adjunct", "shadow"];
 	string passwd_dir = NisServer::pwd_srcdir;
 	map files = listmap (string table, all,
-			     ``( [table, sformat ("/etc/%1",table)] ));
+			     {return $[table : sformat ("/etc/%1",table)]; });
 	foreach (string table, passwd_tables, ``{
 	    files[table] = sformat ("%1/%2", passwd_dir, table);
 	});
@@ -68,7 +68,7 @@
 
 	// We want to construct a list of items:
 	// `item (`id (table), table, true|false)
-	map enabled = listmap (string table, all, ``( [table, false] ));
+	map enabled = listmap (string table, all, {return $[table : false];});
 	// filter out tables that are merged or their sources don't exist
 	if (NisServer::merge_passwd)
 	{
@@ -77,7 +77,7 @@
 	enabled = filter (string table, boolean dummy, enabled, ``(
 			      SCR::Read (.target.size, files[table]:"/") >= 0
 			      ));
-	list current = NisServer::maps;
+	list<string> current = NisServer::maps;
 	foreach (string table, current, ``{
 	    enabled[table] = true;
 	});
@@ -96,7 +96,7 @@
 
 	repeat
 	{
-	    ui = UI::UserInput ();
+	    ui = (symbol) UI::UserInput ();
 	    if (ui == `cancel)
 	    {
 		ui = `abort;
@@ -106,7 +106,7 @@
 	}
 	until (contains ([`back, `next, `abort], ui));
 
-	current = UI::QueryWidget (`id (`current), `SelectedItems);
+	current = (list<string>) UI::QueryWidget (`id (`current), `SelectedItems);
 	NisServer::maps = current;
 	return ui;
     }

@@ -35,7 +35,7 @@
      * Details dialog
      * @return `back, `abort or `next
      */
-    global define symbol DetailsDialog () ``{
+    define symbol DetailsDialog () ``{
 	string srcdir = NisServer::pwd_srcdir;
 
 	// help text 1/3
@@ -134,14 +134,14 @@ file
 		UI::ChangeWidget (`id (`group_frame), `Enabled, gshadow_exists);
 	    }
 
-	    ui = UI::UserInput ();
+	    ui = (symbol) UI::UserInput ();
 	    if (ui == `cancel)
 	    {
 		ui = `abort;
 	    }
 
 	    change_enabled = (ui == `srcdir);
-	    srcdir = UI::QueryWidget (`id (`srcdir), `Value);
+	    srcdir = (string) UI::QueryWidget (`id (`srcdir), `Value);
 	    if (ui == `abort && !Popup::ReallyAbort (true)) continue;
 	    if (ui == `next)
 	    {
@@ -157,8 +157,8 @@ Create it?
 	}
 	until (contains ([`back, `next, `abort], ui));
 
-	NisServer::minuid = UI::QueryWidget (`id (`minuid), `Value);
-	NisServer::mingid = UI::QueryWidget (`id (`mingid), `Value);
+	NisServer::minuid = (integer) UI::QueryWidget (`id (`minuid), `Value);
+	NisServer::mingid = (integer) UI::QueryWidget (`id (`mingid), `Value);
 	NisServer::merge_passwd = UI::QueryWidget (`id (`pass_rb), `CurrentButton) == `yes;
 	NisServer::merge_group = UI::QueryWidget (`id (`group_rb), `CurrentButton) == `yes;
 	NisServer::pwd_srcdir = srcdir;

@@ -26,18 +26,17 @@
 
     import "Wizard";
     import "Popup";
-    include "network/ip.ycp";
-    include "network/dns.ycp";
 
     import "NisServer";
     import "Nis";
+    import "IP";
     include "nis_server/routines.ycp";
 
     /**
      * Slave dialog
      * @return `back, `abort or `next
      */
-    global define symbol SlaveDialog () ``{
+    define symbol SlaveDialog () ``{
 
 	// help text 1/2
 	string helptext = _("<p>Enter the NIS <b>domain</b> and the IP <b>address</b> of the master NIS server.</p>");
@@ -66,7 +65,7 @@
 
 	repeat
 	{
-	    ui = UI::UserInput ();
+	    ui = (symbol) UI::UserInput ();
 	    if (ui == `cancel)
 	    {
 		ui = `abort;
@@ -74,13 +73,13 @@
 
 	    if (ui == `next)
 	    {
-		string master_ip  = UI::QueryWidget (`id (`master_ip), `Value);
-		string domainname = UI::QueryWidget (`id (`domain), `Value);
-		if (!check_address (master_ip))
+		string master_ip  = (string) UI::QueryWidget (`id (`master_ip), `Value);
+		string domainname = (string) UI::QueryWidget (`id (`domain), `Value);
+		if (!IP::Check4(master_ip))
 		{
 		    // To translators: error message
 		    UI::SetFocus (`id (`master_ip));
-		    Popup::Error (valid_address ());
+		    Popup::Error (IP::Valid4());
 		    ui = nil;
 		}
 		else if (!Nis::check_nisdomainname (domainname))
@@ -93,11 +92,11 @@
 
 	    if (ui == `abort && !Popup::ReallyAbort (true)) continue;
 	}
-	until (contains ([`next, `back, `abort], ui));
+	until (ui != nil && contains ([`next, `back, `abort], ui));
 
-	NisServer::ui_master_ip = UI::QueryWidget (`id (`master_ip), `Value);
-	NisServer::start_ypbind = UI::QueryWidget (`id (`also_client), `Value);
-	NisServer::domain = UI::QueryWidget (`id (`domain), `Value);
+	NisServer::ui_master_ip = (string) UI::QueryWidget (`id (`master_ip), `Value);
+	NisServer::start_ypbind = (boolean) UI::QueryWidget (`id (`also_client), `Value);
+	NisServer::domain = (string) UI::QueryWidget (`id (`domain), `Value);
 
 	return ui;
     }
