@@ -68,22 +68,25 @@ configure it.</p>");
 	else if (isYPServerConfigured ())
 	{
 	    boolean isMaster = (detected == `master);
-		    // To translators: part of the label in the dialog
-	    string slave_or_master = isMaster ? _("Master") : _("Slave");
-		    // To translators: part of the label in the dialog
-	    string master_action   = isMaster ? _("Reconfigure") : _("Change to");
-		    // To translators: part of the label in the dialog
-	    string slave_action    = isMaster ? _("Change to") : _("Reconfigure");
 
-				// To translators: label in the dialog
 	    labels = add (labels, `Left (`Label (_("NIS Software is installed."))));
-				// To translators: label in the dialog
+	    // To translators: part of the label in the dialog
+	    string slave_or_master = isMaster ? _("Master") : _("Slave");
+	    // To translators: label in the dialog, %1 is Master or Slave above
 	    labels = add (labels, `Left (`Label (sformat (_("A NIS %1 Server is configured."),
 							  slave_or_master))));
-				// To translators: label in the dialog %1 if Reconfigure or Change to
-	    master_setup_label = sformat (_("%1 NIS &Master Server"), master_action);
-				// To translators: label in the dialog %1 if Reconfigure or Change to
-	    slave_setup_label  = sformat (_("%1 NIS &Slave Server"), slave_action);
+
+	    // To translators: label in the dialog
+	    string reconfigure_master = _("Reconfigure NIS &Master Server");
+	    // To translators: label in the dialog
+	    string change_to_master = _("Change to NIS &Master Server");
+	    // To translators: label in the dialog
+	    string reconfigure_slave = _("Reconfigure NIS &Slave Server");
+	    // To translators: label in the dialog
+	    string change_to_slave = _("Change to NIS &Slave Server");
+
+	    master_setup_label = isMaster? reconfigure_master: change_to_master;
+	    slave_setup_label  = isMaster? change_to_slave: reconfigure_slave;
 	    none_setup_label   = _("&Deactivate any NIS server configuration");
 	}
 	else
