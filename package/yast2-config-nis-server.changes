@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Fri Jan 11 09:43:46 CET 2002 - mvidner@suse.cz
+
+- Changed an identifier that has become a builtin name. (2.5.4)
+
+-------------------------------------------------------------------
 Fri Dec  7 15:29:40 CET 2001 - mvidner@suse.cz
 
 - Obliterated START_ variables, using Runlevel.
