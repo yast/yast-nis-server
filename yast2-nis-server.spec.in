@@ -3,7 +3,7 @@
 # neededforbuild  yast2-devel-packages
 
 @HEADER@
-Requires:	yast2yast2-packager
+Requires:	yast2 yast2-packager
 Requires:	yast2-network yast2-nis-client
 
 Provides:	yast2-config-nis-server
