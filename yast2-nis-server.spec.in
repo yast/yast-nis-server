@@ -32,6 +32,7 @@ Summary:	Configuration of NIS server
 @yncludedir@/nis_server/*.ycp
 %dir @moduledir@
 @moduledir@/NisServer.ycp
+@moduledir@/NisServer.ybc
 %dir @clientdir@
 @clientdir@/nis_server.ycp
 @clientdir@/nis_server_auto.ycp
