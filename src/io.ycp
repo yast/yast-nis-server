@@ -79,93 +79,119 @@
     }
 
     /**
-     * Starts or stop daemons
-     * @param workflow what to start or save: `master, `slave, `none OR `client
+     * Ensures that the domain directory exists.
+     * @param	directory	the path
+     * @return	boolean		false if not and cannot be created
      */
-    global define YPDaemons (symbol workflow) ``{
+    global define EnsureDirectory (string directory) ``{
 	string error_msg     = lookup (user_settings, "error", "");
 	string error_details = lookup (user_settings, "error_details", "");
-	map output    = $[];
-	list to_stop  = [];
-	list to_start = [];
+	map output = $[];
 
-	if (workflow == `none)
+	if (SCR::Read (.target.size, directory) == -1)
 	{
-	    to_stop = ["ypxfrd", "yppasswdd", "ypserv"];
-	}
-	else if (workflow == `slave)
-	{
-	    to_stop  = ["ypxfrd", "yppasswdd", "ypserv"];
-	    to_start = ["portmap", "ypserv"];
-	}
-	else if (workflow == `master)
-	{
-	    to_stop  = ["ypxfrd", "yppasswdd", "ypserv"];
-	    to_start = ["portmap", "ypserv"];
-
-	    if (lookup (user_settings, ".rc.system.START_YPPASSWDD", "no") == "yes")
+	    output = SCR::Execute (.target.bash_output, sformat ("/bin/mkdir %1", directory));
+	    if (size (lookup (output, "stderr", "")) > 0)
 	    {
-		to_start = add (to_start, "yppasswdd");
-	    }
-
-	    if (lookup (user_settings, ".rc.system.START_YPXFRD", "no") == "yes")
-	    {
-		to_start = add (to_start, "ypxfrd");
+		// To translators: message in the popup dialog
+		error_msg = error_msg + sformat (_("Directory %1 can not be created.\n"), directory);
+		error_details = error_details + sformat ("<pre>%1</pre>", lookup (output, "stderr", ""));
+		return false;
 	    }
 	}
-	else if (workflow == `client)
+	return true;
+    }
+
+    /**
+     * Gets the YP maps from master for slave
+     */
+    global define YPGetMaps () ``{
+
+	string error_msg     = lookup (user_settings, "error", "");
+	string error_details = lookup (user_settings, "error_details", "");
+	map output = $[];
+	string dn = lookup (user_settings, ".rc.system.YP_DOMAINNAME", "");
+
+	// first make sure that the directory exists
+	if (! EnsureDirectory (sformat ("/var/yp/%1", dn)))
 	{
-	    to_stop  = ["ypbind"];
-	    if (lookup (user_settings, "ui_also_client", false))
-	    {
-		to_start = ["ypbind"]; // portmap should already run
-	    }
+	    return;
 	}
 
-	if (size (to_stop) > 0)
+	// and get the maps
+	string master = lookup (user_settings, "ui_master_ip", "");
+	output = SCR::Execute (.target.bash_output, sformat ("/usr/lib/yp/yphelper --maps %1 --domainname %2", master, dn));
+	if (lookup (output, "exit", 1) != 0)
 	{
-	    maplist (`d, to_stop, ``{
-		y2milestone ("Stopping daemon %1", d);
+	    // To translators: message in the popup dialog
+	    error_msg = error_msg + sformat (_("Can not get list of maps.\n"));
+	    error_details = error_details + sformat ("<pre>%1</pre>", lookup (output, "stderr", ""));
+	}
+	list running_maps = splitstring (lookup (output, "stdout", ""), "\n");
+	// the element after the last newline is empty, remove it
+	if (size (running_maps) > 0)
+	{
+	    running_maps = remove (running_maps, size (running_maps) - 1);
+	}
 
-		// only stop it if it is running. LSB will make this check unnecessary.
-		if (SCR::Execute (.target.bash, sformat ("/etc/init.d/%1 status", d)) == 0)
+	maplist (`map_name, running_maps, ``{
+	    output = SCR::Execute (.target.bash_output,
+				    sformat ("/usr/lib/yp/ypxfr -f -h %1 -d %2 %3",
+					     master,
+					     dn,
+					     map_name));
+	    if (lookup (output, "exit", 1) != 0)
+	    {
+		// To translators: message in the popup dialog
+		error_msg = error_msg + sformat (_("Error while retrieving %1 map from master.\n"), map_name);
+		error_details = error_details + sformat ("<pre>%1</pre>", lookup (output, "stderr", ""));
+	    }
+	});
+
+
+	if (!contains (running_maps, "ypservers"))
+	{
+	    // To translators: message in the popup dialog
+	    error_msg = error_msg + sformat (_("Could not get list with slaves.\n"));
+	}
+	else
+	{
+	    string slaves = lookup (SCR::Execute (.target.bash_output, "/usr/bin/ypcat ypservers"), "stdout", nil);
+
+	    if (slaves != nil)
+	    {
+		string hostname = lookup (SCR::Execute (.target.bash_output, "/usr/lib/yp/yphelper --hostname"), "stdout", "");
+		hostname = substring (hostname, 0, size (hostname) - 1);
+		if (!contains (splitstring (slaves, "\n"), hostname))
 		{
-		    output = SCR::Execute (.target.bash_output, sformat ("/etc/init.d/%1 stop", d),
-					    $["TERM" : "raw"]);
-		    if (lookup (output, "exit", 1) != 0)
-		    {
-			// To translators: message in the popup dialog
-			error_msg = error_msg + sformat (_("Error while stopping %1 daemon\n"), d);
-			error_details = error_details + sformat ("<pre>%1</pre>", lookup (output, "stderr", ""));
-		    }
+		    // To translators: message in the popup dialog
+		    error_msg = error_msg + sformat (_("Hostname of this host is not listed\nin the master's list.\n"));
 		}
-	    });
+	    }
 	}
-
-	if (size (to_start) > 0)
-	{
-	    sleep(1000);	// workaround for bug #10428, ypbind restart
-	    maplist (`d, to_start, ``{
-		y2milestone ("Starting daemon %1", d);
-		// start only if not running. essential for portmap! (bug #9999)
-		if (SCR::Execute (.target.bash, sformat ("/etc/init.d/%1 status", d)) != 0) {
-		    output = SCR::Execute (.target.bash_output, sformat ("/etc/init.d/%1 start", d),
-					    $["TERM" : "raw"]);
-		    if (lookup (output, "exit", 1) != 0)
-		    {
-			// To translators: message in the popup dialog
-			error_msg = error_msg + sformat (_("Error while starting %1 daemon\n"), d);
-			// To translators: formated string %1 is a daemon name %2 is an error message
-			error_details = error_details + sformat (_("<p>Starting daemon %1 %2</p>"), d,
-								 lookup (output, "stderr", ""));
-		    }
-		}
-	    });
-	}
-
 
 	user_settings = add (user_settings, "error", error_msg);
 	user_settings = add (user_settings, "error_details", error_details);
+    }
+
+
+
+    /**
+     * Save securenets list
+     */
+
+    global define SaveSecurenets () ``{
+
+	string error_msg     = lookup (user_settings, "error", "");
+	list securenets = lookup (user_settings, ".var.yp.securenets", []);
+
+	SCR::Execute (.target.bash, sformat ("/bin/cp %1 %1.YaST2.save", "/var/yp/securenets"));
+	if (SCR::Write (.var.yp.securenets, securenets) == nil)
+	{
+	    // To translators: message in the popup dialog
+	    error_msg = error_msg + sformat (_("Error saving file %1\n"), "/var/yp/securenets");
+	}
+	user_settings = add (user_settings, "error", error_msg);
     }
 
 
@@ -184,44 +210,6 @@
 
 	user_settings = add (user_settings, "error", error_msg);
     }
-
-    /**
-     * Creates initial database
-     */
-    global define YPMake () ``{
-	string error_msg     = lookup (user_settings, "error", "");
-	string error_details = lookup (user_settings, "error_details", "");
-	map output =$[];
-	string dn = lookup (user_settings, ".rc.system.YP_DOMAINNAME", "");
-
-	if (! EnsureDirectory (sformat ("/var/yp/%1", dn)))
-	{
-	    return;
-	}
-
-	output = SCR::Execute (.target.bash_output, sformat ("/usr/bin/make -C /var/yp/%1 -f ../Makefile NOPUSH=true ypservers", dn));
-
-	if (size (lookup (output, "stderr", "")) > 0)
-	{
-	    // FIXME: Error while creating ypservers
-	    // To translators: message in the popup dialog
-	    error_msg = error_msg + sformat (_("Error while creating database.\n"));
-	    error_details = error_details + sformat ("<pre>%1</pre>", lookup (output, "stderr", ""));
-	}
-
-	output = SCR::Execute (.target.bash_output, sformat ("/usr/bin/make -C /var/yp NOPUSH=true LOCALDOMAIN=%1", dn));
-
-	if (size (lookup (output, "stderr", "")) > 0)
-	{
-	    // To translators: message in the popup dialog
-	    error_msg = error_msg + sformat (_("Error while creating database.\n"));
-	    error_details = error_details + sformat ("<pre>%1</pre>", lookup (output, "stderr", ""));
-	}
-
-	user_settings = add (user_settings, "error", error_msg);
-	user_settings = add (user_settings, "error_details", error_details);
-    }
-
 
     /**
      * Saves config variables according to workflow
@@ -349,118 +337,130 @@
     }
 
     /**
-     * Ensures that the domain directory exists.
-     * @param	directory	the path
-     * @return	boolean		false if not and cannot be created
+     * Starts or stop daemons
+     * @param workflow what to start or save: `master, `slave, `none OR `client
      */
-    global define EnsureDirectory (string directory) ``{
+    global define YPDaemons (symbol workflow) ``{
 	string error_msg     = lookup (user_settings, "error", "");
 	string error_details = lookup (user_settings, "error_details", "");
-	map output = $[];
+	map output    = $[];
+	list to_stop  = [];
+	list to_start = [];
 
-	if (SCR::Read (.target.size, directory) == -1)
+	if (workflow == `none)
 	{
-	    output = SCR::Execute (.target.bash_output, sformat ("/bin/mkdir %1", directory));
-	    if (size (lookup (output, "stderr", "")) > 0)
+	    to_stop = ["ypxfrd", "yppasswdd", "ypserv"];
+	}
+	else if (workflow == `slave)
+	{
+	    to_stop  = ["ypxfrd", "yppasswdd", "ypserv"];
+	    to_start = ["portmap", "ypserv"];
+	}
+	else if (workflow == `master)
+	{
+	    to_stop  = ["ypxfrd", "yppasswdd", "ypserv"];
+	    to_start = ["portmap", "ypserv"];
+
+	    if (lookup (user_settings, ".rc.system.START_YPPASSWDD", "no") == "yes")
 	    {
-		// To translators: message in the popup dialog
-		error_msg = error_msg + sformat (_("Directory %1 can not be created.\n"), directory);
-		error_details = error_details + sformat ("<pre>%1</pre>", lookup (output, "stderr", ""));
-		return false;
+		to_start = add (to_start, "yppasswdd");
+	    }
+
+	    if (lookup (user_settings, ".rc.system.START_YPXFRD", "no") == "yes")
+	    {
+		to_start = add (to_start, "ypxfrd");
 	    }
 	}
-	return true;
-    }
-
-    /**
-     * Gets the YP maps from master for slave
-     */
-    global define YPGetMaps () ``{
-
-	string error_msg     = lookup (user_settings, "error", "");
-	string error_details = lookup (user_settings, "error_details", "");
-	map output = $[];
-	string dn = lookup (user_settings, ".rc.system.YP_DOMAINNAME", "");
-
-	// first make sure that the directory exists
-	if (! EnsureDirectory (sformat ("/var/yp/%1", dn)))
+	else if (workflow == `client)
 	{
-	    return;
-	}
-
-	// and get the maps
-	string master = lookup (user_settings, "ui_master_ip", "");
-	output = SCR::Execute (.target.bash_output, sformat ("/usr/lib/yp/yphelper --maps %1 --domainname %2", master, dn));
-	if (lookup (output, "exit", 1) != 0)
-	{
-	    // To translators: message in the popup dialog
-	    error_msg = error_msg + sformat (_("Can not get list of maps.\n"));
-	    error_details = error_details + sformat ("<pre>%1</pre>", lookup (output, "stderr", ""));
-	}
-	list running_maps = splitstring (lookup (output, "stdout", ""), "\n");
-	// the element after the last newline is empty, remove it
-	if (size (running_maps) > 0)
-	{
-	    running_maps = remove (running_maps, size (running_maps) - 1);
-	}
-
-	maplist (`map_name, running_maps, ``{
-	    output = SCR::Execute (.target.bash_output,
-				    sformat ("/usr/lib/yp/ypxfr -f -h %1 -d %2 %3",
-					     master,
-					     dn,
-					     map_name));
-	    if (lookup (output, "exit", 1) != 0)
+	    to_stop  = ["ypbind"];
+	    if (lookup (user_settings, "ui_also_client", false))
 	    {
-		// To translators: message in the popup dialog
-		error_msg = error_msg + sformat (_("Error while retrieving %1 map from master.\n"), map_name);
-		error_details = error_details + sformat ("<pre>%1</pre>", lookup (output, "stderr", ""));
+		to_start = ["ypbind"]; // portmap should already run
 	    }
-	});
-
-
-	if (!contains (running_maps, "ypservers"))
-	{
-	    // To translators: message in the popup dialog
-	    error_msg = error_msg + sformat (_("Could not get list with slaves.\n"));
 	}
-	else
-	{
-	    string slaves = lookup (SCR::Execute (.target.bash_output, "/usr/bin/ypcat ypservers"), "stdout", nil);
 
-	    if (slaves != nil)
-	    {
-		string hostname = lookup (SCR::Execute (.target.bash_output, "/usr/lib/yp/yphelper --hostname"), "stdout", "");
-		hostname = substring (hostname, 0, size (hostname) - 1);
-		if (!contains (splitstring (slaves, "\n"), hostname))
+	if (size (to_stop) > 0)
+	{
+	    maplist (`d, to_stop, ``{
+		y2milestone ("Stopping daemon %1", d);
+
+		// only stop it if it is running. LSB will make this check unnecessary.
+		if (SCR::Execute (.target.bash, sformat ("/etc/init.d/%1 status", d)) == 0)
 		{
-		    // To translators: message in the popup dialog
-		    error_msg = error_msg + sformat (_("Hostname of this host is not listed\nin the master's list.\n"));
+		    output = SCR::Execute (.target.bash_output, sformat ("/etc/init.d/%1 stop", d),
+					    $["TERM" : "raw"]);
+		    if (lookup (output, "exit", 1) != 0)
+		    {
+			// To translators: message in the popup dialog
+			error_msg = error_msg + sformat (_("Error while stopping %1 daemon\n"), d);
+			error_details = error_details + sformat ("<pre>%1</pre>", lookup (output, "stderr", ""));
+		    }
 		}
-	    }
+	    });
 	}
+
+	if (size (to_start) > 0)
+	{
+	    sleep(1000);	// workaround for bug #10428, ypbind restart
+	    maplist (`d, to_start, ``{
+		y2milestone ("Starting daemon %1", d);
+		// start only if not running. essential for portmap! (bug #9999)
+		if (SCR::Execute (.target.bash, sformat ("/etc/init.d/%1 status", d)) != 0) {
+		    output = SCR::Execute (.target.bash_output, sformat ("/etc/init.d/%1 start", d),
+					    $["TERM" : "raw"]);
+		    if (lookup (output, "exit", 1) != 0)
+		    {
+			// To translators: message in the popup dialog
+			error_msg = error_msg + sformat (_("Error while starting %1 daemon\n"), d);
+			// To translators: formated string %1 is a daemon name %2 is an error message
+			error_details = error_details + sformat (_("<p>Starting daemon %1 %2</p>"), d,
+								 lookup (output, "stderr", ""));
+		    }
+		}
+	    });
+	}
+
 
 	user_settings = add (user_settings, "error", error_msg);
 	user_settings = add (user_settings, "error_details", error_details);
     }
 
-
     /**
-     * Save securenets list
+     * Creates initial database
      */
-
-    global define SaveSecurenets () ``{
-
+    global define YPMake () ``{
 	string error_msg     = lookup (user_settings, "error", "");
-	list securenets = lookup (user_settings, ".var.yp.securenets", []);
+	string error_details = lookup (user_settings, "error_details", "");
+	map output =$[];
+	string dn = lookup (user_settings, ".rc.system.YP_DOMAINNAME", "");
 
-	SCR::Execute (.target.bash, sformat ("/bin/cp %1 %1.YaST2.save", "/var/yp/securenets"));
-	if (SCR::Write (.var.yp.securenets, securenets) == nil)
+	if (! EnsureDirectory (sformat ("/var/yp/%1", dn)))
+	{
+	    return;
+	}
+
+	output = SCR::Execute (.target.bash_output, sformat ("/usr/bin/make -C /var/yp/%1 -f ../Makefile NOPUSH=true ypservers", dn));
+
+	if (size (lookup (output, "stderr", "")) > 0)
+	{
+	    // FIXME: Error while creating ypservers
+	    // To translators: message in the popup dialog
+	    error_msg = error_msg + sformat (_("Error while creating database.\n"));
+	    error_details = error_details + sformat ("<pre>%1</pre>", lookup (output, "stderr", ""));
+	}
+
+	output = SCR::Execute (.target.bash_output, sformat ("/usr/bin/make -C /var/yp NOPUSH=true LOCALDOMAIN=%1", dn));
+
+	if (size (lookup (output, "stderr", "")) > 0)
 	{
 	    // To translators: message in the popup dialog
-	    error_msg = error_msg + sformat (_("Error saving file %1\n"), "/var/yp/securenets");
+	    error_msg = error_msg + sformat (_("Error while creating database.\n"));
+	    error_details = error_details + sformat ("<pre>%1</pre>", lookup (output, "stderr", ""));
 	}
+
 	user_settings = add (user_settings, "error", error_msg);
+	user_settings = add (user_settings, "error_details", error_details);
     }
 
 
@@ -496,16 +496,16 @@
 	{
 	    result = result + [
 				// To translators: progress label
-		$["save_label"     : _("Stop running daemons."),
-				// To translators: progress label
-		  "progress_label" : _("Stopping running daemons."),
-		  "function"       : ``(YPDaemons (`none))
-		    ],
-				// To translators: progress label
 		$["save_label"     : _("Set config variables."),
 				// To translators: progress label
 		  "progress_label" : _("Setting config variables."),
 		  "function"       : ``(SaveVariables (`none))
+		    ],
+				// To translators: progress label
+		$["save_label"     : _("Stop running daemons."),
+				// To translators: progress label
+		  "progress_label" : _("Stopping running daemons."),
+		  "function"       : ``(YPDaemons (`none))
 		    ]
 		];
 	}
@@ -521,16 +521,16 @@
 		  "function"       : ``(YPGetMaps ())
 		    ],
 				// To translators: progress label
-		$["save_label"     : _("Set config variables."),
-				// To translators: progress label
-		  "progress_label" : _("Setting config variables."),
-		  "function"       : ``(SaveVariables (`slave))
-		    ],
-				// To translators: progress label
 		$["save_label"     : _("Save hosts allowed to query server."),
 				// To translators: progress label
 		  "progress_label" : _("Saving hosts allowed to query server."),
 		  "function"       : ``(SaveSecurenets ())
+		    ],
+				// To translators: progress label
+		$["save_label"     : _("Set config variables."),
+				// To translators: progress label
+		  "progress_label" : _("Setting config variables."),
+		  "function"       : ``(SaveVariables (`slave))
 		    ],
 				// To translators: progress label
 		$["save_label"     : _("Start daemon."),
@@ -545,12 +545,6 @@
 	else if (workflow == `master)
 	{
 	    result = result + [
-				// To translators: progress label
-		$["save_label"     : _("Set config variables."),
-				// To translators: progress label
-		  "progress_label" : _("Setting config variables."),
-		  "function"       : ``(SaveVariables (`master))
-		    ],
 				// To translators: progress label
 		$["save_label"     : _("Save hosts allowed to query server."),
 				// To translators: progress label
@@ -572,6 +566,12 @@
 		    ];
 	    }
 	    result = result + [
+				// To translators: progress label
+		$["save_label"     : _("Set config variables."),
+				// To translators: progress label
+		  "progress_label" : _("Setting config variables."),
+		  "function"       : ``(SaveVariables (`master))
+		    ],
 				// To translators: progress label
 		$["save_label"     : _("Start daemons."),
 				// To translators: progress label
