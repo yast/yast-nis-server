@@ -27,14 +27,33 @@
     include "ui/common_popups.ycp";
 
     include "nis_server/routines.ycp";
-    
+
+    /**
+     * Master dialog
+     */
     global define MasterDialog () ``{
 
-        string helptext = "TODO";
+        // help text 1/3
+        string helptext = UI (_("<p>Please enter a NIS <b>domain</b>. If this host is also a NIS client, check
+the appropriate button.</p>"));
+
+        // help text 2/3
+        helptext = helptext + UI (_("<p>If you want to allow some slave coexist with this master, check the
+button <i>Active Slave NIS server exist</i>. If you check the button
+<i>Fast Map distribution</i> it will speed up the transfer of maps to the
+slaves.</p>"));
+
+        // help text 3/3
+        helptext = helptext + UI (_("<p><i>Active right to change passwords</i> lets the users change their
+passwords in the presence of NIS. More detailed buttons to allow
+changes of SHELL or GECOS (full name and related informations) could
+be used to set up these more specific options.</p>"));
 
         term pass_yes_buttons = `VBox ();
+                                // To translators: checkbox label
         pass_yes_buttons = add (pass_yes_buttons, `Left (`CheckBox (`id (`allow_shell), _("Allow changing &GECOS field"),
                                 lookup (user_settings, ".rc.ypserver.YPPWD_CHFN", "no") == "yes")));
+                                // To translators: checkbox label
         pass_yes_buttons = add (pass_yes_buttons, `Left (`CheckBox (`id (`allow_gecos), _("Allow changing of &SHELL"),
                                 lookup (user_settings, ".rc.ypserver.YPPWD_CHSH", "no") == "yes")));
         pass_yes_buttons = `HBox (`HSpacing (3), pass_yes_buttons);
@@ -42,6 +61,7 @@
         term pass_buttons = `VBox ();
         pass_buttons = add (pass_buttons, `VSpacing (0.3));
         pass_buttons = add (pass_buttons, `Left (`CheckBox (`id (`change_passwords), `opt (`notify),
+                                                            // To translators: checkbox label
                             _("Active right to change &passwords"),
                             lookup (user_settings, ".rc.system.START_YPPASSWDD", "no") == "yes")));
         pass_buttons = add (pass_buttons, `VSpacing (0.3));
@@ -54,6 +74,7 @@
         domain_frame = add (domain_frame, `TextEntry (`id (`domain), "", 
                                                       lookup (user_settings, ".rc.system.YP_DOMAINNAME", "")));
         domain_frame = add (domain_frame, `VSpacing (0.3));
+                                // To translators: checkbox label
         domain_frame = add (domain_frame, `Left (`CheckBox (`id (`also_client), _("This host is also a NIS &client"),
                                                             lookup (user_settings, "ui_also_client", false))));
         domain_frame = add (domain_frame, `VSpacing (0.3));   
@@ -61,22 +82,28 @@
         
         term contents = `VBox ();
         contents = add (contents, `VSpacing (0.5));
+                                // To translators: frame label
         contents = add (contents, `Frame (_("NIS &Domain name"), domain_frame));
         contents = add (contents, `VSpacing (0.5));
+                                // To translators: checkbox label
         contents = add (contents, `HBox (`HSpacing (), `Left (`CheckBox (`id (`have_slave), _("Active Slave NIS server &exists"),
                         toboolean (lookup (user_settings, ".var.yp.makefile.NOPUSH", false))))));
         contents = add (contents, `VSpacing (0.5));
+                                // To translators: checkbox label
         contents = add (contents, `HBox (`HSpacing (),`Left (`CheckBox (`id (`fast_map), _("&Fast Map distribution (rpc.ypxfrd)"),
                         lookup (user_settings, ".rc.system.START_YPXFRD", "no") == "yes"))));
         contents = add (contents, `VSpacing (0.5));
+                                // To translators: frame label
         contents = add (contents, `Frame (_("Changing of passwords"), pass_buttons));
         
         contents = `VBox (contents,
                           `VSpacing (0.5),
+                          // To translators: pushbutton label
                           `PushButton (`id (`details), _("&Other global settings ...")));
         
         contents = `HBox (`HSpacing (4), contents, `HSpacing (6));
         
+                                // To translators: dialog label
         UI(`SetWizardContents (_("Network Information Service - Master Server Setup"), contents, helptext, true, true));
         UI (`ChangeWidget (`id (`allow_shell), `Enabled, 
                            lookup (user_settings, ".rc.system.START_YPPASSWDD", "no") == "yes"));
@@ -100,6 +127,7 @@
             else if (ui == `next)
             {
                 string domainname = UI (`QueryWidget (`id (`domain), `Value));
+                                // To translators: error message
                 error_msg = error_msg + ((size (domainname) == 0 || checkhostname (domainname)) ? "" : UI(_("Wrong domain!\n")));
 
                 if (size (error_msg) > 0)

@@ -57,6 +57,9 @@
     };
     
 
+    /**
+     * Popup for adjusting slave
+     */
     global define YPSlavePopup (string slave) ``{
 
         term hbox = `HBox ();
@@ -122,9 +125,13 @@
         
     }
 
+    /**
+     * Slaves dialog
+     */
     global define MastersSlavesDialog () ``{
 
-        string helptext = "TODO";
+        // help text 1/1
+        string helptext = UI (_("<p>Here you can set up names of hosts that will be configured as NIS server slaves. Use <i>Add</i> button to add a new one, <i>Edit</i> button to change existing entry and <i>Delete</i> to remove it.</p>"));
 
         list slaves = lookup (user_settings, ".var.yp.ypservers", []);
         list hosts = nil;
@@ -137,7 +144,7 @@
         
         term contents = `VBox ();
         contents = add (contents, `ReplacePoint (`id (`replace), 
-m                                                 `SelectionBox (`id (`slaves), `opt (`notify), _("&Slaves"), sort(slaves))));
+                                                 `SelectionBox (`id (`slaves), `opt (`notify), _("&Slaves"), sort(slaves))));
         contents = add (contents, `Left (buttons));
         
         

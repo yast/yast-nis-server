@@ -28,22 +28,32 @@
 
     include "nis_server/routines.ycp";
 
+    /**
+     * Slave dialog
+     */
     global define SlaveDialog () ``{
 
-        string helptext = "TODO";
+        // help text 1/2
+        string helptext = UI (_("<p>Please enter NIS <b>domain</b> and IP <b>address</b> of the master NIS server.</p>"));
+        // help text 2/2
+        helptext = helptext + UI (_("<p>If this host should be also a NIS client, check the appropriate button.</p>"));
 
         term contents = `VBox ();
+                                // To translators: textentry label
         contents = add (contents, `TextEntry (`id (`domain), _("NIS &Domainname:"),
                                               lookup (user_settings, ".rc.system.YP_DOMAINNAME", "")));
         contents = add (contents, `VSpacing (0.5));
+                                // To translators: text entry label
         contents = add (contents, `TextEntry (`id (`master_ip), _("NIS &Master Server (IP Address):"),
                                               lookup (user_settings, "ui_master_ip", "")));
         contents = add (contents, `VSpacing ());
+                                // To translators: text entry label
         contents = add (contents, `CheckBox (`id (`also_client), _("This host is also a NIS &client"),
                                              lookup (user_settings, "ui_also_client", false)));
         
         contents = `HVSquash (contents);
         
+                                // To translators: dialog label
         UI(`SetWizardContents (_("Network Information Service - Slave Server Setup"), contents, helptext, true, true));
     
         symbol ui = nil;
@@ -58,7 +68,9 @@
             {
                 string master_ip  = UI (`QueryWidget (`id (`master_ip), `Value));
                 string domainname = UI (`QueryWidget (`id (`domain), `Value));
+                                // To translators: error message
                 error_msg = error_msg + ((size (master_ip) != 0 && checkIP (master_ip)) ? "" : UI(_("Wrong master IP address!\n")));
+                                // To translators: error message
                 error_msg = error_msg + ((size (domainname) != 0 && checkhostname (domainname)) ? "" : UI(_("Wrong domain!\n")));
 
                 if (size (error_msg) > 0)

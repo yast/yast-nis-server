@@ -1,4 +1,4 @@
-/*
+/**
  *
  * File:             
  *   routines.ycp
@@ -35,7 +35,7 @@
         else return false;
     }
 
-    /*
+    /**
      * Check hostname
      * @param name string to check
      * @return boolean correctness
@@ -49,7 +49,7 @@
         return result;
     }
 
-    /*
+    /**
      * Determinates if the current host is YP master or not
      * @return boolean
      */
@@ -65,7 +65,7 @@
         return ypwhich_hostname == yphelper_hostname;
     }
 
-    /*
+    /**
      * Checks if the YP server software is installed
      * @return boolean
      */       
@@ -73,7 +73,7 @@
         return (SCR (`Execute(.target.bash, "/bin/rpm -q ypserv")) == 0);
     }
 
-    /*
+    /**
      * Checks if the YP server was already configured
      * @return boolean
      */
@@ -81,7 +81,7 @@
         return (lookup (user_settings, ".rc.system.START_YPSERV", "no") == "yes");
     }
 
-    /*
+    /**
      * Decides whether slave exists
      * @return boolean
      */

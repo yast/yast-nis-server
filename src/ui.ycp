@@ -36,30 +36,44 @@
 
     include "ui/progress.ycp";
 
+    /**
+     * Popup to confirm after finish is pressed
+     */
     global define FinishPopup () ``{
-
+                               // To translators: ContinueCancel Popup
         if (UI (`ContinueCancelHeadlinePopup (_("Finish"), _("Really save configuration ?"))))
             return `yes;
         return `back;
     }
 
+    /**
+     * Popup to confirm vhen exitting without saving
+     */
     global define ExitPopup () ``{
 
+                                // To translators: ContinueCancel Popup
         if (UI (`ContinueCancelHeadlinePopup (_("Exit"), _("Really exit configuration without saving ?"))))
             return `exit;
         return `back;
     }
 
+    /**
+     * Popup with details error
+     */
     global define DetailsPopup () ``{
 
+                                // To translators: popup label
         UI (`LongTextPopup (_("Error details"), `RichText (lookup (user_settings, "error_details", "")), 50, 20 ));
         return `ok;
     }
 
-    
+    /**
+     * Dialog displayed during reading configuration
+     */
     global define ReadConfigDialog () ``{
 
-        locale help = UI (_("TODO"));
+        // help text 1/1
+        locale help = UI (_("<p>Please wait while reading the configuration.</p>"));
         
         list files = [
             "/var/yp/Makefile", 
@@ -75,13 +89,16 @@
             ``(YPSecurenets ()),
             ``(YPServers ())
             ];
+                                // To translators: dialog title
         ProgressSetup (_("Initializing NIS server setup"), _(""), size (files),
+                       // To translators: progress label %1 is filename
                        maplist (`file, files, ``(sformat (UI (_("Load '%1' file")), file))),
                        help);
 
         integer i = 0;
         while (i < size (files))
         {
+            // To translators: progress label %1 is filename
             locale msg = sformat (UI (_("Loading '%1'...")), select (files, i));
             ProgressMilestone (i, msg, i);
             user_settings = user_settings + ReadPathFile (eval (select (vars, i)), select (files, i));
@@ -94,9 +111,13 @@
         return `next;
     }
 
+    /**
+     * Dialog displayed during saving
+     */
     global define SavingDialog () ``{
 
-        locale help = UI (_("TODO"));
+        // help text 1/1
+        locale help = UI (_("<p>Please wait until the configuration is saved.</p>"));
         UI (`RestoreWizardNextButton());
         UI (`ChangeWidget (`id (`next), `Enabled, false));
         UI (`ChangeWidget (`id (`abort), `Enabled, false));
@@ -105,6 +126,7 @@
         list save_list = GetSaveList (workflow);
         integer step = 0;
 
+        // To translators: dialog title
         ProgressSetup (_("Saving NIS server setup"), _(""), size (save_list), 
                        maplist (`e, save_list, ``(lookup (e, "save_label", ""))), help);
 
@@ -118,25 +140,31 @@
             step = step + 1;
         }
 
+        // To translators: progress message
         ProgressMilestone (step + 1, _("Done."), step);
 
         return `done;
     }
 
-
+    /**
+     * Popup dispaying configuration result
+     */
     global define ResultPopup () ``{
 
         string message = "";
         if (size (lookup (user_settings, "error", "")) > 0)
         {
+                                // To translators: popup label
             message = sformat (UI (_("Error during configuration:\n%1")), 
                                lookup (user_settings, "error", ""));
 
+                                // To translators: Error popup
             return UI (`AnyQuestionPopup (_("Error"), message, _("&Ok"), _("&Details"), `focus_yes)) ? `ok : `details;
             //UI (`ErrorPopup (message));
         }
         else 
         {
+                                // To translators: final popup
             message = UI (_("The configuration was succesful!"));
             UI (`NotifyPopup (message));
         }
@@ -144,7 +172,7 @@
         return `ok;
     }
 
-    /*
+    /**
      * Checks if the YP server package is installed
      * and calls installation if not
      */

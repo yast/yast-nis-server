@@ -47,7 +47,7 @@
         return result;
     }
 
-    /*
+    /**
      * Merge edited entries with the original entries with comments
      * @param orig list of original entries (with comments)
      * @param edit list with edited entries (as placed in the table)
@@ -68,7 +68,7 @@
         return result;
     }
 
-    /*
+    /**
      * Popup dialog for editing netmask/network
      * @param id id of item
      * @param netmask netmask
@@ -122,9 +122,22 @@
         return ui == `ok ? `item (`id (id), netmask, network) : nil;
     }
 
+    /**
+     * Securenets dialog
+     */
     global define QueryHosts () ``{
 
-        string helptext = "TODO";
+        // help text 1/4
+        string helptext = UI (_("<p>Please enter which hosts are allowed to query the NIS server.</p>"));
+        // help text 2/4
+        helptext = helptext + UI (_("<p>A host address will be allowed if <b>network</b> is equal
+to the  bitwise <i>AND</i> of the host's address and the <b>netmask</b>.</p>"));
+        // help text 3/4
+        helptext = helptext + UI (_("<p>The entry with <b>netmask</b> <tt>255.0.0.0</tt> and <b>network</b>
+<tt>127.0.0.0</tt> must exist to allow connections from localhost.</p>"));
+        // help text 4/4
+        helptext = helptext + UI (_("<p>If <b>netmask</b> <tt>0.0.0.0</tt> and <b>network</b> <tt>0.0.0.0</tt> is entered
+it gives access to all hosts.</p>"));
     
         list allow_query = ItemizeSecurenets (lookup (user_settings, ".var.yp.securenets", []));
         integer n_items = size (allow_query);
