@@ -6,6 +6,7 @@
  *
  * Authors:
  *   Dan Vesely <dan@suse.cz>
+ *   Martin Vidner <mvidner@suse.cz>
  *
  * $Id$
  */
@@ -18,6 +19,7 @@
     map user_settings = $[
 	"ui_also_client": true,
 	".rc.system.START_YPSERV": "yes",
+	".rc.system.YP_DOMAINNAME": "thedomain",
 	".rc.ypserver.YPPWD_SRCDIR": "/etc",
 	".var.yp.makefile.MERGE_PASSWD": "true"
 	];

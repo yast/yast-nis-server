@@ -295,6 +295,13 @@
 	    }
 	    if (client)
 	    {
+		// FIXME: `master also saves it above, fix the whole routine
+		if (!SCR (`Write(.rc.system.YP_DOMAINNAME,
+				 lookup (user_settings, ".rc.system.YP_DOMAINNAME", ""))))
+		{
+		    // To translators: message in the popup dialog
+		    error_msg = error_msg + sformat (UI (_("Error setting up variable %1%\n")), "YP_DOMAINNAME");
+		}
 		if (!SCR (`Write(.rc.system.CREATE_YP_CONF, "yes")))
 		{
 		    // To translators: message in the popup dialog
