@@ -75,7 +75,7 @@
         // help text 1/1
         locale help = UI (_("<p>Please wait while reading the configuration.</p>"));
         locale title = UI (_("Initializing NIS server setup"));
-        locale progress_title = UI(_(""));
+        locale progress_title = "";
 
         list files = [
             "/var/yp/Makefile", 
@@ -130,7 +130,7 @@
         // help text 1/1
         locale help = UI (_("<p>Please wait until the configuration is saved.</p>"));
         locale title = UI (_("Saving NIS server setup"));
-        locale progress_title = UI (_(""));
+        locale progress_title = "";
 
         UI (`RestoreWizardNextButton());
         UI (`ChangeWidget (`id (`next), `Enabled, false));
