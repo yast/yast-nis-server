@@ -24,7 +24,7 @@
 
     textdomain "nis_server";
     import "NisServer";
-    import "Runlevel";
+    import "Service";
 
     /**
      * Converts from any type to boolean:
@@ -47,7 +47,7 @@
      * (not to confuse the user if he backs up to the first dialog)
      */
     define boolean isYPServerConfigured () ``{
-	return Runlevel::ServiceEnabled ("ypserv");
+	return Service::Enabled ("ypserv");
     }
 
     /**
