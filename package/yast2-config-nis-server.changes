@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Fri Jan 11 16:08:16 CET 2002 - mvidner@suse.cz
+
+- Not using /etc/rc.config* .
+- 2.5.5
+- Removed old menu entry.
+
+-------------------------------------------------------------------
 Fri Jan 11 09:43:46 CET 2002 - mvidner@suse.cz
 
 - Changed an identifier that has become a builtin name. (2.5.4)
