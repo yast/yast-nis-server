@@ -27,7 +27,7 @@ global define symbol NisServerSequence() ``{
     map aliases = $[
 	"read"		: [ ``( ReadDialog() ), true ],
 	"main"		: ``( MainSequence() ),
-	"finish_popup"  : ``( FinishPopup () ),
+//	"finish_popup"  : ``( FinishPopup () ),
 	"write"		: [ ``( WriteDialog() ), true ],
 	"result"        : ``( ResultPopup () ),
 	"error_details" : ``( DetailsPopup () ),
@@ -42,11 +42,14 @@ global define symbol NisServerSequence() ``{
 	"main" : $[
 	    `abort	: `abort,
 	    `nothing	: `nothing,
-	    `next	: "finish_popup",
+//	    `next	: "finish_popup",
+	    `next	: "write",
 	    ],
+	/*
 	"finish_popup" : $[
 	    `yes       : "write",
 	    ],
+	*/
 	"write"       : $[
 	    `next    : "result"
 	    ],
