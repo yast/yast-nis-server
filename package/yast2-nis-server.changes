@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed Aug 14 09:46:44 CEST 2002 - mvidner@suse.cz
+
+- Make "yast2 nis-server" invoke "yast2 nis_server" (#17570).
+- Merged proofread texts for the second translation round.
+- 2.6.9
+
+-------------------------------------------------------------------
 Sun Aug 11 23:05:55 CEST 2002 - mvidner@suse.cz
 
 - Let the table keep the keyboard focus (#16116 workaround).
