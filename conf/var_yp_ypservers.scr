@@ -29,7 +29,8 @@
   false,                                // read-only
   ``(List (
          String ("^ \t\n"),
-         String ("\n\t ")
+//         String ("\n\t ")
+	 "\n"
          ))
       )
     )
