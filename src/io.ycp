@@ -125,9 +125,9 @@
 
 	map output = $[];
 	string dn = lookup (user_settings, ".etc.defaultdomain", "");
-
+	string dndir = sformat ("/var/yp/%1", dn);
 	// first make sure that the directory exists
-	if (! EnsureDirectory (sformat ("/var/yp/%1", dn)))
+	if (! EnsureDirectory (dndir))
 	{
 	    return;
 	}
@@ -170,13 +170,19 @@
 	}
 	else
 	{
-	    string slaves = lookup (SCR::Execute (.target.bash_output, "/usr/bin/ypcat ypservers"), "stdout", nil);
+	    output = SCR::Execute (.target.bash_output, sformat (
+				       "/usr/lib/yp/makedbm -u %1/ypservers",
+				       dndir));
+	    string slaves = output["stdout"]:nil;
 
 	    if (slaves != nil)
 	    {
-		string hostname = lookup (SCR::Execute (.target.bash_output, "/usr/lib/yp/yphelper --hostname"), "stdout", "");
+		output = SCR::Execute (.target.bash_output,
+				       "/usr/lib/yp/yphelper --hostname");
+		string hostname = output["stdout"]:"";
 		hostname = substring (hostname, 0, size (hostname) - 1);
-		if (!contains (splitstring (slaves, "\n"), hostname))
+		string h2 = hostname + " " + hostname; // makedbm format
+		if (!contains (splitstring (slaves, "\n"), h2))
 		{
 		    // To translators: message in the popup dialog
 		    addError (_("Hostname of this host is not listed\nin the master's list.\n"));
