@@ -139,7 +139,7 @@ be used to set up these more specific options.</p>
 		{
 		    UI::SetFocus (`id (`domain));
 		    Popup::Error (Nis::valid_nisdomainname ());
-		    ui = nil;
+		    ui = `again;
 		}
 	    }
 

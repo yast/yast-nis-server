@@ -202,19 +202,19 @@ to the  bitwise <i>AND</i> of the host's address and the <b>netmask</b>.</p>");
 	    if (ui == `delete)
 	    {
 		integer id = (integer) UI::QueryWidget (`id (`table), `CurrentItem);
-		allow_query = filter(term e, allow_query, ``(id != select (select (e, 0, []), 0, -1)));
+		allow_query = filter(term e, allow_query, ``(id != e[0, 0]:-1));
 		UI::ChangeWidget(`id(`table), `Items, allow_query);
 	    }
 
 	    else if (ui == `edit)
 	    {
 		integer id = (integer) UI::QueryWidget (`id (`table), `CurrentItem);
-		term item  = find (term e, allow_query, ``(id == select (select (e, 0, []), 0, -1)));
+		term item  = find (term e, allow_query, ``(id == e[0, 0]:-1));
 		item = NetsEditPopup (id, select (item, 1, ""), select (item, 2,""));
 		if (item != nil)
 		{
 		    allow_query = maplist (term e, allow_query, ``{
-			return select (select (e, 0, []), 0, -1) == id ? item : e;
+			return (e[0, 0]:-1 == id) ? item : e;
 		    });
 		    UI::ChangeWidget (`id (`table), `Items, allow_query);
 		}
