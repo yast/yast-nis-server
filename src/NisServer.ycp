@@ -175,7 +175,7 @@ global define boolean Read() ``{
 	"/var/yp/ypservers"
     ];
 
-    list vars = [
+    list<void ()> vars = [
 	YPMakefileVars,
 	YPServerVars,
 	YPSystemVars,
@@ -208,7 +208,9 @@ global define boolean Read() ``{
     while (i < size (files))
     {
 	Progress::NextStage ();
-	eval (vars[i]:nil);
+
+	void () varfunc = vars[i]:nil;
+	varfunc ();
 	i = i + 1;
     }
 
@@ -364,6 +366,32 @@ global define void addErrorDetail (string s) ``{
 }
 
 /**
+ * Kind-of-compatible replacement for term evaluation.
+ * Either f[0] is void(),
+ * or f[0] is void(any) and f[1] is any
+ * Not called, bug #37146
+ */
+define void CallFunction01 (list<any> f) {
+    typedef void () f0_t;
+    typedef void (any) f1_t;
+    any fp = f[0]:nil;
+    if (is (fp, void ()))
+    {
+	void () fp0 = (void ()) fp;
+	fp0 ();
+    }
+    else if (is (fp, void (any)))
+    {
+	void (any) fp1 = (void (any)) fp;
+	fp1 (f[1]:nil);
+    }
+    else
+    {
+	y2error ("Bad function type: %1", fp);
+    }
+}
+
+/**
  * Write all NIS server settings
  * @return true on success
  */
@@ -387,8 +415,18 @@ global define boolean Write() ``{
 
     foreach (map save_item, save_list, ``{
 	Progress::NextStage ();
-	y2milestone ("Calling: %1", save_item["function"]:"");
-	eval (save_item["function"]:"");
+	list<any> fl = save_item["function"]:[];
+	y2milestone ("Calling: %1", fl);
+	if (size (fl) == 1)
+	{
+	    void () fp = (void ()) fl[0]:nil;
+	    fp ();
+	}
+	else if (size (fl) == 1)
+	{
+	    void (any) fp = (void (any)) fl[0]:nil;
+	    fp (fl[1]:nil);
+	}
     });
 
     Progress::NextStage ();
@@ -399,7 +437,7 @@ global define boolean Write() ``{
  * Removes file or directory and log errors
  * @param file what to remove
  */
-global define void Remove (string file) ``{
+global define void Remove (any file) ``{
     if (SCR::Read (.target.size, file) != -1)
     {
 	map output = (map) SCR::Execute (.target.bash_output,
@@ -543,7 +581,7 @@ global define void SaveSlaves () ``{
  * Saves config variables according to workflow
  * @param which workflow one of `slave, `master
  */
-global define void SaveVariables (symbol which) ``{
+global define void SaveVariables (any which) ``{
     if (!SCR::Write (.etc.defaultdomain, domain))
     {
 	// To translators: message in the popup dialog
@@ -594,7 +632,7 @@ global define void SaveVariables (symbol which) ``{
  * Starts or stop daemons
  * @param workflow what to start or save: `master, `slave, `none
  */
-global define void YPDaemons (symbol workflow) ``{
+global define void YPDaemons (any workflow) ``{
     map output    = $[];
     list<string> to_stop  = [];
     list<string> to_start = [];
@@ -746,7 +784,7 @@ global define void Client () ``{
  * @return a list of maps: <pre>$[
  *   "save_label": ...,
  *   "progress_label": ...,
- *   "function": a term (will be eval'd)
+ *   "function": @see CallFunction01
  * ]</pre>
  */
 global define list<map> GetSaveList (symbol workflow) ``{
@@ -762,8 +800,7 @@ global define list<map> GetSaveList (symbol workflow) ``{
 		"save_label"     : sformat (_("Remove /var/yp/%1"), domain),
 		// To translators: progress label
 		"progress_label" : sformat (_("Removing /var/yp/%1"), domain),
-		"function"       : (``(Remove (
-					sformat ("/var/yp/%1", domain)))),
+		"function"       : [Remove, sformat ("/var/yp/%1", domain)],
 		]
 	    ];
     }
@@ -776,7 +813,7 @@ global define list<map> GetSaveList (symbol workflow) ``{
 	    $["save_label"     : _("Stop running daemons."),
 	      // To translators: progress label
 	      "progress_label" : _("Stopping running daemons."),
-	      "function"       : ``(YPDaemons (`none))
+	      "function"       : [YPDaemons, `none],
 		]
 	    ];
     }
@@ -789,25 +826,25 @@ global define list<map> GetSaveList (symbol workflow) ``{
 	    $["save_label"     : _("Get maps from master."),
 	      // To translators: progress label
 	      "progress_label" : _("Getting maps from master."),
-	      "function"       : ``(YPGetMaps ())
+	      "function"       : [YPGetMaps],
 		],
 	    // To translators: progress label
 	    $["save_label"     : _("Save hosts allowed to query server."),
 	      // To translators: progress label
 	      "progress_label" : _("Saving hosts allowed to query server."),
-	      "function"       : ``(SaveSecurenets ())
+	      "function"       : [SaveSecurenets],
 		],
 	    // To translators: progress label
 	    $["save_label"     : _("Set config variables."),
 	      // To translators: progress label
 	      "progress_label" : _("Setting config variables."),
-	      "function"       : ``(SaveVariables (`slave))
+	      "function"       : [SaveVariables, `slave],
 		],
 	    // To translators: progress label
 	    $["save_label"     : _("Start daemon."),
 	      // To translators: progress label
 	      "progress_label" : _("Starting daemon."),
-	      "function"       : ``(YPDaemons (`slave))
+	      "function"       : [YPDaemons, `slave],
 		]
 	    ];
     }
@@ -820,7 +857,7 @@ global define list<map> GetSaveList (symbol workflow) ``{
 	    $["save_label"     : _("Save hosts allowed to query server."),
 	      // To translators: progress label
 	      "progress_label" : _("Saving hosts allowed to query server."),
-	      "function"       : ``(SaveSecurenets ())
+	      "function"       : [SaveSecurenets],
 		]
 	    ];
 
@@ -831,7 +868,7 @@ global define list<map> GetSaveList (symbol workflow) ``{
 		$["save_label"     : _("Save slaves."),
 		  // To translators: progress label
 		  "progress_label" : _("Saving slaves."),
-		  "function"       : ``(SaveSlaves ())
+		  "function"       : [SaveSlaves],
 		    ]
 		];
 	}
@@ -840,19 +877,19 @@ global define list<map> GetSaveList (symbol workflow) ``{
 	    $["save_label"     : _("Set config variables."),
 	      // To translators: progress label
 	      "progress_label" : _("Setting config variables."),
-	      "function"       : ``(SaveVariables (`master))
+	      "function"       : [SaveVariables, `master],
 		],
 	    // To translators: progress label
 	    $["save_label"     : _("Start daemons."),
 	      // To translators: progress label
 	      "progress_label" : _("Starting daemons."),
-	      "function"       : ``(YPDaemons (`master))
+	      "function"       : [YPDaemons, `master],
 		],
 	    // To translators: progress label
 	    $["save_label"     : _("Create initial database."),
 	      // To translators: progress label
 	      "progress_label" : _("Creating database."),
-	      "function"       : ``(YPMake ())
+	      "function"       : [YPMake],
 		],
 	    ];
     }
@@ -867,7 +904,7 @@ global define list<map> GetSaveList (symbol workflow) ``{
 		$["save_label"     : _("Start NIS client."),
 		  // To translators: progress label
 		  "progress_label" : _("Starting NIS client."),
-		  "function"       : ``(Client ())
+		  "function"       : [Client],
 		    ]
 		];
 	}
@@ -878,7 +915,7 @@ global define list<map> GetSaveList (symbol workflow) ``{
 		$["save_label"     : _("Stop NIS client."),
 		  // To translators: progress label
 		  "progress_label" : _("Stopping NIS client."),
-		  "function"       : ``(Client ())
+		  "function"       : [Client],
 		    ]
 		];
 	}

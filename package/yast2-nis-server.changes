@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Fri Mar 26 18:14:40 CET 2004 - mvidner@suse.cz
+
+- fixed writing broken by improper use of eval (#37031)
+- yast2-installation not necessary anymore
+- 2.9.6
+
+-------------------------------------------------------------------
 Mon Mar  8 19:42:01 CET 2004 - lslezak@suse.cz
 
 - use Sequencer::

@@ -1,6 +1,6 @@
 @HEADER-COMMENT@
 
-# neededforbuild  yast2-devel-packages yast2-nis-client yast2-pam yast2-installation
+# neededforbuild  yast2-devel-packages yast2-nis-client yast2-pam
 
 @HEADER@
 Requires:	yast2 yast2-packager
