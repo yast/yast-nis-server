@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Wed Feb  4 17:16:57 CET 2004 - lslezak@suse.cz
+
+- yast2-nis-client and yast2-pam needed for build
+- NI fixes
+- testsuite update
+- version 2.9.1
+
+-------------------------------------------------------------------
 Sun Sep 21 15:20:06 CEST 2003 - adrian@suse.de
 
 - put package to stable with fixed kcontrol desktop entry

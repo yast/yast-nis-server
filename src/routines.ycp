@@ -33,7 +33,7 @@
      * @param arg argument to convert
      * @return converted value
      */
-    global define boolean toboolean (any arg) ``{
+    define boolean toboolean (any arg) ``{
 	if (arg == nil) return false;
 	else if (is (arg, boolean)) return arg;
 	else if (is (arg, string))  return arg == "true";
@@ -46,7 +46,7 @@
      * by reading the SCR, not the module data
      * (not to confuse the user if he backs up to the first dialog)
      */
-    global define boolean isYPServerConfigured () ``{
+    define boolean isYPServerConfigured () ``{
 	return Runlevel::ServiceEnabled ("ypserv");
     }
 
@@ -55,7 +55,7 @@
      * (according to makefile.NOPUSH)
      * @return `have_slave or `none_slave
      */
-    global define symbol SlaveExists () ``{
+    define symbol SlaveExists () ``{
 	return NisServer::nopush? `none_slave: `have_slave;
     }
 
@@ -63,18 +63,18 @@
     /**
      * @return Checks if this host is in the slaves list on master
      */
-    global define boolean hasMasterThisSlave () ``{
+    define boolean hasMasterThisSlave () ``{
 	// list of maps: $["host": "foo.com", "map":"passwd.byuid"]
-	list running_maps = SCR::Read (.run.ypwhich_m);
+	list running_maps = (list) SCR::Read (.run.ypwhich_m);
 	if (running_maps != nil)
 	{
 	    running_maps = maplist (map m, running_maps, ``(m["map"]:""));
 	    if (contains (running_maps, "ypservers"))
 	    {
-		string slaves = lookup (SCR::Execute (.target.bash_output, "/usr/bin/ypcat ypservers"), "stdout", nil);
+		string slaves = lookup ((map)SCR::Execute (.target.bash_output, "/usr/bin/ypcat ypservers"), "stdout", nil);
 		if (slaves != nil)
 		{
-		    string hostname = lookup (SCR::Execute (.target.bash_output, "/usr/lib/yp/yphelper --hostname"), "stdout", "");
+		    string hostname = lookup ((map)SCR::Execute (.target.bash_output, "/usr/lib/yp/yphelper --hostname"), "stdout", "");
 		    if (hostname == "")
 		    {
 			return false;
