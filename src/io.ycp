@@ -96,12 +96,12 @@
 	else if (workflow == `slave)
 	{
 	    to_stop  = ["ypxfrd", "yppasswdd", "ypserv"];
-	    to_start = ["ypserv"];
+	    to_start = ["portmap", "ypserv"];
 	}
 	else if (workflow == `master)
 	{
 	    to_stop  = ["ypxfrd", "yppasswdd", "ypserv"];
-	    to_start = ["ypserv"];
+	    to_start = ["portmap", "ypserv"];
 
 	    if (lookup (user_settings, ".rc.system.START_YPPASSWDD", "no") == "yes")
 	    {
@@ -115,8 +115,11 @@
 	}
 	else if (workflow == `client)
 	{
-	    to_stop  = ["portmap", "ypbind"];
-	    to_start = ["portmap", "ypbind"];
+	    to_stop  = ["ypbind"];
+	    if (lookup (user_settings, "ui_also_client", false))
+	    {
+		to_start = ["ypbind"]; // portmap should already run
+	    }
 	}
 
 	if (size (to_stop) > 0)
@@ -259,18 +262,20 @@
 
 	if (contains ([`slave, `master], which))
 	{
-	    if (lookup (user_settings, "ui_also_client", false))
+	    if (!SCR (`Write(.rc.system.START_PORTMAP, "yes")))
 	    {
-		if (!SCR (`Write(.rc.system.START_YPBIND, "yes")))
-		{
-		    // To translators: message in the popup dialog
-		    error_msg = error_msg + sformat (UI (_("Error setting up variable %1%\n")), "START_YPBIND");
-		}
-		if (!SCR (`Write(.rc.system.START_PORTMAP, "yes")))
-		{
-		    // To translators: message in the popup dialog
-		    error_msg = error_msg + sformat (UI (_("Error setting up variable %1%\n")), "START_PORTMAP");
-		}
+		// To translators: message in the popup dialog
+		error_msg = error_msg + sformat (UI (_("Error setting up variable %1%\n")), "START_PORTMAP");
+	    }
+
+	    boolean client = lookup (user_settings, "ui_also_client", false);
+	    if (!SCR (`Write(.rc.system.START_YPBIND, client ? "yes" : "no")))
+	    {
+		// To translators: message in the popup dialog
+		error_msg = error_msg + sformat (UI (_("Error setting up variable %1%\n")), "START_YPBIND");
+	    }
+	    if (client)
+	    {
 		if (!SCR (`Write(.rc.system.CREATE_YP_CONF, "yes")))
 		{
 		    // To translators: message in the popup dialog
@@ -530,16 +535,30 @@
 	}
 
 	// slave or master is also client ?
-	if (contains ([`slave, `master], workflow) && lookup (user_settings, "ui_also_client", false))
+	if (contains ([`slave, `master], workflow))
 	{
-	    result = result + [
+	    if (lookup (user_settings, "ui_also_client", false))
+	    {
+		result = result + [
 				// To translators: progress label
-		$["save_label"     : _("Start NIS client."),
+		    $["save_label"     : _("Start NIS client."),
 				// To translators: progress label
-		  "progress_label" : _("Starting NIS client."),
-		  "function"       : ``(YPDaemons (`client))
-		    ]
-		];
+		      "progress_label" : _("Starting NIS client."),
+		      "function"       : ``(YPDaemons (`client))
+			]
+		    ];
+	    }
+	    else
+	    {
+		result = result + [
+				// To translators: progress label
+		    $["save_label"     : _("Stop NIS client."),
+				// To translators: progress label
+		      "progress_label" : _("Stopping NIS client."),
+		      "function"       : ``(YPDaemons (`client))
+			]
+		    ];
+	    }
 
 	}
 
