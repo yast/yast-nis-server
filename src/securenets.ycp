@@ -180,7 +180,7 @@ to the  bitwise <i>AND</i> of the host's address and the <b>netmask</b>.</p>");
 
 				// To translators: dialog label
 	Wizard::SetContents (_("NIS Server Query Hosts Setup"), contents, helptext, true, true);
-	UI::ChangeWidget (`id (`next), `Label, Label::FinishButton());
+	Wizard::SetNextButton(`next, Label::FinishButton() );
 
 	symbol ui = nil;
 
@@ -235,7 +235,7 @@ to the  bitwise <i>AND</i> of the host's address and the <b>netmask</b>.</p>");
 	}
 	until (contains ([`back, `next, `abort], ui));
 
-	if (ui == `back) UI::ChangeWidget (`id (`next), `Label, Label::NextButton());
+	if (ui == `back) Wizard::RestoreNextButton();
 
 	// and finally merge
 	NisServer::securenets = MergeNetsEntries (NisServer::securenets, allow_query);
