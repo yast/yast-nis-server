@@ -40,10 +40,11 @@
 <i>'/etc'</i>).</p>");
 
 	// help text 2/3
-	helptext = helptext + _("<p>Select if <i>passwd</i> file should be merged with <i>shadow</i>
+	helptext = helptext + _("<p>Select if your <i>passwd</i> file should be merged with <i>shadow</i>
 file and if the <i>group</i> file should be merged with <i>gshadow</i>
-file.
-(Only possible if the <i>shadow</i> or <i>gshadow</i> files exist)</p>");
+file
+(only possible if the <i>shadow</i> or <i>gshadow</i> files exist).</p>
+");
 
 	// help text 3/3
 	helptext = helptext + _("<p>You can also adjust the minimum user and group id.</p>");
@@ -147,7 +148,8 @@ file.
 		    UI::SetFocus (`id (`srcdir));
 		    // Translators: yes/no popup
 		    ui = UI::YesNoPopup (sformat (_("The directory %1 does not exist.
-Do you want to create it?"), srcdir)) ? `next : nil;
+Create it?
+"), srcdir)) ? `next : nil;
 		}
 	    }
 	}
