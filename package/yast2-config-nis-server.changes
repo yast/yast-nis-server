@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Fri Aug 17 14:13:21 CEST 2001 - mvidner@suse.cz
+
+- Fixed detection of whether to start a client too.
+- Fixed detection of being a master when a client is not started.
+- 2.4.8
+
+-------------------------------------------------------------------
 Tue Aug 14 09:59:23 CEST 2001 - mvidner@suse.cz
 
 - Fixed *.scr file list. (Don't steal from yast2-core-scr) (2.4.7)
