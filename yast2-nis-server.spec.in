@@ -3,10 +3,13 @@
 # neededforbuild  yast2-devel-packages yast2-runlevel
 
 @HEADER@
-Requires:	yast2 yast2-runlevel yast2-packager yast2-network
+Requires:	yast2 yast2-runlevel yast2-packager
+Requires:	yast2-network yast2-nis-client
 
-Provides:	yast2-nis-server
-Obsoletes:	yast2-nis-server
+Provides:	yast2-config-nis-server
+Obsoletes:	yast2-config-nis-server
+Provides:	yast2-trans-nis-server
+Obsoletes:	yast2-trans-nis-server
 
 BuildArchitectures:	noarch
 
