@@ -39,9 +39,9 @@
 
     /**
      * Popup to confirm after finish is pressed
-     * @return symbol `yes or `back
+     * @return `yes or `back
      */
-    global define FinishPopup () ``{
+    global define symbol FinishPopup () ``{
 			       // To translators: ContinueCancel Popup
 	if (UI::ContinueCancelHeadlinePopup (_("Finish"), _("Really save configuration ?")))
 	    return `yes;
@@ -50,8 +50,9 @@
 
     /**
      * Popup to confirm vhen exitting without saving
+     * @return `exit or `back
      */
-    global define ExitPopup () ``{
+    global define symbol ExitPopup () ``{
 
 				// To translators: YesNo Popup
 	if (UI::YesNoHeadlinePopup (_("Exit"), _("Really exit configuration without saving ?")))
@@ -61,8 +62,9 @@
 
     /**
      * Popup with details error
+     * @return `ok
      */
-    global define DetailsPopup () ``{
+    global define symbol DetailsPopup () ``{
 
 				// To translators: popup label
 	UI::LongTextPopup (_("Error details"), `RichText (lookup (user_settings, "error_details", "")), 50, 20 );
@@ -72,9 +74,9 @@
     /**
      * Dialog displayed during reading configuration.
      * Sets user_settings.
-     * @return symbol `next
+     * @return `next
      */
-    global define ReadConfigDialog () ``{
+    global define symbol ReadConfigDialog () ``{
 
 	// help text 1/1
 	string help = _("<p>Please wait while reading the configuration.</p>");
@@ -159,8 +161,9 @@
 
     /**
      * Dialog displayed during saving
+     * @return `done
      */
-    global define SavingDialog () ``{
+    global define symbol SavingDialog () ``{
 
 	// help text 1/1
 	string help = _("<p>Please wait until the configuration is saved.</p>");
@@ -195,9 +198,10 @@
     }
 
     /**
-     * Popup dispaying configuration result
+     * Popup displaying configuration result
+     * @return `ok or `details
      */
-    global define ResultPopup () ``{
+    global define symbol ResultPopup () ``{
 
 	string message = "";
 	if (size (lookup (user_settings, "error", "")) > 0)
@@ -236,9 +240,9 @@ You must reboot for the changes to take effect."));
     /**
      * Checks if the YP server package is installed
      * and calls installation if not
-     * @return symbol `master or `slave
+     * @return `master or `slave
      */
-    global define InstallServer () ``{
+    global define symbol InstallServer () ``{
 
 	if (isYPServerInstalled ())
 	{

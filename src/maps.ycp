@@ -30,9 +30,9 @@
 
     /**
      * Maps dialog
-     * @returns symbol `back, `abort or `next
+     * @return `back, `abort or `next
      */
-    global define MapsDialog () ``{
+    global define symbol MapsDialog () ``{
 
 
 	// help text 1/1

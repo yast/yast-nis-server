@@ -30,9 +30,9 @@
      * true, "true" and nonzero integers are true,
      * everything else including nil is false.
      * @param arg argument to convert
-     * @return boolean converted value
+     * @return converted value
      */
-    global define toboolean (any arg) ``{
+    global define boolean toboolean (any arg) ``{
 	if (arg == nil) return false;
 	else if (is (arg, boolean)) return arg;
 	else if (is (arg, string))  return arg == "true";
@@ -42,9 +42,9 @@
 
     /**
      * Gets the master server (name or IP?) from any of this server's maps
-     * @return string	nil if no map is found or it has no YP_MASTER_NAME
+     * @return	nil if no map is found or it has no YP_MASTER_NAME
      */
-    global define getMaster () ``{
+    global define string getMaster () ``{
 	string dn = lookup (user_settings, ".etc.defaultdomain", "");
 	if (dn == "")
 	{
@@ -68,10 +68,9 @@
     }
 
     /**
-     * Determines if the current host is YP master or not
-     * @return boolean
+     * @return Determines if the current host is YP master or not
      */
-    global define isYPMaster () ``{
+    global define boolean isYPMaster () ``{
 	string master = getMaster();
 	if (master == nil)
 	{
@@ -85,29 +84,28 @@
     }
 
     /**
-     * Checks if the YP server software is installed
+     * @return Checks if the YP server software is installed
      * by querying RPM for ypserv
-     * @return boolean
      */
-    global define isYPServerInstalled () ``{
+    global define boolean isYPServerInstalled () ``{
 	return (SCR::Execute(.target.bash, "/bin/rpm -q ypserv") == 0);
     }
 
     /**
-     * Checks if the YP server was already configured
+     * @return Checks if the YP server was already configured
      * by reading the SCR, not user_settings
      * (not to confuse the user if he backs up to the first dialog)
-     * @return boolean
      */
-    global define isYPServerConfigured () ``{
+    global define boolean isYPServerConfigured () ``{
 	return Runlevel::ServiceEnabled ("ypserv");
     }
 
     /**
      * Decides whether slave exists
-     * @return symbol `have_slave or `none_slave
+     * (according to makefile.NOPUSH)
+     * @return `have_slave or `none_slave
      */
-    global define SlaveExists () ``{
+    global define symbol SlaveExists () ``{
 	if (! toboolean (lookup (user_settings, ".var.yp.makefile.NOPUSH", false)))
 	    return `have_slave;
 
@@ -115,10 +113,9 @@
     }
 
     /**
-     * Checks if this host is in the slaves list on master
-     * @return boolean
+     * @return Checks if this host is in the slaves list on master
      */
-    global define hasMasterThisSlave () ``{
+    global define boolean hasMasterThisSlave () ``{
 	// list of maps: $["host": "foo.com", "map":"passwd.byuid"]
 	list running_maps = SCR::Read (.run.ypwhich_m);
 	if (running_maps != nil)

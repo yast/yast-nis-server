@@ -30,9 +30,9 @@
      * Read variables, checks the file and each variable
      * @param variables map with names and default values
      * @param file filename to check for
-     * @return map with read values
+     * @return a map with read values
      */
-    global define ReadPathFile (map variables, string file) ``{
+    global define map ReadPathFile (map variables, string file) ``{
 
 	if (SCR::Read (.target.size, file) != -1)
 	{
@@ -62,7 +62,7 @@
      * Removes file or directory and log errors
      * @param file what to remove
      */
-    global define Remove (string file) ``{
+    global define void Remove (string file) ``{
 	if (SCR::Read (.target.size, file) != -1)
 	{
 	    map output = SCR::Execute (.target.bash_output, sformat ("/bin/rm -rf %1", file));
@@ -82,9 +82,9 @@
     /**
      * Ensures that the domain directory exists.
      * @param	directory	the path
-     * @return	boolean		false if not and cannot be created
+     * @return			false if not and cannot be created
      */
-    global define EnsureDirectory (string directory) ``{
+    global define boolean EnsureDirectory (string directory) ``{
 	string error_msg     = lookup (user_settings, "error", "");
 	string error_details = lookup (user_settings, "error_details", "");
 	map output = $[];
@@ -106,7 +106,7 @@
     /**
      * Gets the YP maps from master for slave
      */
-    global define YPGetMaps () ``{
+    global define void YPGetMaps () ``{
 
 	string error_msg     = lookup (user_settings, "error", "");
 	string error_details = lookup (user_settings, "error_details", "");
@@ -181,7 +181,7 @@
      * Save securenets list
      */
 
-    global define SaveSecurenets () ``{
+    global define void SaveSecurenets () ``{
 
 	string error_msg     = lookup (user_settings, "error", "");
 	list securenets = lookup (user_settings, ".var.yp.securenets", []);
@@ -199,7 +199,7 @@
     /**
      * Save list of slaves by calling appropriate any agent
      */
-    global define SaveSlaves () ``{
+    global define void SaveSlaves () ``{
 	string error_msg     = lookup (user_settings, "error", "");
 
 	SCR::Execute (.target.bash, sformat ("/bin/cp %1 %1.YaST2.save", "/var/yp/ypservers"));
@@ -216,7 +216,7 @@
      * Saves config variables according to workflow
      * @param which workflow one of `slave, `master
      */
-    global define SaveVariables (symbol which) ``{
+    global define void SaveVariables (symbol which) ``{
 	string error_msg     = lookup (user_settings, "error", "");
 	string error_details = lookup (user_settings, "error_details", "");
 
@@ -261,7 +261,7 @@
      * Starts or stop daemons
      * @param workflow what to start or save: `master, `slave, `none
      */
-    global define YPDaemons (symbol workflow) ``{
+    global define void YPDaemons (symbol workflow) ``{
 	string error_msg     = lookup (user_settings, "error", "");
 	string error_details = lookup (user_settings, "error_details", "");
 	map output    = $[];
@@ -331,7 +331,7 @@
     /**
      * Creates initial database
      */
-    global define YPMake () ``{
+    global define void YPMake () ``{
 	string error_msg     = lookup (user_settings, "error", "");
 	string error_details = lookup (user_settings, "error_details", "");
 	map output =$[];
@@ -391,11 +391,15 @@
     }
 
     /**
-     * Returns list of progress labels
-     * @param workflow symbol of what workflow was choosed (`none, `slave, `master)
-     * @return list of localized strings
+     * Returns a list of what to save
+     * @param workflow what workflow was chosen (`none, `slave, `master)
+     * @return a list of maps: <pre>$[
+     *   "save_label": ...,
+     *   "progress_label": ...,
+     *   "function": a term (will be eval'd)
+     * ]</pre>
      */
-    global define GetSaveList (symbol workflow) ``{
+    global define list(map) GetSaveList (symbol workflow) ``{
 
 	list result = [];
 
@@ -543,7 +547,7 @@
      * ***** Default values *****
      * **************************
      */
-    global define YPMakefileVars () ``{
+    global define map YPMakefileVars () ``{
 	return $[
 	    ".var.yp.makefile.NOPUSH"        : "true",
 	    ".var.yp.makefile.MERGE_PASSWD"  : "true",
@@ -554,7 +558,7 @@
 	    ];
     }
 
-    global define YPServerVars () ``{
+    global define map YPServerVars () ``{
 	return $[
 	    ".sysconfig.ypserv.YPPWD_CHFN"        : "no",
 	    ".sysconfig.ypserv.YPPWD_CHSH"        : "no",
@@ -562,20 +566,20 @@
 	    ];
     }
 
-    global define YPSystemVars () ``{
+    global define map YPSystemVars () ``{
 	return $[
 	    ".etc.defaultdomain"       : "local"
 	    ];
     }
 
-    global define YPSecurenets () ``{
+    global define map YPSecurenets () ``{
 	return $[".var.yp.securenets" : [$["netmask" : "255.0.0.0",
 					   "network" : "127.0.0.0"
 					     ]
 		     ]];
     }
 
-    global define YPServers () ``{
+    global define map YPServers () ``{
 	return $[".var.yp.ypservers" : []];
     }
 }

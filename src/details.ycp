@@ -30,9 +30,9 @@
 
     /**
      * Details dialog
-     * @return symbol `back, `abort or `next
+     * @return `back, `abort or `next
      */
-    global define DetailsDialog () ``{
+    global define symbol DetailsDialog () ``{
 
 	// help text 1/3
 	string helptext = _("<p>You can change NIS server source directory (usually

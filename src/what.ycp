@@ -30,8 +30,9 @@
 
     /**
      * Dialog for choosing the way of the flow
+     * @return `abort, `exit, `nothing, `master, `slave or `finish
      */
-    global define WhatToConfigure () ``{
+    global define symbol WhatToConfigure () ``{
 
 	// help text 1/2
 	string helptext = _("<p>Select whether to configure the NIS server as a <b>master</b> or a
