@@ -24,7 +24,8 @@
     textdomain "nis_server";
 
     import "Wizard";
-    include "ui/common_popups.ycp";
+    import "Label";
+    import "Popup";
     import "NisServer";
     include "nis_server/routines.ycp";
 
@@ -147,7 +148,7 @@ configure it.</p>");
 
 	    if (current_button == `none)
 	    {
-		Wizard::ReplaceNextButton(`PushButton (`id (`finish), `opt (`default, `key_F10), FinishButtonLabel()));
+		Wizard::ReplaceNextButton(`PushButton (`id (`finish), `opt (`default, `key_F10), Label::FinishButton()));
 		UI::SetFocus (`id (`finish));
 	    }
 	    else if (contains ([`master, `slave], current_button))
@@ -162,7 +163,7 @@ configure it.</p>");
 		ui = `abort;
 	    }
 
-	    if (ui == `abort && !UI::ReallyAbortPopup (true)) continue;
+	    if (ui == `abort && !Popup::ReallyAbort (true)) continue;
 
 	}
 	until (contains ([`back, `next, `abort, `finish], ui));

@@ -25,7 +25,7 @@
     textdomain "nis_server";
 
     import "Wizard";
-    include "ui/common_popups.ycp";
+    import "Popup";
     include "network/ip.ycp";
     include "network/dns.ycp";
 
@@ -80,18 +80,18 @@
 		{
 		    // To translators: error message
 		    UI::SetFocus (`id (`master_ip));
-		    UI::ErrorPopup (valid_address ());
+		    Popup::Error (valid_address ());
 		    ui = nil;
 		}
 		else if (!Nis::check_nisdomainname (domainname))
 		{
 		    UI::SetFocus (`id (`domain));
-		    UI::ErrorPopup (Nis::valid_nisdomainname ());
+		    Popup::Error (Nis::valid_nisdomainname ());
 		    ui = nil;
 		}
 	    }
 
-	    if (ui == `abort && !UI::ReallyAbortPopup (true)) continue;
+	    if (ui == `abort && !Popup::ReallyAbort (true)) continue;
 	}
 	until (contains ([`next, `back, `abort], ui));
 
