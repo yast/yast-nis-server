@@ -37,11 +37,11 @@
         string hname = nil;
         
         UI(`OpenDialog(
-	    // selection box label
+	    // To translators: selection box label
             `VBox(`SelectionBox(`id(`hosts), _("&Remote hosts"), hosts),
-                  // button label
+                  // To translators: button label
                   `HBox(`PushButton(`id(`ok), _("&OK")),
-                        // button label
+                        // To translators: button label
                         `PushButton(`id(`cancel), _("&Cancel"))))));
         any ret = nil;
         do {
@@ -63,18 +63,23 @@
     global define YPSlavePopup (string slave) ``{
 
         term hbox = `HBox ();
+                                // To translators: textentry label
         hbox = add (hbox, `TextEntry (`id(`slave), _("&Slave's hostname"), slave));
+                                // To translators: pushbutton label
         hbox = add (hbox, `VBox (`VSpacing (), `PushButton (`id (`browse), _("&Browse"))));
 
         term contents = `VBox ();
         contents = add (contents, `VSpacing (0.3));
+                               // To translators: popup dialog heading
         contents = add (contents, `Heading (_("Edit slave")));
         contents = add (contents, `VSpacing (0.5));
         contents = add (contents, hbox);
         contents = add (contents, `VSpacing (0.5));
 
         hbox = `HBox ();
+                                // To translators: pushbutton label
         hbox = add (hbox, `PushButton (`id (`ok), `opt (`default), _("&OK")));
+                                // To translators: pushbutton label
         hbox = add (hbox, `PushButton (`id (`cancel), _("&Cancel")));
         
         contents = add (contents, hbox);
@@ -93,6 +98,7 @@
             if (ui == `ok)
             {
                 slave = tolower (UI (`QueryWidget (`id (`slave), `Value)));
+                                // To translators: error message
                 error_msg = error_msg + (checkhostname (slave) ? "" : UI(_("Wrong hostname!\n")));
 
                 if (size (error_msg) > 0)
@@ -103,7 +109,7 @@
             else if (ui == `browse)
             {
                 if (hosts == nil) {
-                    // label message
+                                // To translators: label message
                     UI(`OpenDialog(`Label(_("Scanning for hosts on this LAN..."))));
                     hosts = sort(SCR(`Read(.net.hostnames)));
                     UI(`CloseDialog());
@@ -137,17 +143,21 @@
         list hosts = nil;
 
         term buttons = `HBox ();
+                                // To translators: pushbutton label
         buttons = add (buttons, `PushButton (`id (`edit), _("&Edit")));
+                                // To translators: pushbutton label
         buttons = add (buttons, `PushButton (`id (`delete), _("De&lete")));
         buttons = add (buttons, `HStretch ());
+                                // To translators: pushbutton label
         buttons = add (buttons, `PushButton (`id (`add), _("&Add")));
         
         term contents = `VBox ();
         contents = add (contents, `ReplacePoint (`id (`replace), 
+                                // To translators: selection box label
                                                  `SelectionBox (`id (`slaves), `opt (`notify), _("&Slaves"), sort(slaves))));
         contents = add (contents, `Left (buttons));
         
-        
+                                // To translators: dialog label
         UI (`SetWizardContents (_("NIS Master Server Slaves Setup"), contents, helptext, true, true));
         UI (`ChangeWidget (`id (`edit), `Enabled, false));
         UI (`ChangeWidget (`id (`delete), `Enabled, false));
@@ -173,6 +183,7 @@
                 {
                     slaves = filter (`e, slaves, ``(e != selected));
                     slaves = add (slaves, edited);
+                                // To translators: selectionbox label
                     UI (`ReplaceWidget (`id (`replace), `SelectionBox (`id (`slaves), `opt (`notify), _("&Slaves"), sort (slaves))));
                 }
             }
@@ -182,6 +193,7 @@
                 string selected = UI (`QueryWidget (`id (`slaves), `CurrentItem));
                 if (selected == nil) continue;
                 slaves = filter (`e, slaves, ``(e != selected));
+                                // To translators: selectionbox label
                 UI (`ReplaceWidget (`id (`replace), `SelectionBox (`id (`slaves), `opt (`notify), _("&Slaves"), sort (slaves))));
 
                 if (size (slaves) == 0)
@@ -197,7 +209,8 @@
                 if (edited != nil && !contains (slaves, edited))
                 {
                     slaves = add (slaves, edited);
-                    UI (`ReplaceWidget (`id (`replace), `SelectionBox (`id (`slaves), `opt (`notify), _("Slaves"), sort (slaves))));
+                                // To translators: selectionbox label
+                    UI (`ReplaceWidget (`id (`replace), `SelectionBox (`id (`slaves), `opt (`notify), _("&Slaves"), sort (slaves))));
                 }
             }            
 

@@ -50,35 +50,44 @@ file.</p>"));
 
         term merge_pass_buttons = `VBox ();
         merge_pass_buttons = add (merge_pass_buttons, `VSpacing (0.1));
+                                // To translators: button label
         merge_pass_buttons = add (merge_pass_buttons, `Left (`RadioButton (`id(`no), _("No"), !merge_passwd)));
         merge_pass_buttons = add (merge_pass_buttons, `VSpacing (0.3));
+                                // To translators: button label
         merge_pass_buttons = add (merge_pass_buttons, `Left (`RadioButton (`id(`yes), _("Yes"), merge_passwd)));
         merge_pass_buttons = add (merge_pass_buttons, `VSpacing (0.1));
         merge_pass_buttons = `RadioButtonGroup (`id (`pass_rb), merge_pass_buttons);
         
         term merge_group_buttons = `VBox ();
         merge_group_buttons = add (merge_group_buttons, `VSpacing (0.1));
+                                // To translators: button label
         merge_group_buttons = add (merge_group_buttons, `Left (`RadioButton (`id(`no), _("No"), !merge_groups)));
         merge_group_buttons = add (merge_group_buttons, `VSpacing (0.3));
+                                // To translators: button label
         merge_group_buttons = add (merge_group_buttons, `Left (`RadioButton (`id(`yes), _("Yes"), merge_groups)));
         merge_group_buttons = add (merge_group_buttons, `VSpacing (0.1));
         merge_group_buttons = `RadioButtonGroup (`id (`group_rb), merge_group_buttons);
         
         
         term merge  = `HBox ();
+                                // To translators: frame label
         merge = add (merge, `HWeight (1, `Frame (`id (`pass_frame), _("Merge pa&sswords"), merge_pass_buttons)));
         merge = add (merge, `HSpacing ());
+                                // To translators: frame label
         merge = add (merge, `HWeight (1, `Frame (`id (`group_frame), _("Merge g&roups"), merge_group_buttons)));
         
         term minimals = `HBox ();
         
+                                // To translators: intfield label
         minimals = add (minimals, `IntField (`id (`minuid), _("Minimal &UID"), 0, 50000,
                                              tointeger(lookup (user_settings, ".var.yp.makefile.MINUID", 100))));
+                                // To translators: intfield label
         minimals = add (minimals, `IntField (`id (`mingid), _("Minimal &GUID"), 0, 50000,
                                              tointeger(lookup (user_settings, ".var.yp.makefile.MINGID", 100))));
         
         
         term contents = `VBox ();
+                                // To translators: textentry label
         contents = add (contents, `TextEntry (`id (`srcdir), `opt(`notify), _("&YP Source directory"),
                                               lookup (user_settings, ".rc.ypserver.YPPWD_SRCDIR", "")));
         contents = add (contents, `VSpacing (0.5));
@@ -89,7 +98,9 @@ file.</p>"));
         
         contents = `HVSquash (contents);
         
+                                // To translators: dialog label
         UI (`SetWizardContents (_("NIS Master Server Details Setup"), contents, helptext, true, true));
+                                // To translators: button label
         UI (`ChangeWidget (`id (`next), `Label, _("&OK")));
 
         boolean shadow_exist  = fileexist (sformat ("%1/shadow", lookup (user_settings, ".rc.ypserver.YPPWD_SRCDIR", "")));
@@ -125,6 +136,7 @@ file.</p>"));
         user_settings = add (user_settings, ".rc.ypserver.YPPWD_SRCDIR",
                              UI (`QueryWidget (`id (`srcdir), `Value)));                             
 
+        // To translators: button label
         UI (`ChangeWidget (`id (`next), `Label, _("&Next")));
 
         return ui;

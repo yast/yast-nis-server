@@ -74,13 +74,16 @@ used. You can simply add some more maps from the list on the right side, labeled
         term contents = `HBox ();
         contents = add (contents, `HWeight (1, 
                                             `ReplacePoint (`id (`replace_actual),
+                                // To translators: selectionbox label
                                                            `SelectionBox (`id (`actual), `opt (`notify), _("&Actual"), sort (actual)))));
         contents = add (contents, buttons);
         contents = add (contents, `HWeight (1, 
                                             `ReplacePoint (`id (`replace_remaining),
+                                // To translators: selectionbox label
                                                            `SelectionBox (`id (`remaining), `opt (`notify), _("&Possible"), sort (remaining)))));
         
         
+        // To translators: dialog label
         UI (`SetWizardContents (_("NIS Server Maps Setup"), contents, helptext, true, true));
         UI (`ChangeWidget (`id (`add), `Enabled, false));
         UI (`ChangeWidget (`id (`remove), `Enabled, false));
@@ -111,8 +114,10 @@ used. You can simply add some more maps from the list on the right side, labeled
                 }
 
                 UI (`ReplaceWidget (`id (`replace_actual),
+                                // To translators: selectionbox label
                                     `SelectionBox (`id (`actual), `opt (`notify), _("&Actual"), sort (actual))));
                 UI (`ReplaceWidget (`id (`replace_remaining),
+                                // To translators: selectionbox label
                                     `SelectionBox (`id (`remaining), `opt (`notify), _("&Possible"), sort (remaining))));
 
                 UI (`ChangeWidget (`id (`add), `Enabled, false));

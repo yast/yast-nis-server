@@ -65,8 +65,11 @@ configure it.</p>"));
         }
         else if (isYPServerConfigured ())
         {
+                    // To translators: part of the label in the dialog
             string slave_or_master = isYPMaster () ? UI (_("Master")) : UI (_("Slave"));
+                    // To translators: part of the label in the dialog
             string master_action   = isYPMaster () ? UI (_("Reconfigure")) : UI (_("Change to"));
+                    // To translators: part of the label in the dialog
             string slave_action    = isYPMaster () ? UI (_("Change to")) : UI (_("Reconfigure"));
 
                                 // To translators: label in the dialog

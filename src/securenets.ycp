@@ -78,15 +78,20 @@
     global define NetsEditPopup (integer id, string netmask, string network) ``{
 
         term buttons  = `HBox ();
+                                // To translators: pushbutton label
         buttons = add (buttons, `PushButton (`id (`ok), `opt (`default), _("&OK")));
+                                // To translators: pushbutton label
         buttons = add (buttons, `PushButton (`id (`cancel), _("&Cancel")));
 
         term contents = `VBox ();
         contents = add (contents, `VSpacing (0.3));
+                               // To translators: popup dialog heading
         contents = add (contents, `Heading (_("Edit netmask and network")));
         contents = add (contents, `VSpacing (0.5));
+                                // To translators: textentry label
         contents = add (contents, `TextEntry (`id(`netmask), _("Net&mask"), netmask));
         contents = add (contents, `VSpacing (0.3));
+                                // To translators: textentry label
         contents = add (contents, `TextEntry (`id(`network), _("Net&work"), network));
         contents = add (contents, `VSpacing (0.5));
         contents = add (contents, buttons);
@@ -106,7 +111,9 @@
             {
                 netmask = UI (`QueryWidget (`id (`netmask), `Value));
                 network = UI (`QueryWidget (`id (`network), `Value));
+                                // To translators: error message
                 error_msg = error_msg + (checkIP (netmask) ? "" : UI(_("Wrong netmask!\n")));
+                                // To translators: error message
                 error_msg = error_msg + (checkIP (network) ? "" : UI(_("Wrong network!\n")));
 
                 if (size (error_msg) > 0)
@@ -143,18 +150,24 @@ it gives access to all hosts.</p>"));
         integer n_items = size (allow_query);
 
         term buttons = `HBox ();
+                                // To translators: pushbutton label
         buttons = add (buttons, `PushButton (`id (`edit), _("&Edit")));
+                                // To translators: pushbutton label
         buttons = add (buttons, `PushButton (`id (`delete), _("&Delete")));
         buttons = add (buttons, `HStretch ());
+                                // To translators: pushbutton label
         buttons = add (buttons, `PushButton (`id (`add), _("&Add")));
         
         term contents = `VBox ();
         contents = add (contents, `Table (`id (`table), `opt (`notify, `immediate), 
-                                          `header ("Netmask", "Network"), allow_query));
+                                          // To translators: table headers
+                                          `header (_("Netmask"), _("Network")), allow_query));
         contents = add (contents, buttons);
         
         
+                                // To translators: dialog label
         UI(`SetWizardContents (_("NIS Server Query Hosts Setup"), contents, helptext, true, true));
+                                // To translators: pushbutton label
         UI (`ChangeWidget (`id (`next), `Label, _("&Finish")));
         UI (`ChangeWidget (`id (`edit), `Enabled, false));
         UI (`ChangeWidget (`id (`delete), `Enabled, false));
@@ -213,6 +226,7 @@ it gives access to all hosts.</p>"));
         }
         until (contains ([`back, `next, `abort], ui));
 
+        // To translators: pushbutton label
         if (ui == `back) UI (`ChangeWidget (`id (`next), `Label, _("&Next")));
 
         // and finally merge
