@@ -30,10 +30,11 @@
 
     /**
      * Creates items for table from var_yp_securenets.scr any agent
-     * @param nets list output from securenets agent
-     * @return list of items formated for for table
+     * @param nets list of output from securenets agent
+     *		<br>$["netmask": "255.0.0.0", "network": "10.0.0.0"]
+     * @return a list of items formated for a UI table
      */
-    global define ItemizeSecurenets (list nets) ``{
+    global define list(term) ItemizeSecurenets (list nets) ``{
 	list not_comment = filter (`e, nets, ``(haskey (e, "netmask") || haskey (e, "network")));
 	list result = [];
 	integer i = 0;
@@ -72,9 +73,9 @@
      * @param id id of item
      * @param netmask netmask
      * @param network network
-     * @return item|void new item or nil on cancel
+     * @return a new item or nil on cancel
      */
-    global define NetsEditPopup (integer id, string netmask, string network) ``{
+    global define term NetsEditPopup (integer id, string netmask, string network) ``{
 
 	term buttons  = `HBox ();
 				// To translators: pushbutton label
@@ -135,8 +136,9 @@
 
     /**
      * Securenets dialog
+     * @return `back, `next or `abort
      */
-    global define QueryHosts () ``{
+    global define symbol QueryHosts () ``{
 
 	// help text 1/4
 	string helptext = _("<p>Please enter which hosts are allowed to query the NIS server.</p>");

@@ -64,7 +64,6 @@
 	"begin"      : $[
 	    `slave   : "install",
 	    `master  : "install",
-	    `none    : "none",
 	    `finish  : "finish_popup",
 	    `abort   : `abort,
 	    `exit    : "exit_popup",

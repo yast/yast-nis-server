@@ -33,9 +33,9 @@
 
     /**
      * Slave dialog
-     * @return symbol `back, `abort or `next
+     * @return `back, `abort or `next
      */
-    global define SlaveDialog () ``{
+    global define symbol SlaveDialog () ``{
 
 	// help text 1/2
 	string helptext = _("<p>Enter the NIS <b>domain</b> and the IP <b>address</b> of the master NIS server.</p>");

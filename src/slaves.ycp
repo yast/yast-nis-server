@@ -33,9 +33,9 @@
     /**
      * Give me one name from the list of hosts
      * @param hosts list of hosts
-     * @return string hostname
+     * @return hostname or nil
      */
-    global define ChooseHostName(list hosts) ``{
+    global define string ChooseHostName(list(string) hosts) ``{
 	string hname = nil;
 
 	UI::OpenDialog(
@@ -60,11 +60,11 @@
 
 
     /**
-     * Popup for adjusting slave
+     * Popup for editing a slaver server hostname
      * @param slave	hostname
-     * @return string	hostname or nil if canceled
+     * @return	hostname or nil if canceled
      */
-    global define YPSlavePopup (string slave) ``{
+    global define string YPSlavePopup (string slave) ``{
 
 	term hbox = `HBox ();
 				// To translators: textentry label
@@ -138,8 +138,9 @@
 
     /**
      * Slaves dialog
+     * @return `back, `abort or `next
      */
-    global define MastersSlavesDialog () ``{
+    global define symbol MastersSlavesDialog () ``{
 
 	// help text 1/1
 	string helptext = _("<p>Here, enter the names of hosts to configure as NIS server slaves. Use <i>Add</i> to add a new one, <i>Edit</i>  to change an existing entry, and <i>Delete</i> to remove an entry.</p>");
