@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon Aug 27 15:21:56 CEST 2001 - mvidner@suse.cz
+
+- Fixed starting the client (write yp.conf, set START_PORTMAP).
+- Fixed starting yppasswdd and ypxfrd.
+- 2.4.11
+
+-------------------------------------------------------------------
 Fri Aug 24 15:57:49 CEST 2001 - mvidner@suse.cz
 
 - Fixed re-detection of being a server. (2.4.10)
