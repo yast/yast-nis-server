@@ -1,9 +1,9 @@
 @HEADER-COMMENT@
 
-# neededforbuild  yast2-devel-packages yast2-runlevel
+# neededforbuild  yast2-devel-packages
 
 @HEADER@
-Requires:	yast2 yast2-runlevel yast2-packager
+Requires:	yast2yast2-packager
 Requires:	yast2-network yast2-nis-client
 
 Provides:	yast2-config-nis-server
@@ -29,9 +29,12 @@ Summary:	Configuration of NIS server
 %files
 %defattr(-,root,root)
 %dir @yncludedir@/nis_server
-@clientdir@/nis_server.ycp
 @yncludedir@/nis_server/*.ycp
+%dir @clientdir@
+@clientdir@/nis_server.ycp
+%dir @configdir@
 @configdir@/nis_server.y2cc
+%dir @scrconfdir@
 @scrconfdir@/run_ypwhich_m.scr
 @scrconfdir@/var_yp_securenets.scr
 @scrconfdir@/var_yp_ypservers.scr
