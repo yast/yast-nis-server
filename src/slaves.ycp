@@ -43,8 +43,10 @@
 		     `HBox(`VSpacing(10),
 			   // To translators: selection box label
 			   `SelectionBox(`id(`hosts), _("&Remote hosts"), hosts)),
-		     `HBox(`PushButton(`id(`ok), OKButtonLabel()),
-			   `PushButton(`id(`cancel), CancelButtonLabel()))));
+		     `HBox(`PushButton(`id(`ok), `opt (`default, `key_F10),
+				       OKButtonLabel()),
+			   `PushButton(`id(`cancel), `opt (`key_F9),
+				       CancelButtonLabel()))));
 	any ret = nil;
 	do {
 	    ret = UI::UserInput();
@@ -70,7 +72,7 @@
 				// To translators: textentry label
 	hbox = add (hbox, `TextEntry (`id(`slave), _("&Slave's host name"), slave));
 				// To translators: pushbutton label
-	hbox = add (hbox, `VBox (`VSpacing (), `PushButton (`id (`browse), _("&Browse"))));
+	hbox = add (hbox, `VBox (`VSpacing (), `PushButton (`id (`browse), `opt (`key_F6), _("&Browse"))));
 
 	term contents = `VBox ();
 	contents = add (contents, `VSpacing (0.3));
@@ -81,10 +83,8 @@
 	contents = add (contents, `VSpacing (0.5));
 
 	hbox = `HBox ();
-				// To translators: pushbutton label
-	hbox = add (hbox, `PushButton (`id (`ok), `opt (`default), OKButtonLabel()));
-				// To translators: pushbutton label
-	hbox = add (hbox, `PushButton (`id (`cancel), CancelButtonLabel()));
+	hbox = add (hbox, `PushButton (`id (`ok), `opt (`default, `key_F10), OKButtonLabel()));
+	hbox = add (hbox, `PushButton (`id (`cancel), `opt (`key_F9), CancelButtonLabel()));
 
 	contents = add (contents, hbox);
 	contents = add (contents, `VSpacing (0.3));
@@ -148,11 +148,11 @@
 
 	term buttons = `HBox ();
 				// To translators: pushbutton label
-	buttons = add (buttons, `PushButton (`id (`add), _("A&dd")));
+	buttons = add (buttons, `PushButton (`id (`add), `opt (`key_F3), _("A&dd")));
 				// To translators: pushbutton label
-	buttons = add (buttons, `PushButton (`id (`edit), _("&Edit")));
+	buttons = add (buttons, `PushButton (`id (`edit), `opt (`key_F4), _("&Edit")));
 				// To translators: pushbutton label
-	buttons = add (buttons, `PushButton (`id (`delete), _("De&lete")));
+	buttons = add (buttons, `PushButton (`id (`delete), `opt (`key_F5), _("De&lete")));
 
 	term contents = `VBox ();
 	contents = add (contents, `ReplacePoint (`id (`replace),
