@@ -36,8 +36,8 @@
      *		<br>$["netmask": "255.0.0.0", "network": "10.0.0.0"]
      * @return a list of items formated for a UI table
      */
-    define list<term> ItemizeSecurenets (list nets) ``{
-	list not_comment = filter (map e, nets, ``(haskey (e, "netmask") ||
+    define list<term> ItemizeSecurenets (list<map> nets) ``{
+	list<map> not_comment = filter (map e, nets, ``(haskey (e, "netmask") ||
 						haskey (e, "network")));
 	list<term> result = [];
 	integer i = 0;

@@ -187,7 +187,7 @@
 		string edited = YPSlavePopup (selected);
 		if (edited != nil)
 		{
-		    slaves = filter (`e, slaves, ``(e != selected));
+		    slaves = filter (string e, slaves, ``(e != selected));
 		    slaves = add (slaves, edited);
 				// To translators: selectionbox label
 		    UI::ReplaceWidget (`id (`replace), `SelectionBox (`id (`slaves), `opt (`notify), _("&Slaves"), sort (slaves)));
@@ -198,7 +198,7 @@
 	    {
 		string selected = (string) UI::QueryWidget (`id (`slaves), `CurrentItem);
 		if (selected == nil) continue;
-		slaves = filter (`e, slaves, ``(e != selected));
+		slaves = filter (string e, slaves, ``(e != selected));
 				// To translators: selectionbox label
 		UI::ReplaceWidget (`id (`replace), `SelectionBox (`id (`slaves), `opt (`notify), _("&Slaves"), sort (slaves)));
 	    }

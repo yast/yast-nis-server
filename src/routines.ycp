@@ -65,11 +65,11 @@
      */
     define boolean hasMasterThisSlave () ``{
 	// list of maps: $["host": "foo.com", "map":"passwd.byuid"]
-	list running_maps = (list) SCR::Read (.run.ypwhich_m);
+	list<map> running_maps = (list<map>) SCR::Read (.run.ypwhich_m);
 	if (running_maps != nil)
 	{
-	    running_maps = maplist (map m, running_maps, ``(m["map"]:""));
-	    if (contains (running_maps, "ypservers"))
+	    list<string> running_maps_str = maplist (map m, running_maps, ``(m["map"]:""));
+	    if (contains (running_maps_str, "ypservers"))
 	    {
 		string slaves = lookup ((map)SCR::Execute (.target.bash_output, "/usr/bin/ypcat ypservers"), "stdout", nil);
 		if (slaves != nil)
