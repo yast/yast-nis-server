@@ -16,7 +16,7 @@ myinclude_DATA = \
 	ui.ycp		\
 	routines.ycp
 
-module_DATA = 	\
+client_DATA = 	\
 	nis_server.ycp
 
 config_DATA = nis_server.y2cc
