@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Aug 13 13:40:51 CEST 2001 - mvidner@suse.cz
+
+- Moved specialized agents from yast2-agent-{any,rcconfig}.
+- 2.4.6
+
+-------------------------------------------------------------------
 Wed Aug  8 14:53:11 CEST 2001 - mvidner@suse.cz
 
 - Better error formatting.
