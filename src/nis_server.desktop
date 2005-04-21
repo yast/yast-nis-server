@@ -16,7 +16,7 @@ X-SuSE-YaST-Geometry=
 X-SuSE-YaST-SortKey=
 X-SuSE-YaST-AutoInstClonable=true
 
-Icon=nis_client
+Icon=yast-nis_server
 Exec=/sbin/yast2 nis_server 
 
 Name=NIS Server
