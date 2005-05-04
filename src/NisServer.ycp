@@ -340,15 +340,15 @@ global define boolean Read() ``{
     return true;
 }
 
-define any SCRGet (path p, any default) {
+define any SCRGet (path p, any default_val) {
     any v = SCR::Read (p);
-    return v != nil ? v : default;
+    return v != nil ? v : default_val;
 }
 
-define integer SCRGetInt (path p, integer default) {
+define integer SCRGetInt (path p, integer default_val) {
     any v = SCR::Read (p);
     return (v != nil && v != "" && is (v,string))
-	? tointeger ((string)v) : default;
+	? tointeger ((string)v) : default_val;
 }
 
 define void YPMakefileVars () {
