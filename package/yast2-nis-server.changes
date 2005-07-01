@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Wed Jun 29 14:13:48 CEST 2005 - jsuchome@suse.cz
+
+- allow only hostnames (and not IPs) in slave server list (#94286)
+- allow hostname as master server address
+- show the expected hostname of slave server in the error message (#94287)
+- 2.12.1
+
+-------------------------------------------------------------------
 Wed May  4 08:24:59 CEST 2005 - jsuchome@suse.cz
 
 - renamed "default" variables

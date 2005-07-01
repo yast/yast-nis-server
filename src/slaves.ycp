@@ -24,7 +24,7 @@
 
     textdomain "nis_server";
 
-    import "Address";
+    import "Hostname";
     import "Label";
     import "NisServer";
     import "Popup";
@@ -106,10 +106,10 @@
 	    {
 		slave = tolower ((string) UI::QueryWidget (`id (`slave), `Value));
 
-		if (!Address::Check4(slave))
+		if (!Hostname::CheckFQ (slave))
 		{
 		    UI::SetFocus (`id (`slave));
-		    Popup::Error(Address::Valid4());
+		    Popup::Error (Hostname::ValidFQ());
 		    ui = `again;
 		}
 	    }
@@ -118,7 +118,11 @@
 		if (hosts == nil) {
 				// To translators: label message
 		    UI::OpenDialog(`Label(_("Scanning for hosts on this LAN...")));
-		    hosts = sort((list<string>) SCR::Read(.net.hostnames));
+		    hosts = sort (filter (
+			string host, (list<string>)SCR::Read(.net.hostnames),``(
+			    Hostname::CheckFQ (host)
+			)
+		    ));
 		    UI::CloseDialog();
 		    if (hosts == nil) hosts = [];
 		}

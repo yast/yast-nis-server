@@ -664,8 +664,9 @@ global define void YPGetMaps () ``{
 	    string h2 = hostname + " " + hostname; // makedbm format
 	    if (!contains (splitstring (slaves, "\n"), h2))
 	    {
-		// To translators: message in the popup dialog
-		addError (_("Hostname of this host is not listed\nin the master's list.\n"));
+		// To translators: message in the popup dialog, %1 is hostname
+		addError (sformat (_("Hostname of this host (%1)
+is not listed in the master's list.\n"), hostname));
 	    }
 	}
     }

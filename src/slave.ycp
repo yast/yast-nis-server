@@ -30,7 +30,7 @@
     import "CWMFirewallInterfaces";
     import "NisServer";
     import "Nis";
-    import "IP";
+    import "Address";
     include "nis_server/routines.ycp";
 
     /**
@@ -43,7 +43,7 @@
 	term firewall_layout = firewall_widget["custom_widget"]:`VBox ();
 
 	// help text 1/2
-	string helptext = _("<p>Enter the NIS <b>domain</b> and the IP <b>address</b> of the master NIS server.</p>");
+	string helptext = _("<p>Enter the NIS <b>domain</b> and the IP <b>address</b> or host name of the master NIS server.</p>");
 	// help text 2/2
 	helptext = helptext + _("<p>If this host is also a NIS client using this machine as a server, check the corresponding option.</p>")
 
@@ -94,11 +94,11 @@
 		    (string) UI::QueryWidget (`id (`master_ip), `Value);
 		string domainname =
 		    (string) UI::QueryWidget (`id (`domain), `Value);
-		if (!IP::Check4(master_ip))
+		if (!Address::Check4(master_ip))
 		{
 		    // To translators: error message
 		    UI::SetFocus (`id (`master_ip));
-		    Popup::Error (IP::Valid4());
+		    Popup::Error (Address::Valid4());
 		    ui = `again;
 		}
 		else if (!Nis::check_nisdomainname (domainname))
