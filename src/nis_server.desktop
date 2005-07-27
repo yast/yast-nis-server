@@ -20,7 +20,7 @@ Icon=yast-nis_server
 Exec=/sbin/yast2 nis_server 
 
 Name=NIS Server
-GenericName=Configure NIS server
+GenericName=Configure a NIS server
 Name[cs]=NIS server
 GenericName[cs]=Konfigurovat NIS server
 Name[de]=NIS-Server
