@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Jul 28 11:28:00 CEST 2005 - jsuchome@suse.cz
+
+- updated desktop file 
+- 2.12.2
+
+-------------------------------------------------------------------
 Wed Jun 29 14:13:48 CEST 2005 - jsuchome@suse.cz
 
 - allow only hostnames (and not IPs) in slave server list (#94286)
