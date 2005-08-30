@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Aug 30 08:27:19 CEST 2005 - jsuchome@suse.cz
+
+- correctly detect if the master server is running (#113774)
+- 2.12.3
+
+-------------------------------------------------------------------
 Thu Jul 28 11:28:00 CEST 2005 - jsuchome@suse.cz
 
 - updated desktop file 
