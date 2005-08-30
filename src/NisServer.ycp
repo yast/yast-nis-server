@@ -419,7 +419,7 @@ define void YPServers () {
 	string command = sformat ("/usr/lib/yp/makedbm -u /var/yp/%1/%2 | grep ^YP_MASTER_NAME", dn, any_map);
 
 	map out		= (map) SCR::Execute (.target.bash_output, command);
-	list<string> l	= splitstring (out["stdout"]:"", " \n");
+	list<string> l	= splitstring (out["stdout"]:"", " \t\n");
 	return l[1]:nil;
     }
 
