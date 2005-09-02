@@ -659,10 +659,14 @@ global define void YPGetMaps () ``{
 	{
 	    output = (map) SCR::Execute (.target.bash_output,
 				   "/usr/lib/yp/yphelper --hostname");
-	    string hostname = output["stdout"]:"";
-	    hostname = substring (hostname, 0, size (hostname) - 1);
-	    string h2 = hostname + " " + hostname; // makedbm format
-	    if (!contains (splitstring (slaves, "\n"), h2))
+	    string hostname = deletechars (output["stdout"]:"", "\n");
+	    boolean failed = true;
+	    foreach (string line, splitstring (slaves, "\n"), {
+		list lline = splitstring (line, " \t");
+		if (lline[0]:"" == hostname && lline[1]:"" == hostname)
+		    failed = false;
+	    });
+	    if (failed)
 	    {
 		// To translators: message in the popup dialog, %1 is hostname
 		addError (sformat (_("Hostname of this host (%1)
