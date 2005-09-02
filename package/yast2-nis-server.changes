@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Sep  2 16:32:07 CEST 2005 - jsuchome@suse.cz
+
+- update to current output of makedbm (#114932)
+- 2.12.4 
+ 
+-------------------------------------------------------------------
 Tue Aug 30 08:27:19 CEST 2005 - jsuchome@suse.cz
 
 - correctly detect if the master server is running (#113774)
