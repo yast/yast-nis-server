@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Dec 20 17:29:44 CET 2005 - jsuchome@suse.cz
+
+- new version for new product version
+- 2.13.0 
+
+-------------------------------------------------------------------
 Fri Sep  2 16:32:07 CEST 2005 - jsuchome@suse.cz
 
 - update to current output of makedbm (#114932)
