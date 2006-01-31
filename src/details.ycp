@@ -79,10 +79,10 @@ file
 
 	term merge_all  = `HBox ();
 				// To translators: frame label
-	merge_all = add (merge_all, `HWeight (1, `Frame (`id (`pass_frame), _("Merge pa&sswords"), merge_pass_buttons)));
+	merge_all = add (merge_all, `HWeight (1, `Frame (`id (`pass_frame), _("Merge pa&sswords"), `MinWidth (20, merge_pass_buttons))));
 	merge_all = add (merge_all, `HSpacing ());
 				// To translators: frame label
-	merge_all = add (merge_all, `HWeight (1, `Frame (`id (`group_frame), _("Merge g&roups"), merge_group_buttons)));
+	merge_all = add (merge_all, `HWeight (1, `Frame (`id (`group_frame), _("Merge g&roups"), `MinWidth (20, merge_group_buttons))));
 
 	term minimals = `HBox ();
 
