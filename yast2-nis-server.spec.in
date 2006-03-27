@@ -2,7 +2,7 @@
 
 
 @HEADER@
-BuildRequires:	yast2-devel-packages yast2-network yast2-nis-client
+BuildRequires:	doxygen perl-XML-Writer update-desktop-files yast2 yast2-devtools yast2-network yast2-nis-client yast2-testsuite
 Requires:	yast2 yast2-network yast2-nis-client
 
 Provides:	yast2-config-nis-server
