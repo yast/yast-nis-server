@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Aug  1 11:06:12 CEST 2006 - jsuchome@suse.cz
+
+- install also ypbind package (#195400)
+- 2.13.4 
+
+-------------------------------------------------------------------
 Mon Mar 27 09:45:20 CEST 2006 - jsuchome@suse.cz
 
 - added checking for root permissions (#158483)
