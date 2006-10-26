@@ -15,6 +15,7 @@ X-SuSE-YaST-AutoInst=all
 X-SuSE-YaST-Geometry=
 X-SuSE-YaST-SortKey=
 X-SuSE-YaST-AutoInstClonable=true
+X-SuSE-YaST-AutoInstSchema=nis_server.rnc
 
 Icon=yast-nis_server
 Exec=/sbin/yast2 nis_server 
