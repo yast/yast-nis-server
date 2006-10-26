@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Oct 26 15:46:01 CEST 2006 - jsuchome@suse.cz
+
+- schema file moved from autoyast package (#215249)
+- 2.13.5 
+
+-------------------------------------------------------------------
 Tue Aug  1 11:06:12 CEST 2006 - jsuchome@suse.cz
 
 - install also ypbind package (#195400)
