@@ -2,6 +2,8 @@
 
 myincludedir = @yncludedir@/nis_server
 
+rncdir =  $(schemadir)/autoyast/rnc
+
 myinclude_DATA =	\
 	what.ycp 	\
 	slave.ycp 	\
@@ -23,11 +25,13 @@ client_DATA = 		\
 
 desktop_DATA = nis_server.desktop
 
+rnc_DATA = nis_server.rnc
+
 EXTRA_DIST =		\
 	$(module_DATA)	\
 	$(client_DATA)	\
         $(desktop_DATA)	\
-	$(myinclude_DATA)
+	$(myinclude_DATA) $(rnc_DATA)
 
 nis_server:
 	ln -sf . nis_server
