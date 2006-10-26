@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Oct 26 16:37:49 CEST 2006 - jsuchome@suse.cz
+
+- added schema name to desktop file (#215249)
+- 2.13.6 
+
+-------------------------------------------------------------------
 Thu Oct 26 15:46:01 CEST 2006 - jsuchome@suse.cz
 
 - schema file moved from autoyast package (#215249)
