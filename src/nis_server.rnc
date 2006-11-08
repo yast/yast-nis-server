@@ -23,7 +23,7 @@ mingid =
   element mingid { INTEGER }
 grouplist = element grouplist { text }
 hash = element hash { text }
-home = element home { text }
+nis_server_home = element home { text }
 inact = element inact { text }
 last_change = element last_change { text }
 maps_to_serve =
@@ -42,13 +42,14 @@ nopush =
   element nopush { BOOLEAN }
 y2_password_settings =
   expire | flag | inact | last_change | max | min | warn
-password_settings = element password_settings { y2_password_settings* }
+nis_server_password_settings = element password_settings { y2_password_settings* }
 pwd_chfn =
   element pwd_chfn { BOOLEAN }
 pwd_chsh =
   element pwd_chsh { BOOLEAN }
 pwd_srcdir = element pwd_srcdir { text }
-securenet = element securenet { comment?, hash?, netmask?, network? }
+nis_server_netmask = element netmask { text }
+securenet = element securenet { comment?, hash?, nis_server_netmask?, network? }
 securenets =
   element securenets {
     LIST,
