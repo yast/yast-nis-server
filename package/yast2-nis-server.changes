@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Nov  8 09:52:08 CET 2006 - jsuchome@suse.cz
+
+- fixed autoyast schema (#211014)
+- 2.14.1
+
+-------------------------------------------------------------------
 Mon Nov  6 10:31:27 CET 2006 - jsuchome@suse.cz
 
 - new version for new product
