@@ -101,12 +101,6 @@ global integer mingid = 0;
 global boolean merge_passwd = false;
 
 /**
- * Merge group and gshadow to one map?
- * Makefile: string true|false
- */
-global boolean merge_group = false;
-
-/**
  * Don't push the changes to slave servers. (useful if there aren't any)
  * Makefile: string true|false
  */
@@ -356,7 +350,6 @@ define void YPMakefileVars () {
     minuid = SCRGetInt (.var.yp.makefile.MINUID, 100);
     mingid = SCRGetInt (.var.yp.makefile.MINGID, 100);
     merge_passwd = (string) SCRGet (.var.yp.makefile.MERGE_PASSWD, "true") == "true";
-    merge_group = (string) SCRGet (.var.yp.makefile.MERGE_GROUP, "true") == "true";
     nopush = (string) SCRGet (.var.yp.makefile.NOPUSH, "true") == "true";
 }
 
@@ -727,7 +720,6 @@ global define void SaveVariables (any which) ``{
 	    ".var.yp.makefile.MINUID": sformat ("%1", minuid),
 	    ".var.yp.makefile.MINGID": sformat ("%1", mingid),
 	    ".var.yp.makefile.MERGE_PASSWD": (merge_passwd? "true": "false"),
-	    ".var.yp.makefile.MERGE_GROUP": (merge_group? "true": "false"),
 	    ".var.yp.makefile.NOPUSH": (nopush? "true": "false"),
 	    ];
 
@@ -1080,7 +1072,6 @@ global define boolean Import (map settings) ``{
     mingid = settings["mingid"]:0;
 
     merge_passwd = settings["merge_passwd"]:false;
-    merge_group = settings["merge_group"]:false;
 
     ypservers = settings["slaves"]:[];
     if (ypservers == [])
@@ -1129,8 +1120,6 @@ global define map Export () ``{
     settings["minuid"]= minuid;
     settings["mingid"]= mingid;
     settings["merge_passwd"] =  merge_passwd;
-
-    settings["merge_group"] = merge_group;
 
     list slaves = [];
     slaves = ypservers;
