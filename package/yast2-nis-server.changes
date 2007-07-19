@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Jul 19 08:39:41 CEST 2007 - jsuchome@suse.cz
+
+- do not mention /etc/gshadow (#292299)
+- 2.15.0
+
+-------------------------------------------------------------------
 Fri May 25 13:30:04 CEST 2007 - jsrain@suse.cz
 
 - removed outdated translations from .desktop-files (#271209)
