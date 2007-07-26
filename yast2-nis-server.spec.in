@@ -14,8 +14,21 @@ BuildArchitectures:	noarch
 
 Summary:	Configuration of NIS server
 
-%description
--
+%package devel-doc
+
+@HEADER@
+
+Requires:      yast2-nis-server >= 2.15.1
+
+Provides:      yast2-devel-doc
+Summary:       Developer documentation for yast2-nis-server
+
+
+%description 
+Configuration of NIS server
+
+%description devel-doc
+Developer documentation for yast2-nis-server
 
 @PREP@
 
@@ -43,4 +56,15 @@ Summary:	Configuration of NIS server
 @scrconfdir@/var_yp_securenets.scr
 @scrconfdir@/var_yp_ypservers.scr
 @schemadir@/autoyast/rnc/nis_server.rnc
+
+%dir @docdir@
+@docdir@/COPYING
+@docdir@/COPYRIGHT.english
+%readme @docdir@/README
+
+%files devel-doc
+%defattr(-,root,root)
 %doc @docdir@
+%exclude @docdir@/COPYING
+%exclude @docdir@/COPYRIGHT.english
+%exclude @docdir@/README

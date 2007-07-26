@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Jul 26 08:49:14 CEST 2007 - jsuchome@suse.cz
+
+- documentation moved to -devel-doc package (F302461)
+- 2.15.1 
+
+-------------------------------------------------------------------
 Thu Jul 19 08:39:41 CEST 2007 - jsuchome@suse.cz
 
 - do not mention /etc/gshadow (#292299)
