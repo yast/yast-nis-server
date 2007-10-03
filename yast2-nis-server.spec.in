@@ -20,7 +20,6 @@ Summary:	Configuration of NIS server
 
 Requires:      yast2-nis-server >= 2.15.1
 
-Provides:      yast2-devel-doc
 Summary:       Developer documentation for yast2-nis-server
 
 
