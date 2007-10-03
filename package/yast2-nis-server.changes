@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed Oct  3 10:01:26 CEST 2007 - mvidner@suse.cz
+
+- Do not try to package COPYRIGHT.english, it is gone from
+  devtools (#299144).
+- 2.16.0
+
+-------------------------------------------------------------------
 Thu Jul 26 08:49:14 CEST 2007 - jsuchome@suse.cz
 
 - documentation moved to -devel-doc package (F302461)
