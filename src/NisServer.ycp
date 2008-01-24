@@ -17,7 +17,7 @@ module "NisServer";
 textdomain "nis_server";
 
 import "FileUtils";
-import "NetworkDevices";
+import "NetworkInterfaces";
 import "Progress";
 import "Service";
 import "Summary";
@@ -299,8 +299,8 @@ global define boolean Read() ``{
 
     // Check if any device one is configured with DHCP, to know if domain name
     // won't be replaced by dhcp (#28727)
-    NetworkDevices::Read ();
-    if (size (NetworkDevices::Locate("BOOTPROTO", "dhcp")) > 0 &&
+    NetworkInterfaces::Read ();
+    if (size (NetworkInterfaces::Locate("BOOTPROTO", "dhcp")) > 0 &&
 	SCR::Read (.sysconfig.network.dhcp.DHCLIENT_SET_DOMAINNAME) == "yes")
     {
 	dhcp_changes_domain	= true;
