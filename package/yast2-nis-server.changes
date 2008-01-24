@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Jan 24 15:39:26 CEST 2008 - mzugec@suse.cz
+
+- replace deprecated NetworkDevices by NetworkInterfaces (from yast2)
+- 2.16.1
+
+-------------------------------------------------------------------
 Wed Oct  3 10:01:26 CEST 2007 - mvidner@suse.cz
 
 - Do not try to package COPYRIGHT.english, it is gone from

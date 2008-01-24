@@ -18,7 +18,7 @@ Summary:	Configuration of NIS server
 
 @HEADER@
 
-Requires:      yast2-nis-server >= 2.15.1
+Requires:      yast2-nis-server >= 2.16.23
 
 Summary:       Developer documentation for yast2-nis-server
 
