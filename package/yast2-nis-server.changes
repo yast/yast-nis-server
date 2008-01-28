@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Jan 28 10:39:56 CET 2008 - jsuchome@suse.cz
+
+- fixed broken requirement
+- 2.16.2 
+
+-------------------------------------------------------------------
 Thu Jan 24 15:39:26 CEST 2008 - mzugec@suse.cz
 
 - replace deprecated NetworkDevices by NetworkInterfaces (from yast2)

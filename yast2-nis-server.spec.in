@@ -3,7 +3,10 @@
 
 @HEADER@
 BuildRequires:	doxygen perl-XML-Writer update-desktop-files yast2 yast2-devtools yast2-network yast2-nis-client yast2-testsuite
-Requires:	yast2 yast2-network yast2-nis-client
+Requires:	yast2-network yast2-nis-client
+
+# NetworkInterfaces
+Requires:      	yast2 >= 2.16.23
 
 Provides:	yast2-config-nis-server
 Obsoletes:	yast2-config-nis-server
@@ -18,7 +21,7 @@ Summary:	Configuration of NIS server
 
 @HEADER@
 
-Requires:      yast2-nis-server >= 2.16.23
+Requires:      yast2-nis-server >= 2.16.1
 
 Summary:       Developer documentation for yast2-nis-server
 
