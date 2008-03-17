@@ -23,3 +23,4 @@ Exec=/sbin/yast2 nis_server
 Name=NIS Server
 GenericName=Configure a NIS server
 X-KDE-SubstituteUID=true
+StartupNotify=true
