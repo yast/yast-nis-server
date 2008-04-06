@@ -18,11 +18,8 @@ BuildArchitectures:	noarch
 Summary:	Configuration of NIS server
 
 %package devel-doc
-
-@HEADER@
-
+Group:          System/YaST
 Requires:      yast2-nis-server >= 2.16.1
-
 Summary:       Developer documentation for yast2-nis-server
 
 
