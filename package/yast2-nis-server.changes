@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu Aug 28 14:16:47 CEST 2008 - jsuchome@suse.cz
+
+- adapted to recent changes in nis-client (no check for DHCP)
+- DHCLIENT_SET_DOMAINNAME replaced with NETCONFIG_NIS_SETDOMAINNAME
+- 2.17.0
+
+-------------------------------------------------------------------
 Fri May 16 16:40:22 CEST 2008 - jsrain@suse.cz
 
 - added categories Settings and System into desktop file

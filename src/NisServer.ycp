@@ -276,7 +276,8 @@ global define boolean Read() ``{
 		remote		= true;
 	    }
 	});
-	if (remote || Nis::dhcp_wanted)
+	if (remote ||
+	    (Nis::policy != "" && !issubstring (Nis::policy, "STATIC")))
 	{
 	    start_ypbind	= false;
 	    nisclient_local	= false;
@@ -301,7 +302,7 @@ global define boolean Read() ``{
     // won't be replaced by dhcp (#28727)
     NetworkInterfaces::Read ();
     if (size (NetworkInterfaces::Locate("BOOTPROTO", "dhcp")) > 0 &&
-	SCR::Read (.sysconfig.network.dhcp.DHCLIENT_SET_DOMAINNAME) == "yes")
+	SCR::Read (.sysconfig.network.config.NETCONFIG_NIS_SETDOMAINNAME) != "no")
     {
 	dhcp_changes_domain	= true;
     }
