@@ -158,26 +158,25 @@ to the  bitwise <i>AND</i> of the host's address and the <b>netmask</b>.</p>");
 	list<term> allow_query = ItemizeSecurenets (NisServer::securenets);
 	integer n_items = size (allow_query);
 
-	term buttons = `HBox ();
-				// To translators: pushbutton label
-	buttons = add (buttons, `PushButton (`id (`add), `opt (`key_F3), _("A&dd")));
-				// To translators: pushbutton label
-	buttons = add (buttons, `PushButton (`id (`edit), `opt (`key_F4), _("&Edit")));
-				// To translators: pushbutton label
-	buttons = add (buttons, `PushButton (`id (`delete), `opt (`key_F5), _("De&lete")));
+	term buttons = `HBox (
+	    `PushButton (`id (`add), Label::AddButton ()),
+	    `PushButton (`id (`edit), Label::EditButton ()),
+	    `Left (
+		`PushButton (`id (`delete), Label::DeleteButton ())
+	    )
+	);
 
-	term contents = `VBox ();
-	contents = add (contents, `Table (`id (`table), `opt (`notify, `immediate),
-					  `header (
-					      // To translators: table headers
-					      _("Netmask"),
-					      // To translators: table headers
-					      _("Network")),
-					  allow_query));
-	contents = add (contents, buttons);
+	term contents = `VBox (
+	    `Table (`id (`table), `opt (`notify, `immediate), `header (
+		// To translators: table header
+		_("Netmask"),
+		// To translators: table header
+		_("Network")
+	    ), allow_query),
+	    buttons
+	);
 
-
-				// To translators: dialog label
+	// To translators: dialog label
 	Wizard::SetContents (_("NIS Server Query Hosts Setup"), contents, helptext, true, true);
 	Wizard::SetNextButton(`next, Label::FinishButton() );
 
