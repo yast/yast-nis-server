@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Sep  2 10:40:11 CEST 2008 - jsuchome@suse.cz
+
+- fixed button alignment (bnc#421043)
+- 2.17.1 
+
+-------------------------------------------------------------------
 Thu Aug 28 14:16:47 CEST 2008 - jsuchome@suse.cz
 
 - adapted to recent changes in nis-client (no check for DHCP)
