@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Sep  4 14:36:32 CEST 2008 - jsuchome@suse.cz
+
+- use rpcbind instead of portmap if available (bnc#423026)
+- 2.17.2 
+
+-------------------------------------------------------------------
 Tue Sep  2 10:40:11 CEST 2008 - jsuchome@suse.cz
 
 - fixed button alignment (bnc#421043)
