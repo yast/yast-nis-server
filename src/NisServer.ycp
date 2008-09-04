@@ -18,6 +18,7 @@ textdomain "nis_server";
 
 import "FileUtils";
 import "NetworkInterfaces";
+import "Package";
 import "Progress";
 import "Service";
 import "Summary";
@@ -761,6 +762,10 @@ global define void YPDaemons (any workflow) ``{
     list<string> to_stop  = [];
     list<string> to_start = [];
 
+    string rpc_mapper	= "portmap";
+    if (Package::Installed ("rpcbind"))
+	rpc_mapper      = "rpcbind";
+
     if (workflow == `none)
     {
 	to_stop = ["ypxfrd", "yppasswdd", "ypserv"];
@@ -768,12 +773,12 @@ global define void YPDaemons (any workflow) ``{
     else if (workflow == `slave)
     {
 	to_stop  = ["ypxfrd", "yppasswdd", "ypserv"];
-	to_start = ["portmap", "ypserv"];
+	to_start = [rpc_mapper, "ypserv"];
     }
     else if (workflow == `master)
     {
 	to_stop  = ["ypxfrd", "yppasswdd", "ypserv"];
-	to_start = ["portmap", "ypserv"];
+	to_start = [rpc_mapper, "ypserv"];
 
 	if (start_yppasswdd)
 	{
