@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Thu Jan 22 09:29:03 CET 2009 - jsuchome@suse.cz
+
+- NisServer::modified used to indicate if changes were done
+- ask for abort if changes were done (bnc#460168)
+- code cleanup
+- 2.18.0 
+
+-------------------------------------------------------------------
 Thu Sep  4 14:36:32 CEST 2008 - jsuchome@suse.cz
 
 - use rpcbind instead of portmap if available (bnc#423026)

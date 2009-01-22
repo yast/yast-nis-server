@@ -24,7 +24,6 @@ import "Service";
 import "Summary";
 import "SuSEFirewall";
 
-//TODO: make it work like Mail::Touch
 /**
  * Data was modified?
  */

@@ -49,25 +49,22 @@
 
 	+ firewall_widget["help"]:"";
 
-	term contents = `VBox ();
-	contents = add (contents,
+	term contents = `HVSquash (`VBox (
 	    // textentry label
-	    `TextEntry (`id(`domain),_("NIS &domain name:"),NisServer::domain));
-	contents = add (contents, `VSpacing (0.5));
-	contents = add (contents,
-	    // text entry label
-	    `TextEntry (`id (`master_ip), _("NIS &master server:"),
-		NisServer::ui_master_ip));
-
-	contents = add (contents, `VSpacing ());
-	contents = add (contents,
-	    // checkbox label
-	    `CheckBox (`id (`also_client), _("This host is also a NIS &client"),
-		NisServer::start_ypbind));
-
-	contents = add (contents, `VSpacing (2));
-	contents = add (contents, firewall_layout);
-	contents = `HVSquash (contents);
+	    `InputField (`id (`domain), `opt(`hstretch), _("N&IS domain name:"),
+		NisServer::domain),
+	    `VSpacing (0.5),
+	    `InputField (`id (`master_ip), `opt (`hstretch),
+		// text entry label
+		("NIS &master server:"), NisServer::ui_master_ip),
+	    `VSpacing (),
+	    `Left (`CheckBox (`id (`also_client),
+		// checkbox label
+		_("This host is also a NIS &client"), NisServer::start_ypbind)
+	    ),
+	    `VSpacing (2),
+	    firewall_layout
+	));
 
 	// To translators: dialog label
 	Wizard::SetContents (_("Slave Server Setup"),
@@ -94,37 +91,42 @@
 		    (string) UI::QueryWidget (`id (`master_ip), `Value);
 		string domainname =
 		    (string) UI::QueryWidget (`id (`domain), `Value);
+		boolean start_ypbind	=
+		    (boolean) UI::QueryWidget (`id (`also_client), `Value);
 		if (!Address::Check4(master_ip))
 		{
 		    // To translators: error message
 		    UI::SetFocus (`id (`master_ip));
 		    Popup::Error (Address::Valid4());
 		    ui = `again;
+		    continue;
 		}
 		else if (!Nis::check_nisdomainname (domainname))
 		{
 		    UI::SetFocus (`id (`domain));
 		    Popup::Error (Nis::valid_nisdomainname ());
 		    ui = `again;
+		    continue;
 		}
-		if (ui == `next)
+		if (master_ip != NisServer::ui_master_ip ||
+		    domainname!= NisServer::domain ||
+		    start_ypbind != NisServer::start_ypbind)
 		{
-		    NisServer::start_ypbind = (boolean)
-			UI::QueryWidget (`id (`also_client), `Value);
-		    CheckForDHCPClient (domainname);
-		    CWMFirewallInterfaces::OpenFirewallStore (
-			firewall_widget,"",event);
+		    NisServer::modified	= true;
 		}
+
+		CheckForDHCPClient (domainname);
+		CWMFirewallInterfaces::OpenFirewallStore (
+		    firewall_widget,"",event);
+		NisServer::start_ypbind = start_ypbind;
+		NisServer::ui_master_ip	= master_ip;
+		NisServer::domain	= domainname;
 	    }
 
-	    if (ui == `abort && !Popup::ReallyAbort (true)) ui = `again;
+	    if (ui == `abort && !Popup::ReallyAbort (NisServer::modified))
+		ui = `again;
 	}
 	until (ui == `next || ui == `back || ui == `abort);
-
-	NisServer::ui_master_ip =
-	    (string) UI::QueryWidget (`id (`master_ip), `Value);
-	NisServer::domain =
-	    (string) UI::QueryWidget (`id (`domain), `Value);
 
 	return (symbol) ui;
     }

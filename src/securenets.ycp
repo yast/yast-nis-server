@@ -81,24 +81,25 @@
      */
     define term NetsEditPopup (integer id, string netmask, string network) ``{
 
-	term buttons  = `HBox ();
-	buttons = add (buttons, `PushButton (`id (`ok), `opt (`default, `key_F10), Label::OKButton()));
-	buttons = add (buttons, `PushButton (`id (`cancel), `opt (`key_F9), Label::CancelButton()));
-
-	term contents = `VBox ();
-	contents = add (contents, `VSpacing (0.3));
-			       // To translators: popup dialog heading
-	contents = add (contents, `Heading (_("Edit netmask and network")));
-	contents = add (contents, `VSpacing (0.5));
-				// To translators: textentry label
-	contents = add (contents, `TextEntry (`id(`netmask), _("Net&mask"), netmask));
-	contents = add (contents, `VSpacing (0.3));
-				// To translators: textentry label
-	contents = add (contents, `TextEntry (`id(`network), _("Net&work"), network));
-	contents = add (contents, `VSpacing (0.5));
-	contents = add (contents, buttons);
-	contents = add (contents, `VSpacing (0.3));
-	contents = `HBox (`HSpacing (), contents, `HSpacing ());
+	term contents = `HBox (`HSpacing (), `VBox (
+	    `VSpacing (0.3),
+	    // To translators: popup dialog heading
+	    `Heading (_("Edit netmask and network")),
+	    `VSpacing (0.5),
+	    // To translators: textentry label
+	    `InputField (`id (`netmask), `opt (`hstretch), _("Net&mask"),
+		netmask),
+	    `VSpacing (0.3),
+	    // To translators: textentry label
+	    `InputField (`id (`network), `opt (`hstretch), _("Net&work"),
+		network),
+	    `VSpacing (0.5),
+	    `ButtonBox (
+		`PushButton (`id (`ok), `opt (`default), Label::OKButton()),
+		`PushButton (`id (`cancel), Label::CancelButton())
+	    ),
+	    `VSpacing (0.3)
+	), `HSpacing ());
 
 	UI::OpenDialog (contents);
 	UI::SetFocus (`id (`netmask));
@@ -158,14 +159,6 @@ to the  bitwise <i>AND</i> of the host's address and the <b>netmask</b>.</p>");
 	list<term> allow_query = ItemizeSecurenets (NisServer::securenets);
 	integer n_items = size (allow_query);
 
-	term buttons = `HBox (
-	    `PushButton (`id (`add), Label::AddButton ()),
-	    `PushButton (`id (`edit), Label::EditButton ()),
-	    `Left (
-		`PushButton (`id (`delete), Label::DeleteButton ())
-	    )
-	);
-
 	term contents = `VBox (
 	    `Table (`id (`table), `opt (`notify, `immediate), `header (
 		// To translators: table header
@@ -173,7 +166,12 @@ to the  bitwise <i>AND</i> of the host's address and the <b>netmask</b>.</p>");
 		// To translators: table header
 		_("Network")
 	    ), allow_query),
-	    buttons
+	    `HBox (
+		`PushButton (`id (`add), Label::AddButton ()),
+		`PushButton (`id (`edit), Label::EditButton ()),
+		`PushButton (`id (`delete), Label::DeleteButton ()),
+		`HStretch ()
+	    )
 	);
 
 	// To translators: dialog label
@@ -229,16 +227,22 @@ to the  bitwise <i>AND</i> of the host's address and the <b>netmask</b>.</p>");
 		}
 	    }
 
-	    if (ui == `abort && !Popup::ReallyAbort (true)) ui = `again;
+	    if (ui == `abort && !Popup::ReallyAbort (NisServer::modified))
+		ui = `again;
 	}
 	until (contains ([`back, `next, `abort], ui));
 
 	if (ui == `back) Wizard::RestoreNextButton();
 
-	// and finally merge
-	NisServer::securenets = MergeNetsEntries (NisServer::securenets, allow_query);
+	list<map> securenets	=
+	    MergeNetsEntries (NisServer::securenets, allow_query);
 
+	// and finally merge
+	if (ui == `next && (sort (securenets) != sort (NisServer::securenets)))
+	{
+	    NisServer::securenets	= securenets;
+	    NisServer::modified		= true;
+	}
 	return ui;
     }
-
 }
