@@ -37,7 +37,12 @@
      * @return `back, `abort or `next
      */
     define symbol DetailsDialog () ``{
-	string srcdir = NisServer::pwd_srcdir;
+
+	string srcdir	= NisServer::pwd_srcdir;
+
+	integer minuid	= NisServer::minuid;
+	integer mingid	= NisServer::mingid;
+	boolean merge_passwd	= NisServer::merge_passwd;
 
 	// help text 1/3
 	string helptext = _("<p>You can change NIS server source directory (usually
@@ -51,39 +56,34 @@ file (only possible if the <i>shadow</i> file exists).</p>
 	// help text 3/3
 	helptext = helptext + _("<p>You can also adjust the minimum user and group id.</p>");
 
-	boolean merge_passwd = NisServer::merge_passwd;
+	term minimals = `HBox (
+	    // To translators: intfield label
+	    `IntField (`id (`minuid), _("Minimum &UID"), 0, 50000, minuid),
+	    `HSpacing (),
+	    // To translators: intfield label
+	    `IntField (`id (`mingid), _("Minimum &GID"), 0, 50000, mingid)
+	);
 
-	term merge_pass_buttons = `VBox (`Left (
+	term contents = `HVSquash (`VBox (
+	    `InputField (`id (`srcdir), `opt(`notify, `hstretch),
+		// To translators: textentry label
+		_("&YP Source directory"), srcdir),
+	    `VSpacing (0.5),
 	    // check box label
-	    `CheckBox (`id (`merge_passwd), _("Merge pa&sswords"), merge_passwd)
+	    `Left (`CheckBox (`id (`merge_passwd), _("Merge pa&sswords"),
+		merge_passwd)
+	    ),
+	    `VSpacing (0.5),
+	    minimals
 	));
 
-	term minimals = `HBox ();
+	// To translators: dialog label
+	Wizard::SetContents (_("NIS Master Server Details Setup"),
+	    contents, helptext, true, true);
 
-				// To translators: intfield label
-	minimals = add (minimals, `IntField (`id (`minuid), _("Minimum &UID"), 0, 50000,
-					     NisServer::minuid));
-	minimals = add (minimals, `HSpacing ());
-				// To translators: intfield label
-	minimals = add (minimals, `IntField (`id (`mingid), _("Minimum &GID"), 0, 50000,
-					     NisServer::mingid));
-
-
-	term contents = `VBox ();
-				// To translators: textentry label
-	contents = add (contents, `TextEntry (`id (`srcdir), `opt(`notify), _("&YP Source directory"),
-					      srcdir));
-	contents = add (contents, `VSpacing (0.5));
-	contents = add (contents, merge_pass_buttons);
-	contents = add (contents, `VSpacing (0.5));
-	contents = add (contents, minimals);
-
-
-	contents = `HVSquash (contents);
-
-				// To translators: dialog label
-	Wizard::SetContents (_("NIS Master Server Details Setup"), contents, helptext, true, true);
+	Wizard::SetBackButton(`back, Label::CancelButton() );
 	Wizard::SetNextButton(`next, Label::OKButton() );
+	Wizard::HideAbortButton();
 
 	// If the source directory does not exist, it will be created
 	// with empty passwd, group, shadow
@@ -114,7 +114,8 @@ file (only possible if the <i>shadow</i> file exists).</p>
 
 	    change_enabled = (ui == `srcdir);
 	    srcdir = (string) UI::QueryWidget (`id (`srcdir), `Value);
-	    if (ui == `abort && !Popup::ReallyAbort (true)) ui = `again;
+	    if (ui == `abort && !Popup::ReallyAbort (NisServer::modified))
+		ui = `again;
 	    if (ui == `next)
 	    {
 		if (SCR::Read (.target.dir, srcdir) == nil && !Mode::config ())
@@ -124,17 +125,27 @@ file (only possible if the <i>shadow</i> file exists).</p>
 			Message::DirectoryDoesNotExistCreate (srcdir))
 			? `next : `again;
 		}
+		merge_passwd	= (boolean) UI::QueryWidget (`id (`merge_passwd), `Value);
+		minuid		= (integer) UI::QueryWidget (`id (`minuid), `Value);
+		mingid		= (integer) UI::QueryWidget (`id (`mingid), `Value);
+		if (NisServer::minuid != minuid ||
+		    NisServer::mingid != mingid ||
+		    NisServer::merge_passwd != merge_passwd ||
+		    NisServer::pwd_srcdir != srcdir)
+		{
+		    NisServer::modified	= true;
+		    NisServer::minuid	= minuid;
+		    NisServer::mingid	= mingid;
+		    NisServer::merge_passwd	= merge_passwd;
+		    NisServer::pwd_srcdir	= srcdir;
+		}
 	    }
 	}
 	until (contains ([`back, `next, `abort], ui));
 
-	NisServer::minuid = (integer) UI::QueryWidget (`id (`minuid), `Value);
-	NisServer::mingid = (integer) UI::QueryWidget (`id (`mingid), `Value);
-	NisServer::merge_passwd =
-	    (boolean) UI::QueryWidget (`id (`merge_passwd), `Value);
-	NisServer::pwd_srcdir = srcdir;
-
+	Wizard::RestoreBackButton();
 	Wizard::RestoreNextButton();
+	Wizard::RestoreAbortButton();
 	return ui;
     }
 }

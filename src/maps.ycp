@@ -97,12 +97,17 @@
 		ui = `abort;
 	    }
 
-	    if (ui == `abort && !Popup::ReallyAbort (true)) ui = `again;
+	    if (ui == `abort && !Popup::ReallyAbort (NisServer::modified))
+		ui = `again;
 	}
 	until (contains ([`back, `next, `abort], ui));
 
-	current = (list<string>) UI::QueryWidget (`id (`current), `SelectedItems);
-	NisServer::maps = current;
+	current = (list<string>)UI::QueryWidget (`id (`current),`SelectedItems);
+	if (ui == `next && (sort (current) != sort (NisServer::maps)))
+	{
+	    NisServer::maps	= current;
+	    NisServer::modified	= true;
+	}
 	return ui;
     }
 }

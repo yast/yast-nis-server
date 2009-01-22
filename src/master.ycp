@@ -38,6 +38,14 @@
      */
     define symbol MasterDialog () ``{
 
+	boolean pwd_chfn	= NisServer::pwd_chfn;
+	boolean pwd_chsh	= NisServer::pwd_chsh;
+	boolean start_yppasswdd	= NisServer::start_yppasswdd;
+	string domain		= NisServer::domain;
+	boolean start_ypbind	= NisServer::start_ypbind;
+	boolean nopush		= NisServer::nopush;
+	boolean start_ypxfrd	= NisServer::start_ypxfrd;
+
 	map<string,any> firewall_widget = GetFirewallWidget ();
 	term firewall_layout = firewall_widget["custom_widget"]:`VBox ();
 
@@ -62,73 +70,68 @@ be used to set up these more specific options.</p>
 
 	helptext = helptext + firewall_widget["help"]:"";
 
-	term pass_yes_buttons = `VBox ();
-				// To translators: checkbox label
-	pass_yes_buttons = add (pass_yes_buttons, `Left (`CheckBox (`id (`allow_gecos), _("Allow changes to &GECOS field"),
-				NisServer::pwd_chfn)));
-				// To translators: checkbox label
-	pass_yes_buttons = add (pass_yes_buttons, `Left (`CheckBox (`id (`allow_shell), _("Allow changes to login &shell"),
-				NisServer::pwd_chsh)));
-	pass_yes_buttons = `HBox (`HSpacing (3), pass_yes_buttons);
+	term pass_yes_buttons = `HBox (`HSpacing (3), `VBox (
+	    `Left (`CheckBox (`id (`allow_gecos),
+		// To translators: checkbox label
+		_("Allow changes to &GECOS field"), pwd_chfn)),
+	    `Left (`CheckBox (`id (`allow_shell),
+		// To translators: checkbox label
+		_("Allow changes to login &shell"), pwd_chsh))
+	));
 
-	term pass_buttons = `VBox ();
-	pass_buttons = add (pass_buttons, `VSpacing (0.3));
-	pass_buttons = add (pass_buttons, `Left (`CheckBox (`id (`change_passwords), `opt (`notify),
-							    // To translators: checkbox label
-			    _("Allow changes to &passwords"),
-			    NisServer::start_yppasswdd)));
-	pass_buttons = add (pass_buttons, `VSpacing (0.3));
-	pass_buttons = add (pass_buttons, pass_yes_buttons);
-	pass_buttons = add (pass_buttons, `VSpacing (0.3));
-	pass_buttons = `HBox (`HSpacing (), pass_buttons);
+	term pass_buttons = `HBox (`HSpacing (), `VBox (
+	    `VSpacing (0.3),
+	    `Left (`CheckBox (`id (`change_passwords), `opt (`notify),
+		// To translators: checkbox label
+		_("Allow changes to &passwords"), start_yppasswdd)
+	    ),
+	    `VSpacing (0.3),
+	    pass_yes_buttons,
+	    `VSpacing (0.3)
+	));
 
-	term domain_frame = `VBox ();
-	domain_frame = add (domain_frame, `VSpacing (0.3));
-	domain_frame = add (domain_frame, `TextEntry (`id (`domain), "",
-						      NisServer::domain));
-	domain_frame = add (domain_frame, `VSpacing (0.3));
-	domain_frame = add (domain_frame, `Left (
-	    // To translators: checkbox label
-	    `CheckBox (`id (`also_client), _("This host is also a NIS &client"),
-		NisServer::start_ypbind)));
-	domain_frame = add (domain_frame, `VSpacing (0.3));
-	domain_frame = `HBox (`HSpacing (), domain_frame, `HSpacing (4));
+	term domain_frame = `HBox (`HSpacing (), `VBox (
+	    `VSpacing (0.3),
+	    `InputField (`id (`domain), `opt (`hstretch), "", domain),
+	    `VSpacing (0.3),
+	    `Left (`CheckBox (`id (`also_client),
+		// To translators: checkbox label
+		_("This host is also a NIS &client"), start_ypbind)
+	    ),
+	    `VSpacing (0.3)
+	), `HSpacing (4));
 
-	term contents = `VBox ();
-	contents = add (contents, `VSpacing (0.5));
-				// To translators: frame label
-	contents = add (contents, `Frame (_("NIS &Domain Name"), domain_frame));
-	contents = add (contents, `VSpacing (0.5));
-				// To translators: checkbox label
-	contents = add (contents, `HBox (`HSpacing (), `Left (`CheckBox (`id (`have_slave), _("Active Slave NIS server &exists"),
-			!NisServer::nopush))));
-	contents = add (contents, `VSpacing (0.5));
-				// To translators: checkbox label
-	contents = add (contents, `HBox (`HSpacing (),`Left (`CheckBox (`id (`fast_map), _("&Fast Map distribution (rpc.ypxfrd)"),
-			NisServer::start_ypxfrd))));
-	contents = add (contents, `VSpacing (0.5));
-				// To translators: frame label
-	contents = add (contents, `Frame (_("Changing of passwords"), pass_buttons));
-	contents = add (contents, `VSpacing (0.5));
-	contents = add (contents, firewall_layout);
-
-	contents = `VBox (
-	    contents,
+	term contents = `HBox (`HSpacing (4), `VBox (
+	    `VSpacing (0.5),
+	    // To translators: frame label
+	    `Frame (_("NIS &Domain Name"), domain_frame),
+	    `VSpacing (0.5),
+	    `Left (`CheckBox (`id (`have_slave),
+		// To translators: checkbox label
+		_("Active Slave NIS server &exists"), !nopush)
+	    ),
+	    `VSpacing (0.5),
+	    `Left (`CheckBox (`id (`fast_map),
+		// To translators: checkbox label
+		_("&Fast Map distribution (rpc.ypxfrd)"), start_ypxfrd)
+	    ),
+	    `VSpacing (0.5),
+	    // To translators: frame label
+	    `Frame (_("Changing of passwords"), pass_buttons),
+	    `VSpacing (0.5),
+	    firewall_layout,
 	    `VSpacing (0.5),
 	    `PushButton (`id (`details), `opt (`key_F7),
 		// To translators: pushbutton label
 		_("&Other global settings ..."))
-	);
-
-	contents = `HBox (`HSpacing (4), contents, `HSpacing (6));
+	), `HSpacing (6));
 
 	// To translators: dialog label
 	Wizard::SetContents (_("Master Server Setup"),
 	    contents, helptext, true, true);
 
-	boolean a = NisServer::start_yppasswdd;
-	UI::ChangeWidget (`id (`allow_shell), `Enabled, a);
-	UI::ChangeWidget (`id (`allow_gecos), `Enabled, a);
+	UI::ChangeWidget (`id (`allow_shell), `Enabled, start_yppasswdd);
+	UI::ChangeWidget (`id (`allow_gecos), `Enabled, start_yppasswdd);
 
 	CWMFirewallInterfaces::OpenFirewallInit (firewall_widget, "");
 
@@ -146,51 +149,69 @@ be used to set up these more specific options.</p>
 
 	    if (ui == `change_passwords)
 	    {
-		boolean enabled = (boolean) UI::QueryWidget (`id (`change_passwords), `Value);
-		UI::ChangeWidget (`id (`allow_shell), `Enabled, enabled);
-		UI::ChangeWidget (`id (`allow_gecos), `Enabled, enabled);
+		start_yppasswdd= (boolean)
+		    UI::QueryWidget (`id (`change_passwords), `Value);
+		UI::ChangeWidget (`id (`allow_shell), `Enabled,start_yppasswdd);
+		UI::ChangeWidget (`id (`allow_gecos), `Enabled,start_yppasswdd);
 	    }
 
 	    else if (ui == `next)
 	    {
-		string domainname = (string) UI::QueryWidget (`id (`domain), `Value);
+		string domainname = (string)
+		    UI::QueryWidget (`id (`domain), `Value);
 
 		if (!Nis::check_nisdomainname (domainname))
 		{
 		    UI::SetFocus (`id (`domain));
 		    Popup::Error (Nis::valid_nisdomainname ());
 		    ui = `again;
+		    continue;
 		}
-		if (ui == `next)
+		domain	= domainname;
+		start_ypbind	= (boolean)
+		    UI::QueryWidget (`id (`also_client), `Value);
+		nopush		= ! (boolean)
+		    UI::QueryWidget (`id (`have_slave), `Value);
+		pwd_chfn	= (boolean)
+		    UI::QueryWidget (`id (`allow_gecos), `Value);
+		pwd_chsh	= (boolean)
+		    UI::QueryWidget (`id (`allow_shell), `Value);
+		start_yppasswdd	= (boolean)
+		    UI::QueryWidget (`id (`change_passwords), `Value);
+		start_ypxfrd	= (boolean)
+		    UI::QueryWidget (`id (`fast_map), `Value);
+
+		CheckForDHCPClient (domainname);
+		CWMFirewallInterfaces::OpenFirewallStore (
+		    firewall_widget,"",event);
+
+		if (NisServer::modified ||
+		    domain != NisServer::domain ||
+		    start_ypbind != NisServer::start_ypbind ||
+		    nopush != NisServer::nopush ||
+		    pwd_chfn != NisServer::pwd_chfn ||
+		    pwd_chsh != NisServer::pwd_chsh ||
+		    start_yppasswdd != NisServer::start_yppasswdd ||
+		    start_ypxfrd != NisServer::start_ypxfrd)
 		{
-		    NisServer::start_ypbind = (boolean)
-			UI::QueryWidget (`id (`also_client), `Value);
-		    CheckForDHCPClient (domainname);
-		    CWMFirewallInterfaces::OpenFirewallStore (
-			firewall_widget,"",event);
+		    NisServer::modified		= true;
+		    NisServer::domain		= domain;
+		    NisServer::start_ypbind	= start_ypbind;
+		    NisServer::nopush		= nopush;
+		    NisServer::pwd_chfn		= pwd_chfn;
+		    NisServer::pwd_chsh		= pwd_chsh;
+		    NisServer::start_yppasswdd	= start_yppasswdd;
+		    NisServer::start_ypxfrd	= start_ypxfrd;
 		}
 	    }
 
-	    if (ui == `abort && !Popup::ReallyAbort (true))
+	    if (ui == `abort && !Popup::ReallyAbort (NisServer::modified))
 	    {
 		ui = `again;
 	    }
 	}
 	until (	is (ui,symbol) &&
 		contains ([`next, `back, `abort, `details], (symbol) ui));
-
-	NisServer::nopush =
-	    ! (boolean) UI::QueryWidget (`id (`have_slave), `Value);
-	NisServer::pwd_chfn =
-	    (boolean) UI::QueryWidget (`id (`allow_gecos), `Value);
-	NisServer::pwd_chsh =
-	    (boolean) UI::QueryWidget (`id (`allow_shell), `Value);
-	NisServer::start_yppasswdd =
-	    (boolean) UI::QueryWidget (`id (`change_passwords), `Value);
-	NisServer::start_ypxfrd =
-	    (boolean) UI::QueryWidget (`id (`fast_map), `Value);
-	NisServer::domain =
-	    (string) UI::QueryWidget (`id (`domain), `Value);
 
 	return (symbol) ui;
     }

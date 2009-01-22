@@ -158,12 +158,13 @@ configure it.</p>");
 	    Wizard::SetFocusToNextButton();
 
 	    ui = (symbol) UI::UserInput ();
-	    if (ui == `cancel)
+	    if (ui == `cancel || ui == `back)
 	    {
 		ui = `abort;
 	    }
 
-	    if (ui == `abort && !Popup::ReallyAbort (true)) ui = `again;
+	    if (ui == `abort && NisServer::modified && !Popup::ReallyAbort (true))
+		ui = `again;
 
 	}
 	until (contains ([`back, `next, `abort, `finish], ui));
@@ -182,6 +183,10 @@ configure it.</p>");
 	}
 
 	current_button = (symbol) UI::QueryWidget (`id (`rb), `CurrentButton);
+
+	if (NisServer::ui_what != current_button)
+	    NisServer::modified	= true;
+
 	NisServer::ui_what = current_button;
 	return ui == `next ? current_button : ui;
     }
