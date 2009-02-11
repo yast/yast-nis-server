@@ -352,6 +352,8 @@ define integer SCRGetInt (path p, integer default_val) {
 }
 
 define void YPMakefileVars () {
+    if (!FileUtils::Exists ("/var/yp/Makefile")) return;
+
     maps = (list<string>) SCRGet (.var.yp.makefile.maps, ["passwd", "group", "rpc", "services", "netid"]);
     minuid = SCRGetInt (.var.yp.makefile.MINUID, 100);
     mingid = SCRGetInt (.var.yp.makefile.MINGID, 100);
