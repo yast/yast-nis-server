@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Tue Jun 16 14:27:44 CEST 2009 - mvidner@suse.cz
+
+- Using autodocs-ycp.ami, which contains a fix for automake 1.11.
+
+-------------------------------------------------------------------
 Thu Jan 22 09:29:03 CET 2009 - jsuchome@suse.cz
 
 - NisServer::modified used to indicate if changes were done
