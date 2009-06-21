@@ -15,12 +15,12 @@ Obsoletes:	yast2-trans-nis-server
 
 BuildArchitectures:	noarch
 
-Summary:	Configuration of NIS server
+Summary:	YaST2 - Network Information Services (NIS) Server Configuration
 
 %package devel-doc
 Group:          System/YaST
 Requires:      yast2-nis-server >= 2.16.1
-Summary:       Developer documentation for yast2-nis-server
+Summary:       YaST2 - Developer documentation for yast2-nis-server
 
 
 %description 
