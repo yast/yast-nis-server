@@ -24,10 +24,11 @@ Summary:       YaST2 - Developer documentation for yast2-nis-server
 
 
 %description 
-Configuration of NIS server
+The YaST2 component for NIS server configuration. NIS is a service
+similar to yellow pages.
 
 %description devel-doc
-Developer documentation for yast2-nis-server
+This package contains documentation for yast2-nis-server
 
 @PREP@
 
