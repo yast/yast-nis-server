@@ -18,9 +18,8 @@ X-SuSE-YaST-AutoInstClonable=true
 X-SuSE-YaST-AutoInstSchema=nis_server.rnc
 
 Icon=yast-nis_server
-Exec=/sbin/yast2 nis_server 
+Exec=xdg-su -c "/sbin/yast2 nis_server"
 
 Name=NIS Server
 GenericName=Configure a NIS server
-X-KDE-SubstituteUID=true
 StartupNotify=true
