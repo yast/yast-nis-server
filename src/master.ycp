@@ -155,7 +155,7 @@ be used to set up these more specific options.</p>
 		UI::ChangeWidget (`id (`allow_gecos), `Enabled,start_yppasswdd);
 	    }
 
-	    else if (ui == `next)
+	    if (ui == `details || ui == `next)
 	    {
 		string domainname = (string)
 		    UI::QueryWidget (`id (`domain), `Value);

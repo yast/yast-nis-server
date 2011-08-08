@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Aug  8 10:24:14 CEST 2011 - jsuchome@suse.cz
+
+- remember the settings after clicking Details (bnc#710882)
+- 2.21.0 
+
+-------------------------------------------------------------------
 Fri Aug  5 12:34:22 CEST 2011 - tgoettlicher@suse.de
 
 - fixed .desktop file (bnc #681249)
