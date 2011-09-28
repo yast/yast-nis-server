@@ -8,7 +8,8 @@ BuildRequires:	doxygen perl-XML-Writer update-desktop-files yast2 yast2-devtools
 Requires:	yast2-network yast2-nis-client
 
 # NetworkInterfaces
-Requires:      	yast2 >= 2.16.23
+# Wizard::SetDesktopTitleAndIcon
+Requires:      	yast2 >= 2.21.22
 
 Provides:	yast2-config-nis-server
 Obsoletes:	yast2-config-nis-server

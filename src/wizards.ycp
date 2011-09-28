@@ -131,7 +131,7 @@ define symbol NisServerSequence() ``{
 	];
 
     Wizard::CreateDialog();
-    Wizard::SetDesktopIcon("nis_server");
+    Wizard::SetDesktopTitleAndIcon("nis_server");
     symbol ret = Sequencer::Run(aliases, sequence);
 
     UI::CloseDialog();

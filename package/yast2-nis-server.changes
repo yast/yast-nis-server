@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Sep 28 18:53:45 CEST 2011 - visnov@suse.cz
+
+- set dialog title
+- 2.21.1 
+
+-------------------------------------------------------------------
 Mon Aug  8 10:24:14 CEST 2011 - jsuchome@suse.cz
 
 - remember the settings after clicking Details (bnc#710882)
