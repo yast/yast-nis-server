@@ -71,7 +71,5 @@ start_ypxfrd =
 minuid =
   element minuid { INTEGER }
 warn = element warn { text }
-nis_by_dhcp =
-  element nis_by_dhcp { BOOLEAN }
 # Common
 nis_server = element nis_server { y2_nisserver* }
