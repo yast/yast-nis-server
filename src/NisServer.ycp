@@ -895,6 +895,12 @@ global define void Client () ``{
 	"nis_servers":	[ "127.0.0.1" ],
 	];
 
+    if (start_ypbind)
+    {
+        // static policy assures local client
+        c["netconfig_policy"]     = "";
+    }
+
     boolean progress_orig = Progress::set (false);
     boolean ok =  Nis::Import (c) && Nis::Write ();
     Progress::set (progress_orig);
