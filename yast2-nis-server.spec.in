@@ -18,6 +18,8 @@ Obsoletes:	yast2-trans-nis-server
 
 BuildArchitectures:	noarch
 
+Requires:       yast2-ruby-bindings >= 1.0.0
+
 Summary:	YaST2 - Network Information Services (NIS) Server Configuration
 
 %package devel-doc
@@ -44,14 +46,13 @@ This package contains documentation for yast2-nis-server
 %files
 %defattr(-,root,root)
 %dir @yncludedir@/nis_server
-@yncludedir@/nis_server/*.ycp
+@yncludedir@/nis_server/*.rb
 %dir @moduledir@
-@moduledir@/NisServer.ycp
-@moduledir@/NisServer.ybc
+@moduledir@/NisServer.rb
 %dir @clientdir@
-@clientdir@/nis_server.ycp
-@clientdir@/nis_server_auto.ycp
-@clientdir@/nis-server.ycp
+@clientdir@/nis_server.rb
+@clientdir@/nis_server_auto.rb
+@clientdir@/nis-server.rb
 %dir @desktopdir@
 @desktopdir@/nis_server.desktop
 %dir @scrconfdir@
