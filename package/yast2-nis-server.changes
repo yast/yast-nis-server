@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed Jul 31 08:34:19 UTC 2013 - yast-devel@opensuse.org
+
+- converted from YCP to Ruby by YCP Killer
+  (https://github.com/yast/ycp-killer)
+- version 3.0.0
+
+-------------------------------------------------------------------
 Wed Nov 28 13:14:39 CET 2012 - jsuchome@suse.cz
 
 - save local NIS client with static netconfig policy (bnc#786799)
