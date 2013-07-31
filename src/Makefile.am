@@ -1,43 +1,38 @@
-# Makefile.am for source/nis-server/src
+# Sources for nis-server
 
-myincludedir = @yncludedir@/nis_server
+module_DATA = \
+  modules/NisServer.rb
 
-rncdir =  $(schemadir)/autoyast/rnc
+client_DATA = \
+  clients/nis_server_auto.rb \
+  clients/nis_server.rb \
+  clients/nis-server.rb
 
-myinclude_DATA =	\
-	what.ycp 	\
-	slave.ycp 	\
-	master.ycp 	\
-	details.ycp	\
-	slaves.ycp	\
-	maps.ycp	\
-	securenets.ycp 	\
-	wizards.ycp	\
-	ui.ycp		\
-	routines.ycp
+yncludedir = @yncludedir@/nis_server
+ynclude_DATA = \
+  include/nis_server/what.rb \
+  include/nis_server/wizards.rb \
+  include/nis_server/slaves.rb \
+  include/nis_server/securenets.rb \
+  include/nis_server/ui.rb \
+  include/nis_server/maps.rb \
+  include/nis_server/master.rb \
+  include/nis_server/routines.rb \
+  include/nis_server/slave.rb \
+  include/nis_server/details.rb
 
-module_DATA = NisServer.ycp
+scrconf_DATA = \
+  scrconf/var_yp_securenets.scr \
+  scrconf/var_yp_ypservers.scr \
+  scrconf/run_ypwhich_m.scr
 
-client_DATA = 		\
-	nis-server.ycp	\
-	nis_server.ycp	\
-	nis_server_auto.ycp
+schemafilesdir = $(schemadir)/autoyast/rnc
+schemafiles_DATA = \
+  autoyast-rnc/nis_server.rnc
 
-desktop_DATA = nis_server.desktop
+desktop_DATA = \
+  desktop/nis_server.desktop
 
-rnc_DATA = nis_server.rnc
-
-EXTRA_DIST =		\
-	$(module_DATA)	\
-	$(client_DATA)	\
-        $(desktop_DATA)	\
-	$(myinclude_DATA) $(rnc_DATA)
-
-nis_server:
-	ln -sf . nis_server
-
-ycpchook = nis_server
-
-YCPCFLAGS=-I.
+EXTRA_DIST = $(module_DATA) $(client_DATA) $(ynclude_DATA) $(scrconf_DATA) $(schemafiles_DATA) $(desktop_DATA)
 
 include $(top_srcdir)/Makefile.am.common
