@@ -89,10 +89,8 @@ This package contains documentation for yast2-nis-server
 
 %dir %{yast_docdir}
 %{yast_docdir}/COPYING
-%readme %{yast_docdir}/README
 
 %files devel-doc
 %defattr(-,root,root)
 %doc %{yast_docdir}
 %exclude %{yast_docdir}/COPYING
-%exclude %{yast_docdir}/README
