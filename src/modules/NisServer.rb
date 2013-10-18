@@ -328,7 +328,7 @@ module Yast
     def SCRGet(p, default_val)
       default_val = deep_copy(default_val)
       v = SCR.Read(p)
-      v != nil ? v : default_val
+      v != nil ? deep_copy(v) : deep_copy(default_val)
     end
 
     def SCRGetInt(p, default_val)
