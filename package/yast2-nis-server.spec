@@ -26,7 +26,7 @@ Source0:        %{name}-%{version}.tar.bz2
 Group:          System/YaST
 License:        GPL-2.0
 BuildRequires:	doxygen perl-XML-Writer update-desktop-files yast2 yast2-network yast2-nis-client yast2-testsuite
-BuildRequires:  yast2-devtools >= 3.0.6
+BuildRequires:  yast2-devtools >= 3.1.10
 Requires:	yast2-network yast2-nis-client
 
 # NetworkInterfaces
