@@ -33,8 +33,6 @@
 #   Dan Vesely <dan@suse.cz>
 #   Martin Vidner <mvidner@suse.cz>
 #
-# $Id$
-#
 # YPServer module part.
 #
 module Yast
@@ -81,7 +79,7 @@ module Yast
           InputField(
             Id(:domain),
             Opt(:hstretch),
-            _("N&IS domain name:"),
+            _("N&IS Domain Name:"),
             NisServer.domain
           ),
           VSpacing(0.5),
@@ -89,7 +87,7 @@ module Yast
             Id(:master_ip),
             Opt(:hstretch),
             # text entry label
-            "NIS &master server:",
+            _("NIS &Master Server:"),
             NisServer.ui_master_ip
           ),
           VSpacing(),
