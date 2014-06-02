@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Jun  2 10:40:02 CEST 2014 - locilka@suse.com
+
+- Marked text for translation (bnc#880306)
+- 3.1.2
+
+-------------------------------------------------------------------
 Fri May 30 16:25:26 CEST 2014 - jsuchome@suse.cz
 
 - use correct name of service for firewall (bnc#880383)
