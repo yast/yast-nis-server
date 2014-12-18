@@ -168,7 +168,7 @@ module Yast
               Id(:have_slave),
               # To translators: checkbox label
               _("Active Slave NIS server &exists"),
-              !nopush
+              nopush
             )
           ),
           VSpacing(0.5),
