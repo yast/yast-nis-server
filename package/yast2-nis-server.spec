@@ -17,7 +17,7 @@
 
 
 Name:           yast2-nis-server
-Version:        3.1.3
+Version:        3.1.4
 Release:        0
 
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
@@ -44,18 +44,9 @@ Requires:       yast2-ruby-bindings >= 1.0.0
 
 Summary:	YaST2 - Network Information Services (NIS) Server Configuration
 
-%package devel-doc
-Group:          System/YaST
-Requires:      yast2-nis-server >= 2.16.1
-Summary:       YaST2 - Developer documentation for yast2-nis-server
-
-
 %description 
 The YaST2 component for NIS server configuration. NIS is a service
 similar to yellow pages.
-
-%description devel-doc
-This package contains documentation for yast2-nis-server
 
 %prep
 %setup -n %{name}-%{version}
@@ -89,8 +80,3 @@ This package contains documentation for yast2-nis-server
 
 %dir %{yast_docdir}
 %{yast_docdir}/COPYING
-
-%files devel-doc
-%defattr(-,root,root)
-%doc %{yast_docdir}
-%exclude %{yast_docdir}/COPYING
