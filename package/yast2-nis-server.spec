@@ -37,6 +37,7 @@ Provides:	yast2-config-nis-server
 Obsoletes:	yast2-config-nis-server
 Provides:	yast2-trans-nis-server
 Obsoletes:	yast2-trans-nis-server
+Obsoletes:	yast2-nis-server-devel-doc
 
 BuildArchitectures:	noarch
 
