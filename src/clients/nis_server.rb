@@ -140,6 +140,14 @@ module Yast
             ),
             "type" => "string"
           },
+          "sync_slave"       => {
+           # command line help text for the 'sync_slave' option
+            "help" => _(
+              "Sync to NIS Slave servers"
+            ),
+            "type"     => "enum",
+            "typespec" => ["yes", "no"]
+          },
           "securenets" => {
             # command line help text for the 'hosts' option
             "help" => _(
@@ -150,7 +158,7 @@ module Yast
         },
         "mappings"   => {
           "summary" => [],
-          "master"  => ["domain", "yppasswd", "ypdir", "maps", "securenets"],
+          "master"  => ["domain", "yppasswd", "ypdir", "maps", "securenets", "sync_slave"],
           "slave"   => ["domain", "master_ip", "securenets"]
         }
       }
@@ -364,6 +372,10 @@ module Yast
 
       if Ops.get_string(options, "yppasswd", "") != ""
         NisServer.start_yppasswdd = Ops.get_string(options, "yppasswd", "") == "yes"
+      end
+      
+      if Ops.get_string(options, "sync_slave", "") != ""
+        NisServer.nopush = Ops.get_string(options, "sync_slave", "") == "yes"
       end
 
       NisServer.maps = deep_copy(maps)
