@@ -30,6 +30,7 @@
 # Representation of the configuration of nisServer.
 # Input and output routines.
 require "yast"
+require "y2firewall/firewalld"
 
 module Yast
   class NisServerClass < Module
@@ -42,7 +43,6 @@ module Yast
       Yast.import "Progress"
       Yast.import "Service"
       Yast.import "Summary"
-      Yast.import "SuSEFirewall"
 
       # Data was modified?
       @modified = false
@@ -315,9 +315,7 @@ module Yast
 
       Progress.NextStage
 
-      progress_orig = Progress.set(false)
-      SuSEFirewall.Read
-      Progress.set(progress_orig)
+      Y2Firewall::Firewalld.instance.read
 
       Progress.NextStage
 
@@ -547,9 +545,7 @@ module Yast
 
       Progress.NextStage
 
-      progress_orig = Progress.set(false)
-      SuSEFirewall.Write
-      Progress.set(progress_orig)
+      Y2Firewall::Firewalld.instance.write
 
       Progress.NextStage
       true
