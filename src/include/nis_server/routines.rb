@@ -148,7 +148,7 @@ module Yast
     # Create the widget for opening firewall ports
     def GetFirewallWidget
       settings = {
-        "services"        => ["service:ypserv"],
+        "services"        => ["ypserv"],
         "display_details" => true,
         # firewall openning help
         "help"            => _(

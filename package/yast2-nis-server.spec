@@ -17,7 +17,7 @@
 
 
 Name:           yast2-nis-server
-Version:        3.1.4
+Version:        4.0.0
 Release:        0
 
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
@@ -25,13 +25,14 @@ Source0:        %{name}-%{version}.tar.bz2
 
 Group:          System/YaST
 License:        GPL-2.0
-BuildRequires:	doxygen perl-XML-Writer update-desktop-files yast2 yast2-network yast2-nis-client yast2-testsuite
+BuildRequires:  doxygen perl-XML-Writer update-desktop-files yast2-network yast2-nis-client yast2-testsuite
+# SuSEFirewall2 replaced by firewalld (fate#323460)
+BuildRequires:  yast2 >= 4.0.39
 BuildRequires:  yast2-devtools >= 3.1.10
-Requires:	yast2-network yast2-nis-client
+Requires:       yast2-network yast2-nis-client
 
-# NetworkInterfaces
-# Wizard::SetDesktopTitleAndIcon
-Requires:      	yast2 >= 2.21.22
+# SuSEFirewall2 replaced by firewalld (fate#323460)
+Requires:       yast2 >= 4.0.39
 
 Provides:	yast2-config-nis-server
 Obsoletes:	yast2-config-nis-server
