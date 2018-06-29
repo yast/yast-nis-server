@@ -14,7 +14,7 @@ X-SuSE-YaST-Geometry=
 X-SuSE-YaST-SortKey=
 X-SuSE-YaST-AutoInstClonable=true
 X-SuSE-YaST-AutoInstSchema=nis_server.rnc
-X-SuSE-YaST-Keywords=authentication,network
+X-SuSE-YaST-Keywords=authentication,network,users
 
 Icon=yast-nis_server
 Exec=xdg-su -c "/sbin/yast2 nis_server"
