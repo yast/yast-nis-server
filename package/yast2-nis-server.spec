@@ -24,7 +24,7 @@ BuildRoot:      %{_tmppath}/%{name}-%{version}-build
 Source0:        %{name}-%{version}.tar.bz2
 
 Group:          System/YaST
-License:        GPL-2.0
+License:        GPL-2.0-only
 BuildRequires:  doxygen perl-XML-Writer update-desktop-files yast2-network yast2-nis-client yast2-testsuite
 # SuSEFirewall2 replaced by firewalld (fate#323460)
 BuildRequires:  yast2 >= 4.0.39
@@ -59,7 +59,10 @@ similar to yellow pages.
 %install
 %yast_install
 
-
+# Remove the license from the /usr/share/doc/packages directory,
+# it is also included in the /usr/share/licenses directory by using
+# the %license tag.
+rm -f $RPM_BUILD_ROOT/%{yast_docdir}/COPYING
 
 
 %files
@@ -81,4 +84,4 @@ similar to yellow pages.
 %{yast_schemadir}/autoyast/rnc/nis_server.rnc
 
 %dir %{yast_docdir}
-%{yast_docdir}/COPYING
+%license COPYING
