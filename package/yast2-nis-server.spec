@@ -17,7 +17,7 @@
 
 
 Name:           yast2-nis-server
-Version:        4.0.1
+Version:        4.0.2
 Release:        0
 
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
@@ -82,6 +82,6 @@ rm -f $RPM_BUILD_ROOT/%{yast_docdir}/COPYING
 %{yast_scrconfdir}/var_yp_securenets.scr
 %{yast_scrconfdir}/var_yp_ypservers.scr
 %{yast_schemadir}/autoyast/rnc/nis_server.rnc
-
+%{_datadir}/icons/*
 %dir %{yast_docdir}
 %license COPYING
