@@ -82,6 +82,6 @@ rm -f $RPM_BUILD_ROOT/%{yast_docdir}/COPYING
 %{yast_scrconfdir}/var_yp_securenets.scr
 %{yast_scrconfdir}/var_yp_ypservers.scr
 %{yast_schemadir}/autoyast/rnc/nis_server.rnc
-%{_datadir}/icons/*
+%{yast_icondir}
 %dir %{yast_docdir}
 %license COPYING
