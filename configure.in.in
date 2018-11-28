@@ -9,8 +9,5 @@
 @YAST2-CHECKS-YCP@
 @YAST2-CHECKS-TESTSUITE@
 
-
-
-
 ## and generate the output...
 @YAST2-OUTPUT@
