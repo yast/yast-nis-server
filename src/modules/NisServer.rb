@@ -31,6 +31,7 @@
 # Input and output routines.
 require "yast"
 require "y2firewall/firewalld"
+require "shellwords"
 
 module Yast
   class NisServerClass < Module
@@ -284,7 +285,7 @@ module Yast
         # a DHCP client may set the domainname too:
         # /etc/sysconfig/network/dhcp:DHCLIENT_SET_DOMAINNAME
         out = Convert.to_map(
-          SCR.Execute(path(".target.bash_output"), "/bin/ypdomainname")
+          SCR.Execute(path(".target.bash_output"), "/usr/bin/ypdomainname")
         )
         @domain = Builtins.deletechars(Ops.get_string(out, "stdout", ""), "\n")
       end
@@ -414,8 +415,8 @@ module Yast
       return nil if any_map == nil
       command = Builtins.sformat(
         "/usr/lib/yp/makedbm -u /var/yp/%1/%2 | grep ^YP_MASTER_NAME",
-        dn,
-        any_map
+        dn.shellescape,
+        any_map.shellescape
       )
 
       out = Convert.to_map(SCR.Execute(path(".target.bash_output"), command))
@@ -444,7 +445,7 @@ module Yast
     # @return Checks if the YP server software is installed
     # by querying RPM for ypserv
     def isYPServerInstalled
-      SCR.Execute(path(".target.bash"), "/bin/rpm -q ypserv") == 0
+      SCR.Execute(path(".target.bash"), "/usr/bin/rpm -q ypserv") == 0
     end
 
     # Adds an error to error_msg
@@ -559,7 +560,7 @@ module Yast
         output = Convert.to_map(
           SCR.Execute(
             path(".target.bash_output"),
-            Builtins.sformat("/bin/rm -rf %1", file)
+            Builtins.sformat("/usr/bin/rm -rf %1", file.shellescape)
           )
         )
         if Ops.greater_than(
@@ -585,7 +586,7 @@ module Yast
         output = Convert.to_map(
           SCR.Execute(
             path(".target.bash_output"),
-            Builtins.sformat("/bin/mkdir %1", directory)
+            Builtins.sformat("/usr/bin/mkdir %1", directory.shellescape)
           )
         )
         if Ops.greater_than(
@@ -618,8 +619,8 @@ module Yast
           path(".target.bash_output"),
           Builtins.sformat(
             "/usr/lib/yp/yphelper --maps %1 --domainname %2",
-            master,
-            dn
+            master.shellescape,
+            dn.shellescape
           )
         )
       )
@@ -646,9 +647,9 @@ module Yast
             path(".target.bash_output"),
             Builtins.sformat(
               "/usr/lib/yp/ypxfr -f -h %1 -d %2 %3",
-              master,
-              dn,
-              map_name
+              master.shellescape,
+              dn.shellescape,
+              map_name.shellescape
             )
           )
         )
@@ -672,7 +673,7 @@ module Yast
         output = Convert.to_map(
           SCR.Execute(
             path(".target.bash_output"),
-            Builtins.sformat("/usr/lib/yp/makedbm -u %1/ypservers", dndir)
+            Builtins.sformat("/usr/lib/yp/makedbm -u %1/ypservers", dndir.shellescape)
           )
         )
         slaves = Ops.get_string(output, "stdout")
@@ -720,7 +721,7 @@ module Yast
     def SaveSecurenets
       SCR.Execute(
         path(".target.bash"),
-        Builtins.sformat("/bin/cp %1 %1.YaST2.save", "/var/yp/securenets")
+        Builtins.sformat("/usr/bin/cp %1 %1.YaST2.save", "/var/yp/securenets")
       )
       if !SCR.Write(path(".var.yp.securenets"), @securenets)
         # To translators: message in the popup dialog
@@ -877,7 +878,7 @@ module Yast
                 path(".target.bash"),
                 Builtins.sformat(
                   "/usr/bin/touch %1; /bin/chmod 0644 %1; /bin/chown root.root %1",
-                  p2
+                  p2.shellescape
                 )
               )
         end
@@ -890,7 +891,7 @@ module Yast
               path(".target.bash"),
               Builtins.sformat(
                 "/usr/bin/touch %1; /bin/chmod 0640 %1; /bin/chown root.shadow %1",
-                p
+                p.shellescape
               )
             )
       end
@@ -910,7 +911,7 @@ module Yast
           path(".target.bash_output"),
           Builtins.sformat(
             "/usr/bin/make -C /var/yp/%1 -f ../Makefile NOPUSH=true ypservers",
-            dn
+            dn.shellescape
           )
         )
       )
@@ -929,7 +930,7 @@ module Yast
           path(".target.bash_output"),
           Builtins.sformat(
             "/usr/bin/make -C /var/yp NOPUSH=true LOCALDOMAIN=%1",
-            dn
+            dn.shellescape
           )
         )
       )
