@@ -12,76 +12,63 @@
 # license that conforms to the Open Source Definition (Version 1.9)
 # published by the Open Source Initiative.
 
-# Please submit bugfixes or comments via http://bugs.opensuse.org/
+# Please submit bugfixes or comments via https://bugs.opensuse.org/
 #
 
 
 Name:           yast2-nis-server
 Version:        4.1.1
 Release:        0
-
-BuildRoot:      %{_tmppath}/%{name}-%{version}-build
-Source0:        %{name}-%{version}.tar.bz2
-
 Group:          System/YaST
 License:        GPL-2.0-only
+Summary:        YaST2 - Network Information Services (NIS) Server Configuration
+Url:            https://github.com/yast/yast-nis-server
+
+Source0:        %{name}-%{version}.tar.bz2
+
 BuildRequires:  doxygen perl-XML-Writer update-desktop-files yast2-network yast2-nis-client yast2-testsuite
 # SuSEFirewall2 replaced by firewalld (fate#323460)
 BuildRequires:  yast2 >= 4.0.39
 BuildRequires:  yast2-devtools >= 3.1.10
-Requires:       yast2-network yast2-nis-client
 
+Requires:       yast2-network yast2-nis-client
 # SuSEFirewall2 replaced by firewalld (fate#323460)
 Requires:       yast2 >= 4.0.39
-
-Provides:	yast2-config-nis-server
-Obsoletes:	yast2-config-nis-server
-Provides:	yast2-trans-nis-server
-Obsoletes:	yast2-trans-nis-server
-Obsoletes:	yast2-nis-server-devel-doc
-
-BuildArchitectures:	noarch
-
 Requires:       yast2-ruby-bindings >= 1.0.0
 
-Summary:	YaST2 - Network Information Services (NIS) Server Configuration
+Provides:       yast2-config-nis-server
+Provides:       yast2-trans-nis-server
+
+Obsoletes:      yast2-config-nis-server
+Obsoletes:      yast2-trans-nis-server
+Obsoletes:      yast2-nis-server-devel-doc
+
+BuildArch:      noarch
 
 %description 
 The YaST2 component for NIS server configuration. NIS is a service
 similar to yellow pages.
 
 %prep
-%setup -n %{name}-%{version}
+%setup -q
 
 %build
 %yast_build
 
 %install
 %yast_install
-
-# Remove the license from the /usr/share/doc/packages directory,
-# it is also included in the /usr/share/licenses directory by using
-# the %license tag.
-rm -f $RPM_BUILD_ROOT/%{yast_docdir}/COPYING
-
+%yast_metainfo
 
 %files
-%defattr(-,root,root)
-%dir %{yast_yncludedir}/nis_server
-%{yast_yncludedir}/nis_server/*.rb
-%dir %{yast_moduledir}
-%{yast_moduledir}/NisServer.rb
-%dir %{yast_clientdir}
-%{yast_clientdir}/nis_server.rb
-%{yast_clientdir}/nis_server_auto.rb
-%{yast_clientdir}/nis-server.rb
-%dir %{yast_desktopdir}
-%{yast_desktopdir}/nis_server.desktop
-%dir %{yast_scrconfdir}
-%{yast_scrconfdir}/run_ypwhich_m.scr
-%{yast_scrconfdir}/var_yp_securenets.scr
-%{yast_scrconfdir}/var_yp_ypservers.scr
-%{yast_schemadir}/autoyast/rnc/nis_server.rnc
+%{yast_yncludedir}
+%{yast_moduledir}
+%{yast_clientdir}
+%{yast_desktopdir}
+%{yast_metainfodir}
+%{yast_scrconfdir}
+%{yast_schemadir}
 %{yast_icondir}
-%dir %{yast_docdir}
+%doc %{yast_docdir}
 %license COPYING
+
+%changelog
