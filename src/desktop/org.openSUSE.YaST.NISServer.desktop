@@ -19,6 +19,7 @@ X-SuSE-YaST-Keywords=authentication,network,users
 Icon=yast-nis-server
 Exec=xdg-su -c "/sbin/yast2 nis_server"
 
-Name=NIS Server
-GenericName=Configure a NIS server
+Name=YaST NIS Server
+GenericName=NIS Server
+Comment=Configure a NIS server
 StartupNotify=true
