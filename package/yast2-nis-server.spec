@@ -29,7 +29,7 @@ Source0:        %{name}-%{version}.tar.bz2
 BuildRequires:  doxygen perl-XML-Writer update-desktop-files yast2-network yast2-nis-client yast2-testsuite
 # SuSEFirewall2 replaced by firewalld (fate#323460)
 BuildRequires:  yast2 >= 4.0.39
-BuildRequires:  yast2-devtools >= 3.1.10
+BuildRequires:  yast2-devtools >= 4.2.2
 
 Requires:       yast2-network yast2-nis-client
 # SuSEFirewall2 replaced by firewalld (fate#323460)
