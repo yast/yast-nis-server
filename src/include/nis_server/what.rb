@@ -62,29 +62,23 @@ module Yast
       labels = VBox()
       labels = Builtins.add(labels, VSpacing(1.5))
 
-      master_setup_label = ""
-      slave_setup_label = ""
-      none_setup_label = ""
-
-      if detected == :none
+      if NisServer.isYPServerInstalled
+        # To translators: label in the dialog
+        install_label = _("NIS Software is installed.")
+      else
         # help text 2/2
-        helptext = Ops.add(
-          helptext,
+        helptext +=
           _(
             "<p>The NIS server package will be <b>installed</b> first if you want to\nconfigure it.</p>"
           )
-        )
+        # To translators: label in the dialog
+        install_label = _("No NIS Software is installed.")
+      end
+      labels << Left(Label(install_label))
 
+      if detected == :none
         # To translators: label in the dialog
-        labels = Builtins.add(
-          labels,
-          Left(Label(_("No NIS Software is installed.")))
-        )
-        # To translators: label in the dialog
-        labels = Builtins.add(
-          labels,
-          Left(Label(_("No NIS Server is configured.")))
-        )
+        labels << Left(Label(_("No NIS Server is configured.")))
 
         # To translators: label in the dialog
         master_setup_label = _("Install and set up an NIS &Master Server")
@@ -95,27 +89,15 @@ module Yast
       elsif isYPServerConfigured
         isMaster = detected == :master
 
-        labels = Builtins.add(
-          labels,
-          Left(Label(_("NIS Software is installed.")))
-        )
         slave_or_master = isMaster ?
           # To translators: part of the label in the dialog
           _("Master") :
           # To translators: part of the label in the dialog
           _("Slave")
         # To translators: label in the dialog, %1 is Master or Slave above
-        labels = Builtins.add(
-          labels,
-          Left(
-            Label(
-              Builtins.sformat(
-                _("A NIS %1 Server is configured."),
-                slave_or_master
-              )
-            )
-          )
-        )
+        labels << Left(Label(Builtins.sformat(
+          _("A NIS %1 Server is configured."), slave_or_master
+        )))
 
         # To translators: label in the dialog
         reconfigure_master = _("Reconfigure NIS &Master Server")
@@ -132,15 +114,9 @@ module Yast
         none_setup_label = _("&Deactivate any NIS server configuration")
       else
         # To translators: label in the dialog
-        labels = Builtins.add(
-          labels,
-          Left(Label(_("NIS Software is installed.")))
-        )
+        labels << Left(Label(_("NIS Software is installed.")))
         # To translators: label in the dialog
-        labels = Builtins.add(
-          labels,
-          Left(Label(_("No NIS Server is configured.")))
-        )
+        labels << Left(Label(_("No NIS Server is configured.")))
 
         # To translators: checkbox label
         master_setup_label = _("Create NIS &Master Server")
@@ -152,47 +128,39 @@ module Yast
 
       info = HBox()
       # To translators: label in the dialog
-      info = Builtins.add(info, VBox(Label(_("Current status:"))))
-      info = Builtins.add(info, HSpacing(4))
-      info = Builtins.add(info, labels)
+      info << VBox(Label(_("Current status:")))
+      info << HSpacing(4)
+      info << labels
+
       buttons = VBox()
-      buttons = Builtins.add(buttons, VSpacing(0.5))
-      buttons = Builtins.add(
-        buttons,
-        Left(
-          RadioButton(
-            Id(:master),
-            Opt(:notify),
-            master_setup_label,
-            detected == :master
-          )
-        )
-      )
-      buttons = Builtins.add(buttons, VSpacing(0.2))
-      buttons = Builtins.add(
-        buttons,
-        Left(
-          RadioButton(
-            Id(:slave),
-            Opt(:notify),
-            slave_setup_label,
-            detected == :slave
-          )
-        )
-      )
-      buttons = Builtins.add(buttons, VSpacing(0.2))
-      buttons = Builtins.add(
-        buttons,
-        Left(
-          RadioButton(
-            Id(:none),
-            Opt(:notify),
-            none_setup_label,
-            detected == :none
-          )
-        )
-      )
-      buttons = Builtins.add(buttons, VSpacing(0.5))
+      buttons << VSpacing(0.5)
+      buttons << Left(
+                  RadioButton(
+                    Id(:master),
+                    Opt(:notify),
+                    master_setup_label,
+                    detected == :master
+                  )
+                )
+      buttons << VSpacing(0.2)
+      buttons << Left(
+                   RadioButton(
+                     Id(:slave),
+                     Opt(:notify),
+                     slave_setup_label,
+                     detected == :slave
+                   )
+                 )
+      buttons << VSpacing(0.2)
+      buttons << Left(
+                   RadioButton(
+                     Id(:none),
+                     Opt(:notify),
+                     none_setup_label,
+                     detected == :none
+                   )
+                 )
+      buttons << VSpacing(0.5)
 
       buttons = HBox(HSpacing(0.5), buttons, HSpacing(0.5))
 
