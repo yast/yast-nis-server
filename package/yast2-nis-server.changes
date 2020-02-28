@@ -1,7 +1,8 @@
 -------------------------------------------------------------------
 Fri Feb 28 11:12:19 UTC 2020 - Josef Reidinger <jreidinger@suse.com>
 
-- Show properly in CLI when nis is not configured (bsc#1146030)
+- Properly report in CLI whether NIS is configured or not
+  (bsc#1146030)
 - 4.2.2
 
 -------------------------------------------------------------------
