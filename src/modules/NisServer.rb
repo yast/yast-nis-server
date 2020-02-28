@@ -305,7 +305,7 @@ module Yast
       end
 
       Progress.NextStage
-      if !isYPServerInstalled
+      if !isYPServerInstalled || getMaster.nil?
         @ui_what = :none
       else
         @ui_what = isYPMaster ? :master : :slave
