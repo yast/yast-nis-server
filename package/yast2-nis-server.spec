@@ -26,10 +26,12 @@ Url:            https://github.com/yast/yast-nis-server
 
 Source0:        %{name}-%{version}.tar.bz2
 
-BuildRequires:  doxygen perl-XML-Writer update-desktop-files yast2-network yast2-nis-client yast2-testsuite
+BuildRequires:  update-desktop-files yast2-network yast2-nis-client
 # SuSEFirewall2 replaced by firewalld (fate#323460)
 BuildRequires:  yast2 >= 4.0.39
 BuildRequires:  yast2-devtools >= 4.2.2
+BuildRequires:  rubygem(%rb_default_ruby_abi:rspec)
+BuildRequires:  rubygem(%rb_default_ruby_abi:yast-rake)
 
 Requires:       yast2-network yast2-nis-client
 # SuSEFirewall2 replaced by firewalld (fate#323460)
@@ -52,8 +54,10 @@ similar to yellow pages.
 %prep
 %setup -q
 
+%check
+%yast_check
+
 %build
-%yast_build
 
 %install
 %yast_install
