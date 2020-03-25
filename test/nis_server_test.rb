@@ -56,6 +56,35 @@ describe "Yast::NisServer" do
 
       expect(subject.isYPMaster).to eq true
     end
+  end
 
+  describe "#SaveVariables" do
+    context ":slave is passed" do
+      it "writes default domain" do
+        subject.domain = "test"
+        expect(Yast::SCR).to receive(:Write).with(path(".etc.defaultdomain"), "test")
+
+        subject.SaveVariables(:slave)
+      end
+    end
+
+    context ":master is passed" do
+      before do
+        allow(Yast::SCR).to receive(:Write)
+      end
+
+      it "writes default domain" do
+        subject.domain = "test"
+        expect(Yast::SCR).to receive(:Write).with(path(".etc.defaultdomain"), "test")
+
+        subject.SaveVariables(:master)
+      end
+
+      it "writes variables to /var/yp/Makefile" do
+        expect(Yast::SCR).to receive(:Write).with(path(".var.yp.makefile"), nil)
+
+        subject.SaveVariables(:master)
+      end
+    end
   end
 end
