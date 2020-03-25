@@ -80,6 +80,12 @@ describe "Yast::NisServer" do
         subject.SaveVariables(:master)
       end
 
+      it "writes variables to /etc/sysconfig/ypserv" do
+        expect(Yast::SCR).to receive(:Write).with(path(".sysconfig.ypserv"), nil)
+
+        subject.SaveVariables(:master)
+      end
+
       it "writes variables to /var/yp/Makefile" do
         expect(Yast::SCR).to receive(:Write).with(path(".var.yp.makefile"), nil)
 
