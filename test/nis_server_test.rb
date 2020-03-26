@@ -10,7 +10,7 @@ describe "Yast::NisServer" do
       expect(subject.getMaster).to eq nil
     end
 
-    it "returns nil if domain directory does not exists" do
+    it "returns nil if domain directory does not exist" do
       subject.domain = "test"
       allow(Yast::SCR).to receive(:Read).with(path(".target.size"), "/var/yp/test").and_return(-1)
 
@@ -25,7 +25,7 @@ describe "Yast::NisServer" do
       expect(subject.getMaster).to eq nil
     end
 
-    it "return master server name" do
+    it "returns master server name" do
       subject.domain = "test"
       allow(Yast::SCR).to receive(:Read).with(path(".target.size"), "/var/yp/test").and_return(0)
       allow(Yast::SCR).to receive(:Read).with(path(".target.dir"), "/var/yp/test").and_return(["a"])
