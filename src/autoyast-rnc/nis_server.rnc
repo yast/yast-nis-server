@@ -1,3 +1,6 @@
+
+include "common.rnc"
+
 # NIS Server
 y2_nisserver =
   domain
@@ -16,47 +19,47 @@ y2_nisserver =
   | start_ypxfrd
   | mingid
   | minuid
-comment = element comment { text }
-flag = element flag { text }
-forename = element forename { text }
+comment = element comment { STRING }
+flag = element flag { STRING }
+forename = element forename { STRING }
 mingid =
   element mingid { INTEGER }
-grouplist = element grouplist { text }
-hash = element hash { text }
-nis_server_home = element home { text }
-inact = element inact { text }
-last_change = element last_change { text }
+grouplist = element grouplist { STRING }
+hash = element hash { STRING }
+nis_server_home = element home { STRING }
+inact = element inact { STRING }
+last_change = element last_change { STRING }
 maps_to_serve =
   element maps_to_serve {
     LIST,
     nis_map*
   }
-max = element max { text }
+max = element max { STRING }
 merge_passwd =
   element merge_passwd { BOOLEAN }
 merge_group =
   element merge_group { BOOLEAN }
-min = element min { text }
-nis_map = element nis_map { text }
+min = element min { STRING }
+nis_map = element nis_map { STRING }
 nopush =
   element nopush { BOOLEAN }
 y2_password_settings =
   expire | flag | inact | last_change | max | min | warn
-nis_server_password_settings = element password_settings { y2_password_settings* }
+nis_server_password_settings = element password_settings { MAP, y2_password_settings* }
 pwd_chfn =
   element pwd_chfn { BOOLEAN }
 pwd_chsh =
   element pwd_chsh { BOOLEAN }
-pwd_srcdir = element pwd_srcdir { text }
-nis_server_netmask = element netmask { text }
-securenet = element securenet { comment?, hash?, nis_server_netmask?, network? }
+pwd_srcdir = element pwd_srcdir { STRING }
+nis_server_netmask = element netmask { STRING }
+securenet = element securenet { MAP, (comment?, hash?, nis_server_netmask?, network?) }
 securenets =
   element securenets {
     LIST,
     securenet*
   }
-server_type = element server_type { text }
-slave = element slave { text }
+server_type = element server_type { STRING }
+slave = element slave { STRING }
 slaves =
   element slaves {
     LIST,
@@ -70,6 +73,6 @@ start_ypxfrd =
   element start_ypxfrd { BOOLEAN }
 minuid =
   element minuid { INTEGER }
-warn = element warn { text }
+warn = element warn { STRING }
 # Common
-nis_server = element nis_server { y2_nisserver* }
+nis_server = element nis_server { MAP, y2_nisserver* }
