@@ -1279,7 +1279,6 @@ module Yast
     end
 
     # Create a textual summary and a list of unconfigured cards
-    # @param split split configured and unconfigured?
     # @return summary of the current configuration
     def Summary
       summary = ""
