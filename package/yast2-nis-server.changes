@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Fri Jul 23 12:15:34 UTC 2021 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Set X-SuSE-YaST-AutoInstClient in the desktop file to properly
+  determine the client name (bsc#1188644).
+- 4.2.3
+
+-------------------------------------------------------------------
 Fri Feb 28 11:12:19 UTC 2020 - Josef Reidinger <jreidinger@suse.com>
 
 - Properly report in CLI whether NIS is configured or not
