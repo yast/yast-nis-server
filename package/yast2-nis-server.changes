@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Fri Jul 23 12:15:34 UTC 2021 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Set X-SuSE-YaST-AutoInstClient in the desktop file to properly
+  determine the client name (bsc#1188644).
+- 4.3.2
+
+-------------------------------------------------------------------
 Mon Aug 10 17:20:14 CEST 2020 - schubi@suse.de
 
 - AutoYaST: Added supplements: autoyast(nis_server) into the spec file
