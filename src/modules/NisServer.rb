@@ -668,7 +668,7 @@ module Yast
 
       if !Builtins.contains(running_maps, "ypservers")
         # To translators: message in the popup dialog
-        addError(_("Could not get list with slaves.\n"))
+        addError(_("Could not get list with workers.\n"))
       else
         output = Convert.to_map(
           SCR.Execute(
@@ -1100,7 +1100,7 @@ module Yast
                 "save_label"     => _("Save slaves."),
                 # To translators: progress label
                 "progress_label" => _(
-                  "Saving slaves."
+                  "Saving workers."
                 ),
                 "function"       => [fun_ref(method(:SaveSlaves), "void ()")]
               }

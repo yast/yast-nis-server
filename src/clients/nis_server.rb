@@ -98,10 +98,30 @@ module Yast
                 "boolean (map)"
               ),
               # command line action help
+              # TRANSLATORS: user should be encouraged to use worker option instead
               "help"    => _(
-                "Configure NIS slave server"
+                "Configure NIS worker server (obsolete)"
+              )
+            },
+            "worker"   => {
+              "handler" => fun_ref(
+                method(:NisServerSlaveHandler),
+                "boolean (map)"
+              ),
+              # command line action help
+              "help"    => _(
+                "Configure NIS worker server"
               )
             }
+          },
+        "options"    => {
+          "domain"     => {
+            # command line help text for the 'domain' option
+            "help" => _(
+              "NIS domain"
+            ),
+            "type" => "string"
+          },
           },
         "options"    => {
           "domain"     => {
@@ -186,7 +206,7 @@ module Yast
         CommandLine.Print(_("A NIS master server is configured."))
       else
         # summary label
-        CommandLine.Print(_("A NIS slave server is configured."))
+        CommandLine.Print(_("A NIS worker server is configured."))
       end
 
       # summary label

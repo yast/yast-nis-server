@@ -104,9 +104,9 @@ module Yast
         )
       )
 
-      # To translators: dialog label
+      # To translators: dialog label, worker used to be known as slave
       Wizard.SetContents(
-        _("Slave Server Setup"),
+        _("Worker Server Setup"),
         contents,
         helptext,
         true,
