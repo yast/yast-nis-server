@@ -1097,7 +1097,7 @@ module Yast
             [
               # To translators: progress label
               {
-                "save_label"     => _("Save slaves."),
+                "save_label"     => _("Save workers."),
                 # To translators: progress label
                 "progress_label" => _(
                   "Saving workers."

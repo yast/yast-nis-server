@@ -98,7 +98,7 @@ module Yast
                 "boolean (map)"
               ),
               # command line action help
-              # TRANSLATORS: user should be encouraged to use worker option instead
+              # TRANSLATORS: help for the "slave" action. It is obsoleted by the "worker" action
               "help"    => _(
                 "Configure NIS worker server (obsolete)"
               )
@@ -113,15 +113,6 @@ module Yast
                 "Configure NIS worker server"
               )
             }
-          },
-        "options"    => {
-          "domain"     => {
-            # command line help text for the 'domain' option
-            "help" => _(
-              "NIS domain"
-            ),
-            "type" => "string"
-          },
           },
         "options"    => {
           "domain"     => {
