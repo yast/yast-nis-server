@@ -97,7 +97,7 @@ module Yast
     def YPSlavePopup(slave)
       hbox = HBox(
         # To translators: textentry label
-        InputField(Id(:slave), Opt(:hstretch), _("&Slave's host name"), slave),
+        InputField(Id(:slave), Opt(:hstretch), _("&Worker's host name"), slave),
         VBox(
           VSpacing(),
           PushButton(Id(:browse), Opt(:key_F6), Label.BrowseButton)
@@ -109,7 +109,7 @@ module Yast
         VBox(
           VSpacing(0.3),
           # To translators: popup dialog heading
-          Heading(_("Edit slave")),
+          Heading(_("Edit worker")),
           VSpacing(0.5),
           hbox,
           VSpacing(0.3),
@@ -173,7 +173,7 @@ module Yast
     def MastersSlavesDialog
       # help text 1/1
       helptext = _(
-        "<p>Here, enter the names of hosts to configure as NIS server slaves. Use <i>Add</i> to add a new one, <i>Edit</i>  to change an existing entry, and <i>Delete</i> to remove an entry.</p>"
+        "<p>Here, enter the names of hosts to configure as NIS server workers. Use <i>Add</i> to add a new one, <i>Edit</i>  to change an existing entry, and <i>Delete</i> to remove an entry.</p>"
       )
 
       slaves = deep_copy(NisServer.ypservers)
@@ -192,7 +192,7 @@ module Yast
           SelectionBox(
             Id(:slaves),
             Opt(:notify),
-            _("&Slaves"),
+            _("&Workers"),
             Builtins.sort(slaves)
           )
         ),
@@ -201,7 +201,7 @@ module Yast
 
       # To translators: dialog label
       Wizard.SetContents(
-        _("NIS Master Server Slaves Setup"),
+        _("NIS Master Server Workers Setup"),
         contents,
         helptext,
         true,
@@ -231,7 +231,7 @@ module Yast
               SelectionBox(
                 Id(:slaves),
                 Opt(:notify),
-                _("&Slaves"),
+                _("&Workers"),
                 Builtins.sort(slaves)
               )
             )
@@ -247,7 +247,7 @@ module Yast
             SelectionBox(
               Id(:slaves),
               Opt(:notify),
-              _("&Slaves"),
+              _("&Workers"),
               Builtins.sort(slaves)
             )
           )
@@ -260,7 +260,7 @@ module Yast
               SelectionBox(
                 Id(:slaves),
                 Opt(:notify),
-                _("&Slaves"),
+                _("&Workers"),
                 Builtins.sort(slaves)
               )
             )

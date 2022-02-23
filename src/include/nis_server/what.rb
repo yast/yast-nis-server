@@ -55,7 +55,7 @@ module Yast
     def WhatToConfigure
       # help text 1/2
       helptext = _(
-        "<p>Select whether to configure the NIS server as a <b>master</b> or a\n<b>slave</b> or not to configure a NIS server.</p>\n"
+        "<p>Select whether to configure the NIS server as a <b>master</b> or a\n<b>worker</b> or not to configure a NIS server.</p>\n"
       )
 
       detected = NisServer.ui_what
@@ -83,7 +83,7 @@ module Yast
         # To translators: label in the dialog
         master_setup_label = _("Install and set up an NIS &Master Server")
         # To translators: label in the dialog
-        slave_setup_label = _("Install and set up an NIS &Slave Server")
+        slave_setup_label = _("Install and set up an NIS &Worker Server")
         # To translators: label in the dialog
         none_setup_label = _("&Do nothing and leave set up")
       elsif isYPServerConfigured
@@ -92,9 +92,9 @@ module Yast
         slave_or_master = isMaster ?
           # To translators: part of the label in the dialog
           _("Master") :
-          # To translators: part of the label in the dialog
-          _("Slave")
-        # To translators: label in the dialog, %1 is Master or Slave above
+          # To translators: part of the label in the dialog, used to be slave before
+          _("Worker")
+        # To translators: label in the dialog, %1 is Master or Worker above
         labels << Left(Label(Builtins.sformat(
           _("A NIS %1 Server is configured."), slave_or_master
         )))
@@ -104,9 +104,9 @@ module Yast
         # To translators: label in the dialog
         change_to_master = _("Change to NIS &Master Server")
         # To translators: label in the dialog
-        reconfigure_slave = _("Reconfigure NIS &Slave Server")
+        reconfigure_slave = _("Reconfigure NIS &Worker Server")
         # To translators: label in the dialog
-        change_to_slave = _("Change to NIS &Slave Server")
+        change_to_slave = _("Change to NIS &Worker Server")
 
         master_setup_label = isMaster ? reconfigure_master : change_to_master
         slave_setup_label = isMaster ? change_to_slave : reconfigure_slave
@@ -121,7 +121,7 @@ module Yast
         # To translators: checkbox label
         master_setup_label = _("Create NIS &Master Server")
         # To translators: checkbox label
-        slave_setup_label = _("Create NIS &Slave Server")
+        slave_setup_label = _("Create NIS &Worker Server")
         # To translators: checkbox label
         none_setup_label = _("&Do nothing and leave set up")
       end

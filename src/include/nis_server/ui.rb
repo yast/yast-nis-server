@@ -70,20 +70,6 @@ module Yast
       ret ? :next : :abort
     end
 
-    # Popup to confirm after finish is pressed
-    # @return `yes or `back
-    def FinishPopup
-      if Popup.ContinueCancelHeadline(
-          # To translators: ContinueCancel Popup headline
-          _("Finish"),
-          # To translators: ContinueCancel Popup
-          _("Really save configuration ?")
-        )
-        return :yes
-      end
-      :back
-    end
-
     # Popup to confirm vhen exitting without saving
     # @return `exit or `back
     def ExitPopup

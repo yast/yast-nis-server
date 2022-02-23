@@ -73,13 +73,14 @@ module Yast
       )
 
       # help text 2/3
+      # TRANSLATORS: workers or worker servers used to be known as slave servers before
       helptext = Ops.add(
         helptext,
         _(
-          "<p>For slave servers to cooperate with this master, check\n" +
-            "<i>Active Slave NIS server exists</i>. If you check\n" +
+          "<p>For worker servers to cooperate with this master, check\n" +
+            "<i>Active Worker NIS server exists</i>. If you check\n" +
             "<i>Fast Map distribution</i>, it will speed up the transfer of maps to the\n" +
-            "slaves.</p>\n"
+            "workers.</p>\n"
         )
       )
 
@@ -167,7 +168,7 @@ module Yast
             CheckBox(
               Id(:have_slave),
               # To translators: checkbox label
-              _("Active Slave NIS server &exists"),
+              _("Active Worker NIS server &exists"),
               !nopush
             )
           ),

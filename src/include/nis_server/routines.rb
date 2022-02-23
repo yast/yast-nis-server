@@ -48,26 +48,6 @@ module Yast
       Yast.import "Service"
     end
 
-    # Converts from any type to boolean:
-    # true, "true" and nonzero integers are true,
-    # everything else including nil is false.
-    # @param [Object] arg argument to convert
-    # @return converted value
-    def toboolean(arg)
-      arg = deep_copy(arg)
-      if arg == nil
-        return false
-      elsif Ops.is_boolean?(arg)
-        return deep_copy(arg)
-      elsif Ops.is_string?(arg)
-        return arg == "true"
-      elsif Ops.is_integer?(arg)
-        return arg != 0
-      else
-        return false
-      end
-    end
-
     # @return Checks if the YP server was already configured
     # by reading the SCR, not the module data
     # (not to confuse the user if he backs up to the first dialog)
@@ -80,47 +60,6 @@ module Yast
     # @return `have_slave or `none_slave
     def SlaveExists
       NisServer.nopush ? :none_slave : :have_slave
-    end
-
-    # unused
-    # @return Checks if this host is in the slaves list on master
-    def hasMasterThisSlave
-      # list of maps: $["host": "foo.com", "map":"passwd.byuid"]
-      running_maps = Convert.convert(
-        SCR.Read(path(".run.ypwhich_m")),
-        :from => "any",
-        :to   => "list <map>"
-      )
-      if running_maps != nil
-        running_maps_str = Builtins.maplist(running_maps) do |m|
-          Ops.get_string(m, "map", "")
-        end
-        if Builtins.contains(running_maps_str, "ypservers")
-          out = Convert.to_map(
-            SCR.Execute(path(".target.bash_output"), "/usr/bin/ypcat ypservers")
-          )
-          slaves = Ops.get_string(out, "stdout", "")
-          if slaves != nil
-            out = Convert.to_map(
-              SCR.Execute(
-                path(".target.bash_output"),
-                "/usr/lib/yp/yphelper --hostname"
-              )
-            )
-            hostname = Ops.get_string(out, "stdout", "")
-            return false if hostname == ""
-            hostname = Builtins.substring(
-              hostname,
-              0,
-              Ops.subtract(Builtins.size(hostname), 1)
-            )
-            if Builtins.contains(Builtins.splitstring(slaves, "\n"), hostname)
-              return true
-            end
-          end
-        end
-      end
-      false
     end
 
     # Do the check if DHCP client is able to change domain name and

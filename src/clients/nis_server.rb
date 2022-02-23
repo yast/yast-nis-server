@@ -98,8 +98,19 @@ module Yast
                 "boolean (map)"
               ),
               # command line action help
+              # TRANSLATORS: help for the "slave" action. It is obsoleted by the "worker" action
               "help"    => _(
-                "Configure NIS slave server"
+                "Configure NIS worker server (obsolete)"
+              )
+            },
+            "worker"   => {
+              "handler" => fun_ref(
+                method(:NisServerSlaveHandler),
+                "boolean (map)"
+              ),
+              # command line action help
+              "help"    => _(
+                "Configure NIS worker server"
               )
             }
           },
@@ -186,7 +197,7 @@ module Yast
         CommandLine.Print(_("A NIS master server is configured."))
       else
         # summary label
-        CommandLine.Print(_("A NIS slave server is configured."))
+        CommandLine.Print(_("A NIS worker server is configured."))
       end
 
       # summary label
