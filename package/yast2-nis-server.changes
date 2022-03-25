@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Mar 25 13:10:30 UTC 2022 - José Iván López González <jlopez@suse.com>
+
+- Obsolete package for Tumbleweed (bsc#1183893).
+- 4.4.3
+
+-------------------------------------------------------------------
 Fri Feb 18 12:51:37 UTC 2022 - Michal Filka <mfilka@suse.com>
 
 - bnc#1195714
