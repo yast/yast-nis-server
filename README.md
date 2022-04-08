@@ -1,8 +1,11 @@
-# YaST - The NIS Server Module #
+Obsoleted Module
+================
 
-[![Workflow Status](https://github.com/yast/yast-nis-server/workflows/CI/badge.svg?branch=master)](
-https://github.com/yast/yast-nis-server/actions?query=branch%3Amaster)
-[![Jenkins Status](https://ci.opensuse.org/buildStatus/icon?job=yast-yast-nis-server-master)](
-https://ci.opensuse.org/view/Yast/job/yast-yast-nis-server-master/)
-[![Coverage Status](https://img.shields.io/coveralls/yast/yast-nis-server.svg)](https://coveralls.io/r/yast/yast-nis-server?branch=master)
-[![inline docs](http://inch-ci.org/github/yast/yast-nis-server.svg?branch=master)](http://inch-ci.org/github/yast/yast-nis-server)
+**This module is obsoleted and is not developed anymore.**
+
+GIT
+---
+
+If you want to see the last state check the [*master_old*](../master_old) branch.
+
+Use [*SLE-15-SP4*](../SLE-15-SP4) branch for SLES15 maintenance.
