@@ -1,7 +1,7 @@
 #
 # spec file for package yast2-nis-server
 #
-# Copyright (c) 2013 SUSE LINUX Products GmbH, Nuernberg, Germany.
+# Copyright (c) 2023 SUSE LLC
 #
 # All modifications and additions to the file contributed by third parties
 # remain the property of their copyright owners, unless otherwise agreed
@@ -22,18 +22,21 @@ Release:        0
 Group:          System/YaST
 License:        GPL-2.0-only
 Summary:        YaST2 - Network Information Services (NIS) Server Configuration
-Url:            https://github.com/yast/yast-nis-server
+URL:            https://github.com/yast/yast-nis-server
 
 Source0:        %{name}-%{version}.tar.bz2
 
-BuildRequires:  update-desktop-files yast2-network yast2-nis-client
+BuildRequires:  update-desktop-files
+BuildRequires:  yast2-network
+BuildRequires:  yast2-nis-client
 # SuSEFirewall2 replaced by firewalld (fate#323460)
 BuildRequires:  yast2 >= 4.0.39
 BuildRequires:  yast2-devtools >= 4.2.2
 BuildRequires:  rubygem(%rb_default_ruby_abi:rspec)
 BuildRequires:  rubygem(%rb_default_ruby_abi:yast-rake)
 
-Requires:       yast2-network yast2-nis-client
+Requires:       yast2-network
+Requires:       yast2-nis-client
 # SuSEFirewall2 replaced by firewalld (fate#323460)
 Requires:       yast2 >= 4.0.39
 Requires:       yast2-ruby-bindings >= 1.0.0
@@ -42,14 +45,14 @@ Provides:       yast2-config-nis-server
 Provides:       yast2-trans-nis-server
 
 Obsoletes:      yast2-config-nis-server
-Obsoletes:      yast2-trans-nis-server
 Obsoletes:      yast2-nis-server-devel-doc
+Obsoletes:      yast2-trans-nis-server
 
 Supplements:    autoyast(nis_server)
 
 BuildArch:      noarch
 
-%description 
+%description
 The YaST2 component for NIS server configuration. NIS is a service
 similar to yellow pages.
 
