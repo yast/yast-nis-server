@@ -17,7 +17,7 @@
 
 
 Name:           yast2-nis-server
-Version:        5.0.0
+Version:        5.0.1
 Release:        0
 Group:          System/YaST
 License:        GPL-2.0-only
@@ -26,7 +26,6 @@ Url:            https://github.com/yast/yast-nis-server
 
 Source0:        %{name}-%{version}.tar.bz2
 
-BuildRequires:  update-desktop-files yast2-network yast2-nis-client
 # SuSEFirewall2 replaced by firewalld (fate#323460)
 BuildRequires:  yast2 >= 4.0.39
 BuildRequires:  yast2-devtools >= 4.2.2
